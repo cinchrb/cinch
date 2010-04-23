@@ -4,8 +4,10 @@ require "rake/gempackagetask"
 require "rake/rdoctask"
 require "spec/rake/spectask"
 
+require 'lib/cinch'
+
 NAME = 'cinch'
-VERSION = '0.1' 
+VERSION = Cinch::VERSION
 TITLE = "Cinch: The IRC Microframework"
 CLEAN.include ["*.gem", "rdoc"]
 RDOC_OPTS = [
@@ -18,6 +20,11 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = "rdoc"
   rdoc.options += RDOC_OPTS
   rdoc.rdoc_files.add %w(README.rdoc lib/**/*.rb)
+end
+
+desc "Upload rdoc to injekt.net"
+task :upload => [:clean, :rdoc] do
+  sh("scp -r rdoc/* injekt@injekt.net:/var/www/injekt.net/rdoc/cinch")
 end
 
 desc "Run all specs"
@@ -34,4 +41,5 @@ namespace :spec do
 end
 
 
-task :default => [:spec]
+task :default => [:clean, :spec]
+

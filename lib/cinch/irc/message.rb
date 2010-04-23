@@ -1,8 +1,18 @@
 module Cinch
   module IRC
     
-    # Used by Parser#parse_servermessage
+    # == Author
+    # * Lee Jarvis - ljjarvis@gmail.com
     #
+    # == Description
+    # IRC::Message is a nicely encapsulated IRC message object. Used directly by 
+    # IRC::Parser#parse_servermessage and sent to every plugin defined. It does
+    # not do any parsing of itself, that's all down to the parser
+    #
+    # == See
+    # * Cinch::IRC::Parser#parse_servermessage
+    #
+    # TODO: Add more documentation
     class Message
 
       # Message prefix
@@ -23,6 +33,7 @@ module Cinch
       # Hash with message attributes
       attr_reader :data
 
+      # Invoked directly from IRC::Parser#parse_servermessage
       def initialize(raw, prefix, command, params)
         @raw = raw
         @prefix = prefix
@@ -68,6 +79,8 @@ module Cinch
         raw
       end
 
+      # Catch methods and check if they exist as keys in
+      # the attribute hash
       def method_missing(meth, *args, &blk) # :nodoc:
         if @data.key?(meth)
           @data[meth]
