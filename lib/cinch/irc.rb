@@ -18,6 +18,9 @@ module Cinch
   # You can use these tools through Cinch or include them directly and use
   # them on their own.
   #
+  # Each class inside of this module can be used direcly as they contain
+  # no references to higher level classes inside Cinch
+  #
   # == Example
   #  require 'cinch/irc'
   #  require 'pp'

@@ -1,5 +1,7 @@
 = Cinch: The IRC Microframework
 
+== Description
+
 Cinch is an IRC Microframework for quickly creating IRC bots
 in Ruby with minimal effort.
 
@@ -9,6 +11,18 @@ plugin, defining a rule, and watching your profits flourish.
 
 Cinch will do all of the hard work for you, so you can spend time creating cool plugins
 and extensions to wow your internet peers.
+
+== Installation
+
+=== RubyGems
+You can install the latest version of Cinch using RubyGems
+ gem install cinch
+
+=== GitHub
+Alternatively you can check out the latest code directly from Github
+ git clone http://github.com/injekt/cinch.git
+
+== Example
 
 Your typical <em>Hello, World</em> application would go something like this:
 
@@ -37,11 +51,25 @@ This example would provide the following response on IRC:
  injekt> !hello
  Cinch> Hello, injekt!
 
-Plugins are invoked using the command prefix character (which by default is set to <em>!</em>). You can
+Plugins are invoked using the command prefix character (which by default is set to <b>!</b>). You can
 also tell Cinch to ignore any command prefix and instead use the bots username. This would provide
 a result similar to this:
 
  injekt> Cinch: hello
  Cinch> Hello, injekt!
 
+== Authors
+Just me at the moment, sad poor lonely me...
+* {Lee Jarvis}[http://blog.injekt.net]
+
+== Notes
+
+* RDoc API documentation is available {here}[http://rdoc.injekt.net/cinch]
+* Wiki is available {here}[https://github.com/injekt/cinch/wikis]
+* Issue and feature tracking is available {here}[https://github.com/injekt/cinch/issues]
+* Contribution in the form of bugfixes or feature requests is welcome and encouraged
+
+If you'd like to contribute, fork the GitHub repository, make any changes, and send 
+{injekt}[http://github.com/injekt] a pull request. Collaborator access is available on
+request once one patch has been submitted.
 

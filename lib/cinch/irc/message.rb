@@ -63,6 +63,11 @@ module Cinch
         @data[:host] = host
       end
 
+      # The raw IRC message
+      def to_s
+        raw
+      end
+
       def method_missing(meth, *args, &blk) # :nodoc:
         if @data.key?(meth)
           @data[meth]

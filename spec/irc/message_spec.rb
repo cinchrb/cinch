@@ -2,13 +2,7 @@ require File.dirname(__FILE__) + '/helper'
 
 describe "IRC::Message" do
   before do
-    @message = Cinch::IRC::Message.new('rawline', 'prefix', 'COMMAND', 'foo bar params')
-  end
-
-  describe "::new" do
-    it "should return a Cinch::IRC::Message" do
-      @message.class.should == Cinch::IRC::Message
-    end
+    @message = Cinch::IRC::Message.new('rawline', 'prefix', 'COMMAND', ['#chan', 'hello world'])
   end
 
   describe "#add, #[]=" do
@@ -24,6 +18,12 @@ describe "IRC::Message" do
       @message.add(:custom, 'something')
       @message.delete(:custom)
       @message.data.should_not include :custom
+    end
+  end
+
+  describe "#to_s" do
+    it "should return the raw IRC message" do
+      @message.to_s.should == @message.raw
     end
   end
 
@@ -48,7 +48,8 @@ describe "IRC::Message" do
     end
 
     it "should contain params" do
-      @message.params.should == "foo bar params"
+      @message.params.should be_kind_of(Array)
+      @message.params.size.should == 2
     end
 
     it "should contain a symbolized command" do
