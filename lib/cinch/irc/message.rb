@@ -33,15 +33,27 @@ module Cinch
       # Hash with message attributes
       attr_reader :data
 
+      # Message text
+      attr_reader :text
+
+      # Arguments parsed from a rule
+      attr_accessor :args
+
+      # The IRC::Socket object (or nil)
+      attr_accessor :irc
+
       # Invoked directly from IRC::Parser#parse_servermessage
       def initialize(raw, prefix, command, params)
         @raw = raw
         @prefix = prefix
         @command = command
         @params = params
+        @text = params.last unless params.empty?
 
         @symbol = command.downcase.to_sym
         @data = {}
+        @args = {}
+        @irc = nil
       end
 
       # Access attribute
@@ -74,6 +86,20 @@ module Cinch
         @data[:host] = host
       end
 
+      def reply(text)
+        recipient = data[:channel] || data[:nick]
+        @irc.privmsg(recipient, text)
+      end
+
+      def answer(text)
+        return unless data[:channel]
+        @irc.privmsg(data[:channel], "#{data[:nick]}: #{text}")
+      end
+
+      def action(text)
+        reply("\001ACTION #{text}\001")
+      end
+
       # The raw IRC message
       def to_s
         raw
@@ -85,7 +111,7 @@ module Cinch
         if @data.key?(meth)
           @data[meth]
         else
-          super
+          nil
         end
       end
 

@@ -4,9 +4,7 @@
 
 Cinch is an IRC Microframework for quickly creating IRC bots
 in Ruby with minimal effort.
-
-The Cinch philosophy is very based on that of the {Sinatra web framework}[http://www.sinatrarb.com].
-It provides a minimal DSL like interface based on plugins and rules. It's as simple as greating a
+It provides a minimal interface based on plugins and rules. It's as simple as creating a
 plugin, defining a rule, and watching your profits flourish.
 
 Cinch will do all of the hard work for you, so you can spend time creating cool plugins
@@ -28,22 +26,26 @@ Your typical <em>Hello, World</em> application would go something like this:
 
  require 'cinch'
 
- setup do
+ bot = Cinch.setup do
    server "irc.freenode.org"
    nick "Cinch"
  end
 
- plugin 'hello' do
-   reply "Hello, #{nick}!"
+ bot.plugin "hello" do |m|
+   m.reply "Hello, #{m.nick}!"
  end
+
+ bot.run
 
 It doesn't take much to work out what's happening here, but I'll explain it anyway.
 
-First we define the <em>setup</em> block which is required in every application. Cinch is boxed
+First we run the <em>Cinch::setup</em> block which is required in every application. Cinch is boxed
 with a load of default values, so the <b>only</b> option required in this block is the <em>server</em>
 option. We then define a plugin using the <em>plugin</em> method and pass it a rule (a String in this
-case). Every plugin must be happeded to a rule. When the rule matches an IRC message its block is
-invoked, the contents of which contains your plugin interface.
+case). Every plugin must be mapped to a rule. When the rule matches an IRC message its block is
+invoked, the contents of which contains your plugin interface. The variable passed to the block is
+an instance of IRC::Message. This provides us with a couple of helper methods which can be used to
+reply to a message. See Cinch::IRC::Message#reply and Cinch::IRC::Message#answer
 
 This example would provide the following response on IRC:
 
@@ -57,6 +59,28 @@ a result similar to this:
 
  injekt> Cinch: hello
  Cinch> Hello, injekt!
+
+Cinch also provides named parameters. This method of expression was inspired by the {Sinatra
+Web Framework}[http://www.sinatrarb.com/] and although it doesn't quite follow the same pattern,
+it's useful for naming parameters passed to plugins. These paramaters are available through the 
+Cinch::IRC::Message#args method which is passed to each plugin.
+
+ bot.plugin("say :text") do |m|
+   m.reply m.args[:text]
+ end
+
+This plugin would provide the following output:
+
+ injekt> !say foo bar baz
+ Cinch> foo bar baz
+
+Each plugin takes an optional hash of message specific options. These options provide an extension to
+the rules given, for example if we want to reply only if the nick sending the message is injekt, we
+could pass the 'nick' option to the hash.
+
+ bot.plugin("join :channel", :nick => 'injekt') do |m|
+   m.join #{m.args[:channel]}
+ end
 
 == Authors
 Just me at the moment, sad poor lonely me...

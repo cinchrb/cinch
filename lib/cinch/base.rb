@@ -16,8 +16,10 @@ module Cinch
     DEFAULTS = {
       :port => 6667,
       :nick => "Cinch",
+      :username => 'cinch',
       :realname => "Cinch IRC Microframework",
       :prefix => '!',
+      :usermode => 0,
     }
 
     # Options can be passed via a hash, a block, or on the instance
@@ -40,9 +42,17 @@ module Cinch
       @options = OpenStruct.new(options)
 
       @rules = {}
-      @listeners = {}
+      @listeners = Hash.new([])
 
       @irc = IRC::Socket.new(options[:server], options[:port])
+      @parser = IRC::Parser.new
+
+      # Default listeners
+      on(:ping) {|m| @irc.pong(m.text) }
+      
+      if @options.respond_to?(:channels)
+        on(376) { @options.channels.each {|c| @irc.join(c) } }
+      end
     end
 
     # Add a new plugin
@@ -63,8 +73,12 @@ module Cinch
     #    join "#mychan"
     #  end
     def on(*commands, &blk)
-      commands.map {|x| x.downcase.to_s.to_sym }.each do |cmd|
-        add_listener(cmd, &blk)
+      commands.map {|x| x.to_s.downcase.to_sym }.each do |cmd|
+        if @listeners.key?(cmd)
+          @listeners[cmd] << blk
+        else
+          @listeners[cmd] = [blk]
+        end
       end
     end
 
@@ -92,29 +106,84 @@ module Cinch
     # Add a new rule, or add to an existing one if it
     # already exists
     def add_rule(rule, keys, options={}, &blk)
-      p [rule, keys, options, blk]
-    end
-
-    # Add a new listener, should only be used by #on
-    def add_listener(command, &blk)
-      if @listeners.key?(command)
-        @listeners[command] << blk
-      else
-        @listeners[command] = [blk]
+      unless @rules.key?(rule)
+        @rules[rule] = [rule, keys, options, blk]
       end
     end
 
     # Run run run
     def run
       @irc.connect
-      @irc.nick options[:nick]
-      @irc.user *options.values_at(:user, :host, :real)
-      process(@irc.read) while @irc.connected?
+      @irc.nick options.nick
+      @irc.user options.username, options.usermode, '*', options.realname
+        
+      begin
+        process(@irc.read) while @irc.connected?
+      rescue Interrupt
+        @irc.quit("Interrupted")
+        puts "\nInterrupted.."
+        exit
+      end
     end
 
+    # Process the next line read from the server
+    def process(line)
+      message = @parser.parse(line)
+      message.irc = @irc
+      puts message if options.verbose
+
+      if @listeners.key?(message.symbol)
+        @listeners[message.symbol].each {|l| l.call(message) }
+      end
+
+      if [:privmsg].include?(message.symbol)
+        rules.each_value do |attr|
+          rule, keys, ops, blk = attr
+          args = {}
+
+          unless ops.has_key?(:prefix) || options.prefix == false
+            rule.insert(1, options.prefix) unless rule[1].chr == options.prefix
+          end
+
+          if message.text && mdata = message.text.match(Regexp.new(rule))
+            unless keys.empty? || mdata.captures.empty?
+              args = Hash[keys.map {|k| k.to_sym}.zip(mdata.captures)]
+              message.args = args
+            end 
+            execute_rule(message, ops, blk)
+          end
+        end
+      end
+    end
+
+    # Execute a rule
+    def execute_rule(message, ops, blk)
+      ops.keys.each do |k|
+        case k
+        when :nick; return unless ops[:nick] == message.nick
+        when :user; return unless ops[:user] == message.user 
+        when :host; return unless ops[:host] == message.host
+        when :channel
+          if message.channel
+            return unless ops[:channel] == message.channel
+          end
+        end
+      end
+
+      blk.call(message)    
+    end
+
+    # 
+    def method_missing(meth, *args, &blk)
+      if @irc.respond_to?(meth)
+        @irc.send(meth, *args)
+      else
+        super
+      end
+    end
 
     # Option management
-    class Options < Hash
+    class Options < Hash # :nodoc:
       def initialize(&blk)
         instance_eval(&blk) if block_given?
       end
