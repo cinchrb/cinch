@@ -95,7 +95,7 @@ the rules given, for example if we want to reply only if the nick sending the me
 could pass the 'nick' option to the hash.
 
  bot.plugin("join :channel", :nick => 'injekt') do |m|
-   m.join #{m.args[:channel]}
+   bot.join #{m.args[:channel]}
  end
 
 == Authors
