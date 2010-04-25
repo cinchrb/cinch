@@ -90,7 +90,10 @@ module Cinch
             }
           end.parse(ARGV)
         rescue OptionParser::MissingArgument => err
-         warn "Missing values for options: #{err.args.join(', ')}\nFalling back to default"
+          warn "Missing values for options: #{err.args.join(', ')}\nFalling back to default"
+        rescue OptionParser::InvalidOption => err
+          warn err.message
+          exit
         end
       end
       options
