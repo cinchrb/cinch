@@ -10,6 +10,9 @@ plugin, defining a rule, and watching your profits flourish.
 Cinch will do all of the hard work for you, so you can spend time creating cool plugins
 and extensions to wow your internet peers.
 
+Cinch is not a fully fledged IRC framework, its base is extremely small. If you're looking
+for a more controlled library check out {silverplatter-irc}[http://github.com/apeiros/silverplatter-irc].
+
 == Installation
 
 === RubyGems
