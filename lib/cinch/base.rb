@@ -169,6 +169,7 @@ module Cinch
 
     # Process the next line read from the server
     def process(line)
+      return unless line
       message = @parser.parse(line)
       message.irc = @irc
       puts message if options.verbose
