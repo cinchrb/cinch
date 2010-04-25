@@ -175,7 +175,9 @@ module Cinch
 
     # 
     def method_missing(meth, *args, &blk)
-      if @irc.respond_to?(meth)
+      if options.respond_to?(meth)
+        options.send(meth)
+      elsif @irc.respond_to?(meth)
         @irc.send(meth, *args)
       else
         super

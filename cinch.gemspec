@@ -15,4 +15,6 @@ spec = Gem::Specification.new do |s|
   s.required_ruby_version = ">= 1.8.6"
   s.files = %w(README.rdoc Rakefile) + Dir["{rdoc,spec,lib}/**/*"]
   s.require_path = "lib"
+
+  s.add_development_dependency('rspec', '= 1.3.0')
 end

@@ -59,7 +59,7 @@ module Cinch
           add_pattern :host, /#{pattern(:hostname)}|#{pattern(:hostaddr)}/
 
           add_pattern :user, /[^\x00\x10\x0D\x20@]+/
-          add_pattern :nick, /[A-Za-z\[\]\\`_^{|}][A-Za-z\d\[\]\\`_^{|}-]{0,7}/
+          add_pattern :nick, /[A-Za-z\[\]\\`_^{|}][A-Za-z\d\[\]\\`_^{|}-]{0,19}/
 
           add_pattern :userhost, /(#{pattern(:nick)})(?:(?:!(#{pattern(:user)}))?@(#{pattern(:host)}))?/
 
