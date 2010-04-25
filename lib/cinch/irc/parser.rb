@@ -80,7 +80,7 @@ module Cinch
       # Parse the incoming raw IRC string and return
       # a nicely formatted IRC::Message
       def parse_servermessage(raw)
-        raise ArgumentError, raw unless matches = raw.match(pattern(:message))
+        raise ArgumentError, raw unless raw && matches = raw.match(pattern(:message))
 
         prefix, command, parameters = matches.captures
 
