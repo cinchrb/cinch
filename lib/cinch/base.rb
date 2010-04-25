@@ -4,12 +4,28 @@ module Cinch
   # * Lee Jarvis - ljjarvis@gmail.com
   #
   # == Description
+  # The base for an IRC connection
+  # TODO: More documentation
   #
   # == Example
+  #  bot = Cinch::Base.new :server => 'irc.freenode.org'
   #
+  #  bot.on :join do |m|
+  #    m.reply "Welcome to #{m.channel}, #{m.nick}!" unless m.nick == bot.nick
+  #  end
+  #
+  #  bot.plugin "say :text" do |m|
+  #    m.reply m.args[:text]
+  #  end
   class Base
 
-    attr_reader :rules, :listeners
+    # A Hash holding rules and attributes
+    attr_reader :rules
+    
+    # A Hash holding listeners and reply Procs
+    attr_reader :listeners
+
+    # An OpenStruct holding all configuration options
     attr_reader :options
 
     # Default options hash
@@ -23,26 +39,29 @@ module Cinch
     }
 
     # Options can be passed via a hash, a block, or on the instance
-    # independantly
+    # independantly. Or of course via the command line
     #
     # == Example
     #  # With a Hash
-    #  irc = Cinch::Base.new(:server => 'irc.freenode.org')
+    #  bot = Cinch::Base.new(:server => 'irc.freenode.org')
     #
     #  # With a block
-    #  irc = Cinch::Base.new do
+    #  bot = Cinch::Base.new do
     #    server "irc.freenode.org"
     #  end
     #
     #  # After the instance is created
-    #  irc = Cinch::Base.new
-    #  irc.options.server = "irc.freenode.org"
+    #  bot = Cinch::Base.new
+    #  bot.options.server = "irc.freenode.org"
+    #
+    #  # Nothing, but invoked with "ruby foo.rb -s irc.freenode.org"
+    #  bot = Cinch::Base.new
     def initialize(ops={}, &blk)
       options = DEFAULTS.merge(ops).merge(Options.new(&blk))
-      @options = OpenStruct.new(options)
+      @options = OpenStruct.new(options.merge(cli_ops))
 
       @rules = {}
-      @listeners = Hash.new([])
+      @listeners = {}
 
       @irc = IRC::Socket.new(options[:server], options[:port])
       @parser = IRC::Parser.new
@@ -55,11 +74,33 @@ module Cinch
       end
     end
 
+    # Parse command line options
+    def cli_ops
+      options = {}
+      if ARGV.any?
+        begin
+          OptionParser.new do |op|
+            op.on("-s server") {|v| options[:server] = v }
+            op.on("-p port") {|v| options[:port] = v.to_i }
+            op.on("-n nick") {|v| options[:nick] = v }
+            op.on("-c command_prefix") {|v| options[:prefix] = v }
+            op.on("-v", "--verbose", "Enable verbose mode") {|v| options[:verbose] = true }
+            op.on("-j", "--channels x,y,z", Array, "Autojoin channels") {|v| 
+              options[:channels] = v.map {|c| %w(# + &).include?(c[0].chr) ? c : c.insert(0, '#') } 
+            }
+          end.parse(ARGV)
+        rescue OptionParser::MissingArgument => err
+         warn "Missing values for options: #{err.args.join(', ')}\nFalling back to default"
+        end
+      end
+      options
+    end
+
     # Add a new plugin
     #
     # == Example
     #  plugin('hello') do |m|
-    #    reply "Hello, #{m.nick}!"
+    #    m.reply "Hello, #{m.nick}!"
     #  end
     def plugin(rule, options={}, &blk)
       rule, keys = compile(rule)
@@ -69,8 +110,8 @@ module Cinch
     # Add new listeners
     #
     # == Example
-    #  on(376) do 
-    #    join "#mychan"
+    #  on(376) do |m|
+    #    m.join "#mychan"
     #  end
     def on(*commands, &blk)
       commands.map {|x| x.to_s.downcase.to_sym }.each do |cmd|
@@ -90,9 +131,6 @@ module Cinch
 
       pattern = rule.to_s.gsub(/((:\w+)|[\*#{special_chars.join}])/) do |match|
         case match
-        when "*"
-          keys << "splat"
-          "(.*?)"
         when *special_chars
           Regexp.escape(match)
         else
@@ -121,7 +159,7 @@ module Cinch
         process(@irc.read) while @irc.connected?
       rescue Interrupt
         @irc.quit("Interrupted")
-        puts "\nInterrupted.."
+        puts "\nInterrupted. Shutting down.."
         exit
       end
     end
@@ -173,8 +211,8 @@ module Cinch
       blk.call(message)    
     end
 
-    # 
-    def method_missing(meth, *args, &blk)
+    # Catch methods
+    def method_missing(meth, *args, &blk) # :nodoc:
       if options.respond_to?(meth)
         options.send(meth)
       elsif @irc.respond_to?(meth)

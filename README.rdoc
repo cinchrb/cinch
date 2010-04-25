@@ -53,6 +53,22 @@ This example would provide the following response on IRC:
  injekt> !hello
  Cinch> Hello, injekt!
 
+Since Cinch doesn't provide a binary executable, running your application is as simple as you would any 
+other Ruby script. 
+
+ ruby hello.rb
+
+Cinch also parses the command line for options, to save you having to configure options within your script.
+
+ ruby hello.rb -s irc.freenode.org -n Coolbot
+ ruby hello.rb --channels foo,bar
+
+Doing a <b>ruby hello.rb -h</b> provides all possible command line options. When using the <em>--channels</em>
+option, the channel prefix is option, and if none is given the channel will be prefixed with a hash (#) 
+character 
+
+== Plugins
+
 Plugins are invoked using the command prefix character (which by default is set to <b>!</b>). You can
 also tell Cinch to ignore any command prefix and instead use the bots username. This would provide
 a result similar to this:
@@ -96,4 +112,9 @@ Just me at the moment, sad poor lonely me...
 If you'd like to contribute, fork the GitHub repository, make any changes, and send 
 {injekt}[http://github.com/injekt] a pull request. Collaborator access is available on
 request once one patch has been submitted.
+
+== TODO
+* More specs
+* More documentation
+* More examples
 

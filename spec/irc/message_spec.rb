@@ -33,8 +33,8 @@ describe "IRC::Message" do
       @message.custom.should == 'something'
     end
 
-    it "should raise NoMethodError if no attribute exists" do
-      lambda { @message.foobar }.should raise_error(NoMethodError)
+    it "should return nil if no attribute exists" do
+      @message.foobar.should == nil
     end
   end
 
