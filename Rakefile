@@ -22,6 +22,26 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.add %w(README.rdoc lib/**/*.rb)
 end
 
+desc "Package"
+task :package => [:clean] do |p|
+  sh "gem build #{NAME}.gemspec"
+end
+
+desc "Install gem"
+task :install => [:package] do
+  sh "sudo gem install ./#{NAME}-#{VERSION} --local"
+end
+
+desc "Uninstall gem"
+task :uninstall => [:clean] do
+  sh "sudo gem uninstall #{NAME}"
+end
+
+desc "Upload gem to gemcutter"
+task :release => [:package] do
+  sh "gem push ./#{NAME}-#{VERSION}.gem"
+end
+
 desc "Upload rdoc to injekt.net"
 task :upload => [:clean, :rdoc] do
   sh("scp -r rdoc/* injekt@injekt.net:/var/www/injekt.net/rdoc/cinch")
