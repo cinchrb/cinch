@@ -55,7 +55,7 @@ end
 namespace :spec do
   desc "Print with specdoc formatting"
   Spec::Rake::SpecTask.new(:doc) do |t|
-    t.spec_opts = ["--format", "specdoc", "--color"]
+    t.spec_opts = ["--format", "specdoc"]
     t.spec_files = Dir['spec/**/*_spec.rb']
   end
 end
