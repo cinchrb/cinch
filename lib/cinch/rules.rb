@@ -38,8 +38,6 @@ module Cinch
       end
     end
 
-
-
     # The rule as a String
     def to_s
       rule
