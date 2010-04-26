@@ -144,8 +144,8 @@ module Cinch
       ["^#{pattern}$", keys]
     end
 
-    # Add a new rule, or add to an existing one if it
-    # already exists
+    # Add a new rule, or replace to an existing one if it
+    # already exists. TODO: In future rules should be added to, not replaced
     def add_rule(rule, keys, options={}, &blk)
       unless @rules.key?(rule)
         @rules[rule] = [rule, keys, options, blk]
