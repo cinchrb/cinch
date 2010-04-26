@@ -85,7 +85,7 @@ module Cinch
             op.on("-n nick") {|v| options[:nick] = v }
             op.on("-c command_prefix") {|v| options[:prefix] = v }
             op.on("-v", "--verbose", "Enable verbose mode") {|v| options[:verbose] = true }
-            op.on("-j", "--channels x,y,z", Array, "Autojoin channels") {|v| 
+            op.on("-C", "--channels x,y,z", Array, "Autojoin channels") {|v| 
               options[:channels] = v.map {|c| %w(# + &).include?(c[0].chr) ? c : c.insert(0, '#') } 
             }
           end.parse(ARGV)
