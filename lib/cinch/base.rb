@@ -60,7 +60,7 @@ module Cinch
       options = DEFAULTS.merge(ops).merge(Options.new(&blk))
       @options = OpenStruct.new(options.merge(cli_ops))
 
-      @rules = {}
+      @rules = Rules.new
       @listeners = {}
 
       @irc = IRC::Socket.new(options[:server], options[:port])
@@ -107,7 +107,13 @@ module Cinch
     #  end
     def plugin(rule, options={}, &blk)
       rule, keys = compile(rule)
-      add_rule(rule, keys, options, &blk)
+      
+      if @rules.has_rule?(rule)
+        @rules.add_callback(rule, blk)
+        @rules.merge_options(rule, options)
+      else
+        @rules.add_rule(rule, keys, options, blk)
+      end
     end
     
     # Add new listeners
@@ -144,14 +150,6 @@ module Cinch
       ["^#{pattern}$", keys]
     end
 
-    # Add a new rule, or replace to an existing one if it
-    # already exists. TODO: In future rules should be added to, not replaced
-    def add_rule(rule, keys, options={}, &blk)
-      unless @rules.key?(rule)
-        @rules[rule] = [rule, keys, options, blk]
-      end
-    end
-
     # Run run run
     def run      
       @irc.connect options.server, options.port
@@ -179,20 +177,18 @@ module Cinch
       end
 
       if [:privmsg].include?(message.symbol)
-        rules.each_value do |attr|
-          rule, keys, ops, blk = attr
-          args = {}
-
-          unless ops.has_key?(:prefix) || options.prefix == false
-            rule.insert(1, options.prefix) unless rule[1].chr == options.prefix
+        rules.each do |rule|
+          unless rule.options.key?(:prefix) || options.prefix == false
+            rule.to_s.insert(1, options.prefix) unless rule.to_s[1].chr == options.prefix
           end
 
-          if message.text && mdata = message.text.match(Regexp.new(rule))
-            unless keys.empty? || mdata.captures.empty?
-              args = Hash[keys.map {|k| k.to_sym}.zip(mdata.captures)]
+          if message.text && mdata = message.text.match(Regexp.new(rule.to_s))
+            unless rule.keys.empty? || mdata.captures.empty?
+              args = Hash[rule.keys.map {|k| k.to_sym}.zip(mdata.captures)]
               message.args = args
-            end 
-            execute_rule(message, ops, blk)
+            end
+            # execute rule
+            rule.execute(message)
           end
         end
       end

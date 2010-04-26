@@ -25,17 +25,21 @@ describe "Cinch::Base" do
   describe "#plugin" do 
     it "should compile and add a rule" do
       @base.plugin('foo')
-      @base.rules.should include "^foo$"
+      @base.rules.include?("^foo$").should == true
     end
 
-    # TODO: plugins should 'add' to a rule in future, and not
-    # replace existing rules
-    it "should replace an existing rule if it exists" do
-      @base.plugin('foo')
-      @base.plugin('bar')
-      @base.rules.size.should == 2
-      @base.plugin('foo')
-      @base.rules.size.should == 2
+    it "should add options to an existing rule" do
+      @base.plugin('foo') { }
+      @base.plugin('foo', :bar => 'baz') { }
+      rule = @base.rules.get('^foo$')
+      rule.options.should include :bar
+    end 
+
+    it "should add its block to an existing rule" do
+      @base.plugin('foo') { }
+      @base.plugin('foo') { }
+      rule = @base.rules.get_rule('^foo$')
+      rule.callbacks.size.should == 2
     end
   end
 

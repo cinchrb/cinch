@@ -15,6 +15,18 @@ module Cinch
       callbacks = [callback]
       super(rule, keys, options, callbacks)
     end
+
+    # Execute all callbacks, passing an Cinch::IRC::Message to them
+    def execute(message)
+      callbacks.each do |blk|
+        blk.call(message)
+      end
+    end
+
+    # The rule as a String
+    def to_s
+      rule
+    end
   end
 
   # == Author
@@ -27,6 +39,9 @@ module Cinch
   #
   # This class provides an easy way to add options or callbacks to an existing
   # rule.
+  #
+  # Essentially the add_callback, add_option, and merge_options methods are just sugar
+  # so you don't have to edit Rule attributes directly
   #
   # == Example
   #  rules = Cinch::Rules.new
@@ -89,6 +104,17 @@ module Cinch
       @rules[rule].options[key] = value
     end
 
+    # Merge rule options
+    def merge_options(rule, ops={})
+      return unless include?(rule)
+      @rules[rule].options.merge!(ops)
+    end
+
+    # Iterate over the rules
+    def each
+      @rules.each {|rule, obj| yield obj }
+    end
+
     # Remove all rules
     def clear
       @rules.clear
@@ -103,6 +129,7 @@ module Cinch
     def count
       @rules.size
     end
+    alias :size :count
 
     # Return the hash of rules
     def all

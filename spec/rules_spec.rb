@@ -55,6 +55,14 @@ describe "Cinch::Rules" do
     end
   end
 
+  describe "#merge_options" do
+    it "should merge rule options" do
+      @rules.merge_options('foo', {:bar => 'baz'})
+      rule = @rules['foo']
+      rule.options.should == {:bar => 'baz'}
+    end
+  end
+
   describe "#include?" do
     it "should check if a rule exists" do
       @rules.include?('foo').should == true
