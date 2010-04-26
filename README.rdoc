@@ -14,6 +14,7 @@ Cinch is not a fully fledged IRC framework, its base is extremely small. If you'
 for a more controlled library check out {silverplatter-irc}[http://github.com/apeiros/silverplatter-irc].
 
 == Installation
+The latest version of Cinch is 0.2
 
 === RubyGems
 You can install the latest version of Cinch using RubyGems
@@ -100,6 +101,25 @@ could pass the 'nick' option to the hash.
  bot.plugin("join :channel", :nick => 'injekt') do |m|
    bot.join #{m.args[:channel]}
  end
+
+== Named Parameter Types
+Since version 0.2, Cinch supports named parameter types. Although at the moment you're constrained
+to the <i>digit</i>, <i>string</i> and <i>word</i> types. It means stuff like the this works:
+
+ bot.plugin("say :n-digit :text") do |m|
+   m.args[:n].to_i.times {
+     m.reply m.args[:text]
+   end
+ end
+
+This would provide the following output on IRC
+
+ injekt> !say foo bar
+ injekt> !say 2 foo bar
+ Cinch> foo bar
+ Cinch> foo bar
+
+* See Cinch::Base#compile for more information
 
 == Authors
 Just me at the moment, sad poor lonely me...

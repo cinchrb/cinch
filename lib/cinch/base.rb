@@ -60,7 +60,7 @@ module Cinch
       options = DEFAULTS.merge(ops).merge(Options.new(&blk))
       @options = OpenStruct.new(options.merge(cli_ops))
 
-      @rules = {}
+      @rules = Rules.new
       @listeners = {}
 
       @irc = IRC::Socket.new(options[:server], options[:port])
@@ -85,7 +85,7 @@ module Cinch
             op.on("-n nick") {|v| options[:nick] = v }
             op.on("-c command_prefix") {|v| options[:prefix] = v }
             op.on("-v", "--verbose", "Enable verbose mode") {|v| options[:verbose] = true }
-            op.on("-j", "--channels x,y,z", Array, "Autojoin channels") {|v| 
+            op.on("-C", "--channels x,y,z", Array, "Autojoin channels") {|v| 
               options[:channels] = v.map {|c| %w(# + &).include?(c[0].chr) ? c : c.insert(0, '#') } 
             }
           end.parse(ARGV)
@@ -107,7 +107,13 @@ module Cinch
     #  end
     def plugin(rule, options={}, &blk)
       rule, keys = compile(rule)
-      add_rule(rule, keys, options, &blk)
+      
+      if @rules.has_rule?(rule)
+        @rules.add_callback(rule, blk)
+        @rules.merge_options(rule, options)
+      else
+        @rules.add_rule(rule, keys, options, blk)
+      end
     end
     
     # Add new listeners
@@ -126,30 +132,75 @@ module Cinch
       end
     end
 
-    # Compile a rule string into regexp
+    # This method builds a regular expression from your rule
+    # and defines all named parameters, as well as dealing with 
+    # types.
+    #
+    # So far 3 types are supported:
+    #
+    # * word - matches [a-zA-Z]+
+    # * string - matches \w+
+    # * digit - matches \d+
+    #
+    # == Examples
+    # For capturing individual words
+    #  bot.plugin("say :text-word")
+    # * Does match !say foo
+    # * Does not match !say foo bar baz
+    #
+    # For capturing digits
+    #  bot.plugin("say :text-digit")
+    # * Does match !say 3
+    # * Does not match !say 3 4
+    # * Does not match !say foo
+    #
+    # For both
+    #  bot.plugin("say :n-digit :text-word")
+    # * Does match !say 3 foo
+    # * Does not match !say 3 foo bar
+    #
+    # For capturing until the end of the line
+    #  bot.plugin("say :text")
+    # * Does match !say foo
+    # * Does match !say foo bar
+    #
+    # Or mix them all
+    #  bot.plugin("say :n-digit :who-word :text")
+    #  
+    # Using "!say 3 injekt some text here" would provide
+    # the following attributes
+    # m.args[:n] => 3
+    # m.args[:who] => injekt
+    # m.args[:text] => some text here
     def compile(rule)
-      return [rule []] if rule.is_a?(Regexp)
+      return [rule, []] if rule.is_a?(Regexp)
       keys = []
       special_chars = %w{. + ( )}
 
-      pattern = rule.to_s.gsub(/((:\w+)|[\*#{special_chars.join}])/) do |match|
+      pattern = rule.to_s.gsub(/((:[\w\-]+)|[\*#{special_chars.join}])/) do |match|
         case match
         when *special_chars
           Regexp.escape(match)
         else
-          keys << $2[1..-1]
-          "([^\x00\r\n]+?)"
+          k = $2
+          if k =~ /\-(\w+)$/
+            key, type = k.split('-')
+            keys << key[1..-1]
+            
+            case type
+            when 'digit'; "(\\d+?)"
+            when 'word'; "([a-zA-Z]+?)"
+            when 'string'; "(\\w+?)"
+            else
+              "([^\x00\r\n]+?)"
+            end
+          else  
+            keys << k[1..-1]
+            "([^\x00\r\n]+?)"
+          end
         end
       end
       ["^#{pattern}$", keys]
-    end
-
-    # Add a new rule, or replace to an existing one if it
-    # already exists. TODO: In future rules should be added to, not replaced
-    def add_rule(rule, keys, options={}, &blk)
-      unless @rules.key?(rule)
-        @rules[rule] = [rule, keys, options, blk]
-      end
     end
 
     # Run run run
@@ -179,40 +230,21 @@ module Cinch
       end
 
       if [:privmsg].include?(message.symbol)
-        rules.each_value do |attr|
-          rule, keys, ops, blk = attr
-          args = {}
-
-          unless ops.has_key?(:prefix) || options.prefix == false
-            rule.insert(1, options.prefix) unless rule[1].chr == options.prefix
+        rules.each do |rule|
+          unless rule.options.key?(:prefix) || options.prefix == false
+            rule.to_s.insert(1, options.prefix) unless rule.to_s[1].chr == options.prefix
           end
 
-          if message.text && mdata = message.text.match(Regexp.new(rule))
-            unless keys.empty? || mdata.captures.empty?
-              args = Hash[keys.map {|k| k.to_sym}.zip(mdata.captures)]
+          if message.text && mdata = message.text.match(Regexp.new(rule.to_s))
+            unless rule.keys.empty? || mdata.captures.empty?
+              args = Hash[rule.keys.map {|k| k.to_sym}.zip(mdata.captures)]
               message.args = args
-            end 
-            execute_rule(message, ops, blk)
+            end
+            # execute rule
+            rule.execute(message)
           end
         end
       end
-    end
-
-    # Execute a rule
-    def execute_rule(message, ops, blk)
-      ops.keys.each do |k|
-        case k
-        when :nick; return unless ops[:nick] == message.nick
-        when :user; return unless ops[:user] == message.user 
-        when :host; return unless ops[:host] == message.host
-        when :channel
-          if message.channel
-            return unless ops[:channel] == message.channel
-          end
-        end
-      end
-
-      blk.call(message)    
     end
 
     # Catch methods

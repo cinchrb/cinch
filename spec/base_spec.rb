@@ -25,17 +25,21 @@ describe "Cinch::Base" do
   describe "#plugin" do 
     it "should compile and add a rule" do
       @base.plugin('foo')
-      @base.rules.should include "^foo$"
+      @base.rules.include?("^foo$").should == true
     end
 
-    # TODO: plugins should 'add' to a rule in future, and not
-    # replace existing rules
-    it "should replace an existing rule if it exists" do
-      @base.plugin('foo')
-      @base.plugin('bar')
-      @base.rules.size.should == 2
-      @base.plugin('foo')
-      @base.rules.size.should == 2
+    it "should add options to an existing rule" do
+      @base.plugin('foo') { }
+      @base.plugin('foo', :bar => 'baz') { }
+      rule = @base.rules.get('^foo$')
+      rule.options.should include :bar
+    end 
+
+    it "should add its block to an existing rule" do
+      @base.plugin('foo') { }
+      @base.plugin('foo') { }
+      rule = @base.rules.get_rule('^foo$')
+      rule.callbacks.size.should == 2
     end
   end
 
@@ -49,4 +53,55 @@ describe "Cinch::Base" do
       @base.listeners[:ping].should be_kind_of Array
     end
   end
+
+  describe "#compile" do
+    it "should return an Array of 2 values" do
+      ret = @base.compile("foo")
+      ret.should be_kind_of(Array)
+      ret.size.should == 2
+    end
+    
+    it "should return an empty set of keys if no named parameters are labeled" do
+      rule, keys = @base.compile("foo")
+      keys.should be_empty
+    end
+
+    it "should return a key for each named parameter labeled" do
+      rule, keys = @base.compile("foo :bar :baz")
+      keys.size.should == 2
+      keys.should include "bar"
+      keys.should include "baz"
+    end
+
+    it "should return a rule of type String, unless Regexp is given" do
+      rule, keys = @base.compile(:foo)
+      rule.should be_kind_of(String)
+
+      rule, keys = @base.compile(/foo/)
+      rule.should be_kind_of(Regexp)
+      keys.should be_empty
+    end
+
+    it "should convert a digit type" do
+      rule, keys = @base.compile(":foo-digit")
+      rule.should == "^(\\d+?)$"
+    end
+
+    it "should convert a string type" do
+      rule, keys = @base.compile(":foo-string")
+      rule.should == "^(\\w+?)$"
+    end
+
+    it "should convert a word type" do
+      rule, keys = @base.compile(":foo-word")
+      rule.should == "^([a-zA-Z]+?)$"
+    end
+
+    it "should automatically add start and end anchors" do
+      rule, keys = @base.compile("foo bar baz")
+      rule[0].chr.should == "^"
+      rule[-1].chr.should == "$"
+    end
+  end
 end
+

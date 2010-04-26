@@ -5,10 +5,11 @@ require 'ostruct'
 require 'optparse'
 
 require 'cinch/irc'
+require 'cinch/rules'
 require 'cinch/base'
 
 module Cinch
-  VERSION = '0.1'
+  VERSION = '0.2'
 
   # Setup bot options and return a new Cinch::Base instance
   def self.setup(ops={}, &blk)
