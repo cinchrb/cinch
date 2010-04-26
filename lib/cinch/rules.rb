@@ -18,10 +18,27 @@ module Cinch
 
     # Execute all callbacks, passing an Cinch::IRC::Message to them
     def execute(message)
+      options.keys.each do |key|
+        case key
+        when :nick
+          return unless options[:nick] == message.nick
+        when :host
+          return unless options[:host] == message.host
+        when :user
+          return unless options[:user] == message.user
+        when :channel
+          if message.channel
+            return unless options[:channel] == message.channel
+          end
+        end
+      end
+
       callbacks.each do |blk|
         blk.call(message)
       end
     end
+
+
 
     # The rule as a String
     def to_s

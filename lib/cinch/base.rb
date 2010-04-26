@@ -247,23 +247,6 @@ module Cinch
       end
     end
 
-    # Execute a rule
-    def execute_rule(message, ops, blk)
-      ops.keys.each do |k|
-        case k
-        when :nick; return unless ops[:nick] == message.nick
-        when :user; return unless ops[:user] == message.user 
-        when :host; return unless ops[:host] == message.host
-        when :channel
-          if message.channel
-            return unless ops[:channel] == message.channel
-          end
-        end
-      end
-
-      blk.call(message)    
-    end
-
     # Catch methods
     def method_missing(meth, *args, &blk) # :nodoc:
       if options.respond_to?(meth)
