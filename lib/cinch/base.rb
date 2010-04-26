@@ -136,6 +136,12 @@ module Cinch
     # and defines all named parameters, as well as dealing with 
     # types.
     #
+    # So far 3 types are supported:
+    #
+    # * word - matches [a-zA-Z]+
+    # * string - matches \w+
+    # * digit - matches \d+
+    #
     # == Examples
     # For capturing individual words
     #  bot.plugin("say :text-word")

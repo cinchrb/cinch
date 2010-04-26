@@ -103,7 +103,7 @@ could pass the 'nick' option to the hash.
 
 == Named Parameter Types
 Since version 0.2, Cinch supports named parameter types. Although at the moment you're constrained
-to the <i>digit</i> and <i>word</i> types. It means stuff like the this works:
+to the <i>digit</i>, <i>string</i> and <i>word</i> types. It means stuff like the this works:
 
  bot.plugin("say :n-digit :text") do |m|
    m.args[:n].to_i.times {
