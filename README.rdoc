@@ -14,6 +14,7 @@ Cinch is not a fully fledged IRC framework, its base is extremely small. If you'
 for a more controlled library check out {silverplatter-irc}[http://github.com/apeiros/silverplatter-irc].
 
 == Installation
+The latest version of Cinch is 0.2
 
 === RubyGems
 You can install the latest version of Cinch using RubyGems
