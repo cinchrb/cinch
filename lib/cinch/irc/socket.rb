@@ -87,8 +87,11 @@ module Cinch
       
       # Connect to an IRC server, returns true on a successful connection, or
       # raises otherwise
-      def connect
-        @socket = TCPSocket.new(server, port)
+      def connect(server=nil, port=nil)
+        @server = server if server
+        @port = port if port
+
+        @socket = TCPSocket.new(@server, @port)
       rescue Interrupt
         raise
       rescue Exception

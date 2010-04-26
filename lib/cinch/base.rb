@@ -153,8 +153,8 @@ module Cinch
     end
 
     # Run run run
-    def run
-      @irc.connect
+    def run      
+      @irc.connect options.server, options.port
       @irc.nick options.nick
       @irc.user options.username, options.usermode, '*', options.realname
         
