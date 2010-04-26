@@ -183,7 +183,8 @@ module Cinch
             
             case type
             when 'digit'; "(\\d+?)"
-            when 'string', 'word'; "(\\w+?)"
+            when 'word'; "([a-zA-Z]+?)"
+            when 'string'; "(\\w+?)"
             else
               "([^\x00\r\n]+?)"
             end
