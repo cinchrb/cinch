@@ -132,19 +132,65 @@ module Cinch
       end
     end
 
-    # Compile a rule string into regexp
+    # This method builds a regular expression from your rule
+    # and defines all named parameters, as well as dealing with 
+    # types.
+    #
+    # == Examples
+    # For capturing individual words
+    #  bot.plugin("say :text-word")
+    # * Does match !say foo
+    # * Does not match !say foo bar baz
+    #
+    # For capturing digits
+    #  bot.plugin("say :text-digit")
+    # * Does match !say 3
+    # * Does not match !say 3 4
+    # * Does not match !say foo
+    #
+    # For both
+    #  bot.plugin("say :n-digit :text-word")
+    # * Does match !say 3 foo
+    # * Does not match !say 3 foo bar
+    #
+    # For capturing until the end of the line
+    #  bot.plugin("say :text")
+    # * Does match !say foo
+    # * Does match !say foo bar
+    #
+    # Or mix them all
+    #  bot.plugin("say :n-digit :who-word :text")
+    #  
+    # Using "!say 3 injekt some text here" would provide
+    # the following attributes
+    # m.args[:n] => 3
+    # m.args[:who] => injekt
+    # m.args[:text] => some text here
     def compile(rule)
       return [rule []] if rule.is_a?(Regexp)
       keys = []
       special_chars = %w{. + ( )}
 
-      pattern = rule.to_s.gsub(/((:\w+)|[\*#{special_chars.join}])/) do |match|
+      pattern = rule.to_s.gsub(/((:[\w\-]+)|[\*#{special_chars.join}])/) do |match|
         case match
         when *special_chars
           Regexp.escape(match)
         else
-          keys << $2[1..-1]
-          "([^\x00\r\n]+?)"
+          k = $2
+          if k =~ /\-(\w+)$/
+            key, type = k.split('-')
+            keys << key[1..-1]
+            
+            case type
+            when 'digit'; "(\\d+?)"
+            when 'string', 'word'; "(\\w+?)"
+            else
+              "([^\x00\r\n]+?)"
+            end
+          else  
+            keys << k[1..-1]
+            "([^\x00\r\n]+?)"
+          end
         end
       end
       ["^#{pattern}$", keys]
