@@ -173,7 +173,7 @@ module Cinch
     # m.args[:who] => injekt
     # m.args[:text] => some text here
     def compile(rule)
-      return [rule []] if rule.is_a?(Regexp)
+      return [rule, []] if rule.is_a?(Regexp)
       keys = []
       special_chars = %w{. + ( )}
 

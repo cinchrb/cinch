@@ -53,4 +53,55 @@ describe "Cinch::Base" do
       @base.listeners[:ping].should be_kind_of Array
     end
   end
+
+  describe "#compile" do
+    it "should return an Array of 2 values" do
+      ret = @base.compile("foo")
+      ret.should be_kind_of(Array)
+      ret.size.should == 2
+    end
+    
+    it "should return an empty set of keys if no named parameters are labeled" do
+      rule, keys = @base.compile("foo")
+      keys.should be_empty
+    end
+
+    it "should return a key for each named parameter labeled" do
+      rule, keys = @base.compile("foo :bar :baz")
+      keys.size.should == 2
+      keys.should include "bar"
+      keys.should include "baz"
+    end
+
+    it "should return a rule of type String, unless Regexp is given" do
+      rule, keys = @base.compile(:foo)
+      rule.should be_kind_of(String)
+
+      rule, keys = @base.compile(/foo/)
+      rule.should be_kind_of(Regexp)
+      keys.should be_empty
+    end
+
+    it "should convert a digit type" do
+      rule, keys = @base.compile(":foo-digit")
+      rule.should == "^(\\d+?)$"
+    end
+
+    it "should convert a string type" do
+      rule, keys = @base.compile(":foo-string")
+      rule.should == "^(\\w+?)$"
+    end
+
+    it "should convert a word type" do
+      rule, keys = @base.compile(":foo-word")
+      rule.should == "^([a-zA-Z]+?)$"
+    end
+
+    it "should automatically add start and end anchors" do
+      rule, keys = @base.compile("foo bar baz")
+      rule[0].chr.should == "^"
+      rule[-1].chr.should == "$"
+    end
+  end
 end
+
