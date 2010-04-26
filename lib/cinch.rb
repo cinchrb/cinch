@@ -5,6 +5,7 @@ require 'ostruct'
 require 'optparse'
 
 require 'cinch/irc'
+require 'cinch/rules'
 require 'cinch/base'
 
 module Cinch
