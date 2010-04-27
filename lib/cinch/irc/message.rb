@@ -86,16 +86,20 @@ module Cinch
         @data[:host] = host
       end
 
+      # Reply to a channel or user, probably the most commonly used helper
+      # method
       def reply(text)
         recipient = data[:channel] || data[:nick]
         @irc.privmsg(recipient, text)
       end
 
+      # Same as reply but prefixes the users nickname
       def answer(text)
         return unless data[:channel]
         @irc.privmsg(data[:channel], "#{data[:nick]}: #{text}")
       end
 
+      # The deadly /me action
       def action(text)
         reply("\001ACTION #{text}\001")
       end
