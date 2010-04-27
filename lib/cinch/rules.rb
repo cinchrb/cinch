@@ -21,14 +21,14 @@ module Cinch
       options.keys.each do |key|
         case key
         when :nick
-          return unless options[:nick] == message.nick
+          return unless validate(options[:nick], message.nick)
         when :host
-          return unless options[:host] == message.host
+          return unless validate(options[:host], message.host)
         when :user
-          return unless options[:user] == message.user
+          return unless validate(options[:user], message.user)
         when :channel
           if message.channel
-            return unless options[:channel] == message.channel
+            return unless validate(options[:channel], message.channel)
           end
         end
       end
@@ -36,6 +36,16 @@ module Cinch
       callbacks.each do |blk|
         blk.call(message)
       end
+    end
+
+    # Validate rule attributes
+    def validate(option, attr)
+      if option.is_a?(Array)
+        return unless option.any?{|o| o == attr }
+      else
+        return unless options.to_s == attr
+      end
+      true
     end
 
     # The rule as a String
