@@ -99,7 +99,7 @@ could pass the 'nick' option to the hash.
    bot.join #{m.args[:channel]}
  end
 
-This method also works for arrays, to only reply to a message sent in the #foo and #bar channels
+This method also works for arrays, to only reply to a message sent in the foo and bar channels
 
  bot.plugin :hello, :channel => ['#foo', '#bar'] do |m|
    m.reply "Hello"
