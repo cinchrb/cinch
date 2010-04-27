@@ -23,7 +23,7 @@ bot.on :privmsg do |m|
   end
 end
 
-bot.plugin("seen :nick foo") do |m|
+bot.plugin("seen :nick") do |m|
   nick = m.args[:nick]
 
   if nick == bot.nick
