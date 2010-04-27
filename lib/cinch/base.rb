@@ -230,6 +230,11 @@ module Cinch
       end
 
       if [:privmsg].include?(message.symbol)
+
+        # At the moment we must traverse all possibly rules, which
+        # could get clunky with a lot of rules. This is because each
+        # rule can be unique in what prefix it uses, in future some kind
+        # of loose checking should be put in place
         rules.each do |rule|
           unless rule.options.key?(:prefix) || options.prefix == false
             rule.to_s.insert(1, options.prefix) unless rule.to_s[1].chr == options.prefix
