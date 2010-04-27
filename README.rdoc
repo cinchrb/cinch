@@ -105,8 +105,8 @@ This method also works for arrays, to only reply to a message sent in the foo an
    m.reply "Hello"
  end
 
-== Named Parameter Types
-Since version 0.2, Cinch supports named parameter types. It means stuff like the this works:
+== Named Parameter Patterns
+Since version 0.2, Cinch supports named parameter patterns. It means stuff like the this works:
 
  bot.plugin("say :n-digit :text") do |m|
    m.args[:n].to_i.times {
@@ -123,9 +123,10 @@ This would provide the following output on IRC
 
 * See Cinch::Base#compile for more information and the available types
 
-Cinch also supports custom types. That's right, you can define you own type. Just like this:
+Cinch also supports custom named parameter patterns. That's right, you can define you own 
+pattern. Just like this:
 
- bot.add_custom_type(:friends, "(injekt|lee|john|bob)")
+ bot.add_custom_pattern(:friends, "(injekt|lee|john|bob)")
 
  bot.plugin("I like :friend-friends", :prefix => false) do |m|
    m.reply "I like #{m.args[:friend]} too!"

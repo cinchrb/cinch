@@ -62,7 +62,7 @@ module Cinch
 
       @rules = Rules.new
       @listeners = {}
-      @custom_types = {}
+      @custom_patterns = {}
 
       @irc = IRC::Socket.new(options[:server], options[:port])
       @parser = IRC::Parser.new
@@ -135,9 +135,9 @@ module Cinch
 
     # This method builds a regular expression from your rule
     # and defines all named parameters, as well as dealing with 
-    # types.
+    # patterns.
     #
-    # So far 3 types are supported:
+    # So far 3 patterns are supported:
     #
     # * word - matches [a-zA-Z_]+
     # * string - matches \w+
@@ -197,8 +197,8 @@ module Cinch
             when 'upper'; "([A-Z]+?)"
             when 'lower'; "([a-z]+?)"
             else
-              if @custom_types.include?(type)
-                @custom_types[type]
+              if @custom_patterns.include?(type)
+                @custom_patterns[type]
               else
                 "([^\x00\r\n]+?)"
               end
@@ -220,15 +220,16 @@ module Cinch
     #   port 6667
     # end
     #
-    # bot.add_custom_type(:number, "([0-9])")
+    # bot.add_custom_pattern(:number, "([0-9])")
     #
     # bot.plugin("getnum :foo-number") do |m|
     #   m.reply "Your number was: #{m.args[:foo]}"
     # end
-    def add_custom_type(name, pattern)
-      @custom_types[name.to_s] = pattern.to_s
+    def add_custom_pattern(name, pattern)
+      @custom_patterns[name.to_s] = pattern.to_s
     end
-    alias :add_type :add_custom_type
+    alias :add_custom_type :add_custom_pattern # backwards
+    alias :add_pattern :add_custom_pattern 
 
     # Run run run
     def run      
