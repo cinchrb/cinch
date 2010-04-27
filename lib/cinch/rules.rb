@@ -20,13 +20,13 @@ module Cinch
     def execute(message)
       options.keys.each do |key|
         case key
-        when :nick
+        when :nick, :nicks
           return unless validate(options[:nick], message.nick)
-        when :host
+        when :host, :hosts
           return unless validate(options[:host], message.host)
-        when :user
+        when :user, :users
           return unless validate(options[:user], message.user)
-        when :channel
+        when :channel, :channels
           if message.channel
             return unless validate(options[:channel], message.channel)
           end
