@@ -62,6 +62,7 @@ module Cinch
 
       @rules = Rules.new
       @listeners = {}
+      @custom_types = {}
 
       @irc = IRC::Socket.new(options[:server], options[:port])
       @parser = IRC::Parser.new
@@ -138,9 +139,11 @@ module Cinch
     #
     # So far 3 types are supported:
     #
-    # * word - matches [a-zA-Z]+
+    # * word - matches [a-zA-Z_]+
     # * string - matches \w+
     # * digit - matches \d+
+    # * lower - matches [a-z]+
+    # * upper - matches [A-Z]+
     #
     # == Examples
     # For capturing individual words
@@ -189,10 +192,16 @@ module Cinch
             
             case type
             when 'digit'; "(\\d+?)"
-            when 'word'; "([a-zA-Z]+?)"
+            when 'word'; "([a-zA-Z_]+?)"
             when 'string'; "(\\w+?)"
+            when 'upper'; "([A-Z]+?)"
+            when 'lower'; "([a-z]+?)"
             else
-              "([^\x00\r\n]+?)"
+              if @custom_types.include?(type)
+                @custom_types[type]
+              else
+                "([^\x00\r\n]+?)"
+              end
             end
           else  
             keys << k[1..-1]
@@ -202,6 +211,24 @@ module Cinch
       end
       ["^#{pattern}$", keys]
     end
+
+    # Add a custom 'type', for rule validation
+    #
+    # == Example
+    # bot = Cinch.setup do 
+    #   server 'irc.freenode.org'
+    #   port 6667
+    # end
+    #
+    # bot.add_custom_type(:number, "([0-9])")
+    #
+    # bot.plugin("getnum :foo-number") do |m|
+    #   m.reply "Your number was: #{m.args[:foo]}"
+    # end
+    def add_custom_type(name, pattern)
+      @custom_types[name.to_s] = pattern.to_s
+    end
+    alias :add_type :add_custom_type
 
     # Run run run
     def run      

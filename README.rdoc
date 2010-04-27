@@ -106,8 +106,7 @@ This method also works for arrays, to only reply to a message sent in the foo an
  end
 
 == Named Parameter Types
-Since version 0.2, Cinch supports named parameter types. Although at the moment you're constrained
-to the <i>digit</i>, <i>string</i> and <i>word</i> types. It means stuff like the this works:
+Since version 0.2, Cinch supports named parameter types. It means stuff like the this works:
 
  bot.plugin("say :n-digit :text") do |m|
    m.args[:n].to_i.times {
@@ -122,7 +121,24 @@ This would provide the following output on IRC
  Cinch> foo bar
  Cinch> foo bar
 
-* See Cinch::Base#compile for more information
+* See Cinch::Base#compile for more information and the available types
+
+Cinch also supports custom types. That's right, you can define you own type. Just like this:
+
+ bot.add_custom_type(:friends, "(injekt|lee|john|bob)")
+
+ bot.plugin("I like :friend-friends", :prefix => false) do |m|
+   m.reply "I like #{m.args[:friend]} too!"
+ end
+
+Which would provide the following output on IRC:
+
+ * Cinch has joined #cinch
+ injekt> I like spongebob
+ injekt> I like bob
+ Cinch> I like bob too!
+
+Note though that you must wrap your type regexp in capturing parenthesis and escape it yourself
 
 == Authors
 Just me at the moment, sad poor lonely me...

@@ -9,7 +9,7 @@ require 'cinch/rules'
 require 'cinch/base'
 
 module Cinch
-  VERSION = '0.2'
+  VERSION = '0.2.3'
 
   # Setup bot options and return a new Cinch::Base instance
   def self.setup(ops={}, &blk)
