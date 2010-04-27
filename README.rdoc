@@ -10,9 +10,6 @@ plugin, defining a rule, and watching your profits flourish.
 Cinch will do all of the hard work for you, so you can spend time creating cool plugins
 and extensions to wow your internet peers.
 
-Cinch is not a fully fledged IRC framework, its base is extremely small. If you're looking
-for a more controlled library check out {silverplatter-irc}[http://github.com/apeiros/silverplatter-irc].
-
 == Installation
 The latest version of Cinch is 0.2
 
@@ -100,6 +97,12 @@ could pass the 'nick' option to the hash.
 
  bot.plugin("join :channel", :nick => 'injekt') do |m|
    bot.join #{m.args[:channel]}
+ end
+
+This method also works for arrays, to only reply to a message sent in the #foo and #bar channels
+
+ bot.plugin :hello, :channel => ['#foo', '#bar'] do |m|
+   m.reply "Hello"
  end
 
 == Named Parameter Types
