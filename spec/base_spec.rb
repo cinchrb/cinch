@@ -82,19 +82,35 @@ describe "Cinch::Base" do
       keys.should be_empty
     end
 
-    it "should convert a digit type" do
+    it "should convert a digit pattern" do
       rule, keys = @base.compile(":foo-digit")
       rule.should == "^(\\d+?)$"
     end
 
-    it "should convert a string type" do
+    it "should convert a string pattern" do
       rule, keys = @base.compile(":foo-string")
       rule.should == "^(\\w+?)$"
     end
 
-    it "should convert a word type" do
+    it "should convert a word pattern" do
       rule, keys = @base.compile(":foo-word")
-      rule.should == "^([a-zA-Z]+?)$"
+      rule.should == "^([a-zA-Z_]+?)$"
+    end
+
+    it "should convert a lowercase pattern" do
+      rule, keys = @base.compile(":foo-lower")
+      rule.should == "^([a-z]+?)$"
+    end
+
+    it "should convert an uppercase pattern" do
+      rule, keys = @base.compile(":foo-upper")
+      rule.should == "^([A-Z]+?)$"
+    end
+
+    it "should convert a custom pattern" do
+      @base.add_custom_pattern(:people, "(foo|bar|baz)")
+      rule, keys = @base.compile(":foo-people")
+      rule.should == "^(foo|bar|baz)$"    
     end
 
     it "should automatically add start and end anchors" do

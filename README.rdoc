@@ -121,7 +121,7 @@ This would provide the following output on IRC
  Cinch> foo bar
  Cinch> foo bar
 
-* See Cinch::Base#compile for more information and the available types
+* See Cinch::Base#compile for more information and the available patterns
 
 Cinch also supports custom named parameter patterns. That's right, you can define you own 
 pattern. Just like this:
