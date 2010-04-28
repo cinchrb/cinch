@@ -44,7 +44,7 @@ end
 
 desc "Upload rdoc to injekt.net"
 task :upload => [:clean, :rdoc] do
-  sh("scp -r rdoc/* injekt@injekt.net:/var/www/injekt.net/rdoc/cinch")
+  sh("scp -r rdoc/* injekt:/var/www/injekt.net/rdoc/cinch")
 end
 
 desc "Run all specs"
