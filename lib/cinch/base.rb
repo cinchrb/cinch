@@ -36,6 +36,7 @@ module Cinch
       :realname => "Cinch IRC Microframework",
       :prefix => '!',
       :usermode => 0,
+      :password => nil
     }
 
     # Options can be passed via a hash, a block, or on the instance
@@ -234,6 +235,7 @@ module Cinch
     # Run run run
     def run      
       @irc.connect options.server, options.port
+      @irc.pass options.password if options.password
       @irc.nick options.nick
       @irc.user options.username, options.usermode, '*', options.realname
         
