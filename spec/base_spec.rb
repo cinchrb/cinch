@@ -108,7 +108,7 @@ describe "Cinch::Base" do
     end
 
     it "should convert a custom pattern" do
-      @base.add_custom_pattern(:people, "(foo|bar|baz)")
+      @base.add_custom_pattern(:people, "foo|bar|baz")
       rule, keys = @base.compile(":foo-people")
       rule.should == "^(foo|bar|baz)$"    
     end
