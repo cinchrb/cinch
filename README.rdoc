@@ -126,7 +126,7 @@ This would provide the following output on IRC
 Cinch also supports custom named parameter patterns. That's right, you can define you own 
 pattern. Just like this:
 
- bot.add_custom_pattern(:friends, "(injekt|lee|john|bob)")
+ bot.add_custom_pattern(:friends, "injekt|lee|john|bob")
 
  bot.plugin("I like :friend-friends", :prefix => false) do |m|
    m.reply "I like #{m.args[:friend]} too!"
@@ -139,7 +139,7 @@ Which would provide the following output on IRC:
  injekt> I like bob
  Cinch> I like bob too!
 
-Note though that you must wrap your type regexp in capturing parenthesis and escape it yourself
+Note though that although Cinch adds the capturing parenthesis for you, you must escape it yourself
 
 == Authors
 Just me at the moment, sad poor lonely me...
