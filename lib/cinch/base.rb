@@ -272,7 +272,7 @@ module Cinch
             end
           end
 
-          if message.text && mdata = message.text.match(Regexp.new(rule.to_s))
+          if message.text && mdata = message.text.rstrip.match(Regexp.new(rule.to_s))
             unless rule.keys.empty? || mdata.captures.empty?
               args = Hash[rule.keys.map {|k| k.to_sym}.zip(mdata.captures)]
               message.args = args
