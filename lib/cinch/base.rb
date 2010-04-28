@@ -267,7 +267,9 @@ module Cinch
         # of loose checking should be put in place
         rules.each do |rule|
           unless rule.options.key?(:prefix) || options.prefix == false
-            rule.to_s.insert(1, options.prefix) unless rule.to_s[1].chr == options.prefix
+            unless rule.to_s[1..options.prefix.size] == options.prefix
+              rule.to_s.insert(1, options.prefix)
+            end
           end
 
           if message.text && mdata = message.text.match(Regexp.new(rule.to_s))
