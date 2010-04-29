@@ -21,7 +21,7 @@ module Cinch
 
     # A Hash holding rules and attributes
     attr_reader :rules
-    
+
     # A Hash holding listeners and reply Procs
     attr_reader :listeners
 
@@ -70,7 +70,7 @@ module Cinch
 
       # Default listeners
       on(:ping) {|m| @irc.pong(m.text) }
-      
+
       if @options.respond_to?(:channels)
         on(376) { @options.channels.each {|c| @irc.join(c) } }
       end
@@ -87,8 +87,8 @@ module Cinch
             op.on("-n nick") {|v| options[:nick] = v }
             op.on("-c command_prefix") {|v| options[:prefix] = v }
             op.on("-v", "--verbose", "Enable verbose mode") {|v| options[:verbose] = true }
-            op.on("-C", "--channels x,y,z", Array, "Autojoin channels") {|v| 
-              options[:channels] = v.map {|c| %w(# + &).include?(c[0].chr) ? c : c.insert(0, '#') } 
+            op.on("-C", "--channels x,y,z", Array, "Autojoin channels") {|v|
+              options[:channels] = v.map {|c| %w(# + &).include?(c[0].chr) ? c : c.insert(0, '#') }
             }
           end.parse(ARGV)
         rescue OptionParser::MissingArgument => err
@@ -109,7 +109,7 @@ module Cinch
     #  end
     def plugin(rule, options={}, &blk)
       rule, keys = compile(rule)
-      
+
       if @rules.has_rule?(rule)
         @rules.add_callback(rule, blk)
         @rules.merge_options(rule, options)
@@ -117,7 +117,7 @@ module Cinch
         @rules.add_rule(rule, keys, options, blk)
       end
     end
-    
+
     # Add new listeners
     #
     # == Example
@@ -135,7 +135,7 @@ module Cinch
     end
 
     # This method builds a regular expression from your rule
-    # and defines all named parameters, as well as dealing with 
+    # and defines all named parameters, as well as dealing with
     # patterns.
     #
     # So far 3 patterns are supported:
@@ -170,7 +170,7 @@ module Cinch
     #
     # Or mix them all
     #  bot.plugin("say :n-digit :who-word :text")
-    #  
+    #
     # Using "!say 3 injekt some text here" would provide
     # the following attributes
     # m.args[:n] => 3
@@ -190,7 +190,7 @@ module Cinch
           if k =~ /\-(\w+)$/
             key, type = k.split('-')
             keys << key[1..-1]
-            
+
             case type
             when 'digit'; "(\\d+?)"
             when 'word'; "([a-zA-Z_]+?)"
@@ -204,7 +204,7 @@ module Cinch
                 "([^\x00\r\n]+?)"
               end
             end
-          else  
+          else
             keys << k[1..-1]
             "([^\x00\r\n]+?)"
           end
@@ -216,7 +216,7 @@ module Cinch
     # Add a custom 'type', for rule validation
     #
     # == Example
-    # bot = Cinch.setup do 
+    # bot = Cinch.setup do
     #   server 'irc.freenode.org'
     #   port 6667
     # end
@@ -230,15 +230,15 @@ module Cinch
       @custom_patterns[name.to_s] = "(#{pattern.to_s})"
     end
     alias :add_custom_type :add_custom_pattern # backwards
-    alias :add_pattern :add_custom_pattern 
+    alias :add_pattern :add_custom_pattern
 
     # Run run run
-    def run      
+    def run
       @irc.connect options.server, options.port
       @irc.pass options.password if options.password
       @irc.nick options.nick
       @irc.user options.username, options.usermode, '*', options.realname
-        
+
       begin
         process(@irc.read) while @irc.connected?
       rescue Interrupt
@@ -254,6 +254,9 @@ module Cinch
       message = @parser.parse(line)
       message.irc = @irc
       puts message if options.verbose
+
+      # runs on any symbol
+      @listeners[:any].each { |l| l.call(message) } if @listeners.key?(:any)
 
       if @listeners.key?(message.symbol)
         @listeners[message.symbol].each {|l| l.call(message) }
@@ -306,4 +309,3 @@ module Cinch
     end
   end
 end
-
