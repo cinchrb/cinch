@@ -32,6 +32,7 @@ module Cinch
     DEFAULTS = {
       :port => 6667,
       :nick => "Cinch",
+      :nick_suffix => '_',
       :username => 'cinch',
       :realname => "Cinch IRC Microframework",
       :prefix => '!',
@@ -70,6 +71,10 @@ module Cinch
 
       # Default listeners
       on(:ping) {|m| @irc.pong(m.text) }
+      on(433) do |m|
+        @options.nick += @options.nick_suffix
+        @irc.nick @options.nick
+      end
       
       if @options.respond_to?(:channels)
         on(376) { @options.channels.each {|c| @irc.join(c) } }

@@ -16,6 +16,10 @@ describe "Cinch::Base" do
       @base.listeners.should include :ping
     end
 
+    it "should add a default nick-taken listener" do
+      @base.listeners.should include :"433"
+    end
+
     it "should add a 376 listener, only if channels are set" do
       @base.listeners.should_not include :'376'
       @full.listeners.should include :'376'

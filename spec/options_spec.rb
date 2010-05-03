@@ -27,7 +27,12 @@ describe "Cinch::Base options" do
     defaults = {
       :port => 6667,
       :nick => 'Cinch',
+      :nick_suffix => '_',
+      :username => 'cinch',
+      :realname => 'Cinch IRC Microframework',
+      :usermode => 0,
       :prefix => '!',
+      :password => nil,
     }
 
     base = @base.new
