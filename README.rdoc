@@ -11,7 +11,7 @@ Cinch will do all of the hard work for you, so you can spend time creating cool 
 and extensions to wow your internet peers.
 
 If you'd like to test your own Cinch experiments you can do so in the cinch IRC channel
-on {irc://irc.freenode.org/cinch}[irc.freenode.org]. Support is also welcome here.
+on {irc.freenode.org}[irc://irc.freenode.org/cinch]. Support is also welcome here.
 
 == Installation
 The latest version of Cinch is 0.2
