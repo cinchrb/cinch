@@ -10,6 +10,9 @@ plugin, defining a rule, and watching your profits flourish.
 Cinch will do all of the hard work for you, so you can spend time creating cool plugins
 and extensions to wow your internet peers.
 
+If you'd like to test your own Cinch experiments you can do so in the cinch IRC channel
+on {irc://irc.freenode.org/cinch}[irc.freenode.org]. Support is also welcome here.
+
 == Installation
 The latest version of Cinch is 0.2
 
@@ -141,20 +144,26 @@ Which would provide the following output on IRC:
 
 Note though that although Cinch adds the capturing parenthesis for you, you must escape it yourself
 
+== Examples
+Check out the /examples directory for basic, yet fully functional out-of-the-box bots.
+If you have any examples you'd like to add, please either fork the repo and push your example
+before sending me a pull request. Alternatively paste the example and inform me in the IRC 
+channel or by email
+
 == Authors
 Just me at the moment, sad poor lonely me...
 * {Lee Jarvis}[http://blog.injekt.net]
 
 == Notes
-
 * RDoc API documentation is available {here}[http://rdoc.injekt.net/cinch]
 * Wiki is available {here}[https://github.com/injekt/cinch/wikis]
 * Issue and feature tracking is available {here}[https://github.com/injekt/cinch/issues]
 * Contribution in the form of bugfixes or feature requests is welcome and encouraged
 
+== Contribute
 If you'd like to contribute, fork the GitHub repository, make any changes, and send 
 {injekt}[http://github.com/injekt] a pull request. Collaborator access is available on
-request once one patch has been submitted.
+request once one patch has been submitted. Any contribution is welcome and appreciated
 
 == TODO
 * More specs
