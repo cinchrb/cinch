@@ -42,11 +42,6 @@ task :release => [:package] do
   sh "gem push ./#{NAME}-#{VERSION}.gem"
 end
 
-desc "Upload rdoc to injekt.net"
-task :upload => [:clean, :rdoc] do
-  sh("scp -r rdoc/* injekt:/var/www/injekt.net/rdoc/cinch")
-end
-
 desc "Run all specs"
 Spec::Rake::SpecTask.new(:spec) do |t|
   t.spec_files = Dir['spec/**/*_spec.rb']
