@@ -21,14 +21,14 @@ module Cinch
       options.keys.each do |key|
         case key
         when :nick, :nicks
-          return unless validate(options[:nick], message.nick)
+          return unless validate(options[:nick] || options[:nicks], message.nick)
         when :host, :hosts
-          return unless validate(options[:host], message.host)
+          return unless validate(options[:host] || options[:hosts], message.host)
         when :user, :users
-          return unless validate(options[:user], message.user)
+          return unless validate(options[:user] || options[:users], message.user)
         when :channel, :channels
           if message.channel
-            return unless validate(options[:channel], message.channel)
+            return unless validate(options[:channel] || options[:channels], message.channel)
           end
         end
       end
