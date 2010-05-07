@@ -270,18 +270,32 @@ module Cinch
 
       if [:privmsg].include?(message.symbol)
 
-        # At the moment we must traverse all possibly rules, which
+        # At the moment we must traverse all possible rules, which
         # could get clunky with a lot of rules. This is because each
         # rule can be unique in what prefix it uses, in future some kind
         # of loose checking should be put in place
         rules.each do |rule|
-          unless rule.options.key?(:prefix) || options.prefix == false
-            unless rule.to_s[1..options.prefix.size] == options.prefix
-              rule.to_s.insert(1, options.prefix)
+          pattern = rule.to_s
+          
+          if options.prefix
+            if rule.options.key?(:prefix)
+              if [:bot, :botnick, options.nick].include? rule.options[:prefix]
+                prefix = options.nick + "[:,] "
+              else              
+                prefix = rule.options[:prefix]
+              end
+            else
+              prefix = options.prefix
             end
+          else
+            prefix = nil
           end
 
-          if message.text && mdata = message.text.rstrip.match(Regexp.new(rule.to_s))
+          if prefix && pattern[1..prefix.size] != prefix
+            pattern.insert(1, prefix)
+          end
+
+          if message.text && mdata = message.text.rstrip.match(Regexp.new(pattern))
             unless rule.keys.empty? || mdata.captures.empty?
               args = Hash[rule.keys.map {|k| k.to_sym}.zip(mdata.captures)]
               message.args = args
