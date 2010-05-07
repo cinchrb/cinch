@@ -108,6 +108,27 @@ This method also works for arrays, to only reply to a message sent in the foo an
    m.reply "Hello"
  end
 
+You can also set a custom prefix for each individual plugin, this is a great method if you have 
+two commands which do slightly different things. You can seperate the commands depending on which
+prefix the rule contains. 
+
+ bot.plugin "foo", :prefix => '@' do |m|
+   m.reply "Doing foo.."
+ end
+
+You can also prefix the rule with the bots nickname. Either pass the <b>:bot</b>, <b>:botnick</b> or
+<b>bot.nick</b> values to the prefix option.
+
+ bot.plugin "foo", :prefix => :bot do |m|
+   m.reply "Doing foo.."
+ end
+
+Assuming the username is cinch, this will respond to the following:
+* cinch: foo
+* cinch, foo
+
+More examples of this can be found in the /examples directory
+
 == Named Parameter Patterns
 Since version 0.2, Cinch supports named parameter patterns. It means stuff like the this works:
 
