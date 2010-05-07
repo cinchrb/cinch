@@ -8,7 +8,7 @@ require 'lib/cinch'
 
 NAME = 'cinch'
 VERSION = Cinch::VERSION
-TITLE = "Cinch: The IRC Microframework"
+TITLE = "Cinch: The IRC Bot Building Framework"
 CLEAN.include ["*.gem", "rdoc"]
 RDOC_OPTS = [
   "-U", "--title", TITLE,

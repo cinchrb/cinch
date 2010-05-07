@@ -1,8 +1,8 @@
-= Cinch: The IRC Microframework
+= Cinch: The IRC Bot Building Framework
 
 == Description
 
-Cinch is an IRC Microframework for quickly creating IRC bots
+Cinch is an IRC Bot Building Framework for quickly creating IRC bots
 in Ruby with minimal effort.
 It provides a minimal interface based on plugins and rules. It's as simple as creating a
 plugin, defining a rule, and watching your profits flourish.
