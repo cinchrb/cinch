@@ -28,6 +28,9 @@ module Cinch
     # An OpenStruct holding all configuration options
     attr_reader :options
 
+    # Hash of custom rule patterns
+    attr_reader :custom_patterns
+
     # Default options hash
     DEFAULTS = {
       :port => 6667,
