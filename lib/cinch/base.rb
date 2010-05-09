@@ -64,7 +64,14 @@ module Cinch
 
       @rules = Rules.new
       @listeners = {}
-      @custom_patterns = {}
+
+      @custom_patterns = {
+        'digit' => "(\\d+?)",
+        'word' => "([a-zA-Z_]+?)",
+        'string' => "(\\w+?)",
+        'upper' => "([A-Z]+?)",
+        'lower' => "([a-z]+?)",
+      }
 
       @irc = IRC::Socket.new(options[:server], options[:port])
       @parser = IRC::Parser.new
@@ -196,19 +203,11 @@ module Cinch
           if k =~ /\-(\w+)$/
             key, type = k.split('-')
             keys << key[1..-1]
-
-            case type
-            when 'digit'; "(\\d+?)"
-            when 'word'; "([a-zA-Z_]+?)"
-            when 'string'; "(\\w+?)"
-            when 'upper'; "([A-Z]+?)"
-            when 'lower'; "([a-z]+?)"
+            
+            if @custom_patterns.include?(type)
+              @custom_patterns[type]
             else
-              if @custom_patterns.include?(type)
-                @custom_patterns[type]
-              else
-                "([^\x00\r\n]+?)"
-              end
+              "([^\x00\r\n]+?)"
             end
           else
             keys << k[1..-1]
