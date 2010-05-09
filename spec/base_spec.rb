@@ -28,6 +28,12 @@ describe "Cinch::Base" do
     it "should add a 433 nick taken listener" do
       @base.listeners.should include :'433'
     end
+
+    it "should add default custom_patterns" do
+      [:digit, :word, :string, :upper, :lower].each do |l|
+        @base.custom_patterns.should include l.to_s
+      end
+    end
   end
 
   describe "#plugin" do 
