@@ -133,6 +133,7 @@ module Cinch
         @rules.add_rule(rule, keys, options, blk)
       end
     end
+    alias :rule :plugin
 
     # Add new listeners
     #
