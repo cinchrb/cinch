@@ -24,6 +24,10 @@ describe "Cinch::Base" do
       @base.listeners.should_not include :'376'
       @full.listeners.should include :'376'
     end
+
+    it "should add a 433 nick taken listener" do
+      @base.listeners.should include :'433'
+    end
   end
 
   describe "#plugin" do 
