@@ -238,7 +238,6 @@ module Cinch
     def add_custom_pattern(name, pattern)
       @custom_patterns[name.to_s] = "(#{pattern.to_s})"
     end
-    alias :add_custom_type :add_custom_pattern # backwards
     alias :add_pattern :add_custom_pattern
 
     # Run run run
