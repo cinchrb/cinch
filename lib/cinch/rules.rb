@@ -16,7 +16,7 @@ module Cinch
       super(rule, keys, options, callbacks)
     end
 
-    # Execute all callbacks, passing an Cinch::IRC::Message to them
+    # Execute all callbacks, passing a Cinch::IRC::Message to them
     def execute(message)
       options.keys.each do |key|
         case key
@@ -43,7 +43,7 @@ module Cinch
       if option.is_a?(Array)
         return unless option.any?{|o| o == attr }
       else
-        return unless options.to_s == attr
+        return unless option.to_s == attr
       end
       true
     end
