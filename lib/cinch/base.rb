@@ -31,6 +31,9 @@ module Cinch
     # Hash of custom rule patterns
     attr_reader :custom_patterns
 
+    # Our IRC::Socket instance
+    attr_reader :irc
+
     # Default options hash
     DEFAULTS = {
       :port => 6667,
@@ -88,7 +91,7 @@ module Cinch
       end
 
       if @options.respond_to?(:channels)
-        on(376) { @options.channels.each {|c| @irc.join(c) } }
+        on(004) { @options.channels.each {|c| @irc.join(c) } }
       end
     end
 
