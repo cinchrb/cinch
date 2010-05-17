@@ -91,7 +91,7 @@ module Cinch
       end
 
       if @options.respond_to?(:channels)
-        on(004) { @options.channels.each {|c| @irc.join(c) } }
+        on("004") { @options.channels.each {|c| @irc.join(c) } }
       end
     end
 
