@@ -93,8 +93,8 @@ module Cinch
           m.apply_user(*userhost)
 
           unless m.params.empty?
-            m[:recipient] = m.params.first
-            m[:channel] = m[:recipient] if valid_channel?(m[:recipient])
+            m.add(:recipient, m.params.first)
+            m.add(:channel, m.recipient) if valid_channel?(m.recipient)
           end
         end
 
