@@ -144,6 +144,11 @@ module Cinch
     #  on(376) do |m|
     #    m.join "#mychan"
     #  end
+    #
+    # Note that when adding listeners for numberic IRC replies which
+    # begin with a 0 (digit), make sure you define the command as a
+    # String and not Integer. This is because 001.to_s == "1" so the
+    # command will not work as expected.
     def on(*commands, &blk)
       commands.map {|x| x.to_s.downcase.to_sym }.each do |cmd|
         if @listeners.key?(cmd)
