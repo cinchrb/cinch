@@ -42,7 +42,9 @@ It doesn't take much to work out what's happening here, but I'll explain it anyw
 
 First we run the <em>Cinch::setup</em> block which is required in every application. Cinch is boxed
 with a load of default values, so the <b>only</b> option required in this block is the <em>server</em>
-option. We then define a plugin using the <em>plugin</em> method and pass it a rule (a String in this
+option. 
+
+We then define a plugin using the <em>plugin</em> method and pass it a rule (a String in this
 case). Every plugin must be mapped to a rule. When the rule matches an IRC message its block is
 invoked, the contents of which contains your plugin interface. The variable passed to the block is
 an instance of IRC::Message. This provides us with a couple of helper methods which can be used to
@@ -131,7 +133,7 @@ More examples of this can be found in the /examples directory
 Since version 0.2, Cinch supports named parameter patterns. It means stuff like the this works:
 
  bot.plugin("say :n-digit :text") do |m|
-   m.args[:n].to_i.times {
+   m.args[:n].to_i.times do
      m.reply m.args[:text]
    end
  end
