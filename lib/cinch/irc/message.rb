@@ -2,15 +2,14 @@ module Cinch
   module IRC
     
     # == Description
-    # IRC::Message is a nicely encapsulated IRC message object. Used directly by 
-    # IRC::Parser#parse_servermessage and sent to every plugin defined. It does
-    # not do any parsing of itself, that's all down to the parser
-    #
-    # == See
-    # * Cinch::IRC::Parser#parse_servermessage
+    # IRC::Message provies a nicely encapsulated IRC message object. Used directly by 
+    # IRC::Parser#parse and sent to any plugin or listener defined. 
     #
     # TODO: Add more documentation
     # 
+    # == See Also
+    # * Cinch::IRC::Parser#parse_servermessage
+    #
     # == Author
     # * Lee Jarvis - ljjarvis@gmail.com
     class Message
