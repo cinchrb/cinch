@@ -79,7 +79,7 @@ module Cinch
 
       # Parse the incoming raw IRC string and return
       # a nicely formatted IRC::Message
-      def parse_servermessage(raw)
+      def parse(raw)
         raise ArgumentError, raw unless raw && matches = raw.match(pattern(:message))
 
         prefix, command, parameters = matches.captures
@@ -90,7 +90,7 @@ module Cinch
         m = IRC::Message.new(raw, prefix, command, params)
 
         if prefix && userhost = parse_userhost(prefix)
-          nick, user, host = userhost.captures
+          nick, user, host = userhost
           m.add(:nick, nick)
           m.add(:user, user)
           m.add(:host, host)
@@ -103,7 +103,6 @@ module Cinch
 
         m # Return our IRC::Message
       end
-      alias :parse :parse_servermessage
 
       # Parse the prefix returned from the server
       # and return an Array of [nick, user, host] or 

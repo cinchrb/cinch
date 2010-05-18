@@ -56,7 +56,7 @@ describe "IRC::Parser" do
     end
   end
 
-  describe "#parse_servermessage" do
+  describe "#parse" do
     it "should return an IRC::Message" do
       @parser.parse("foo :bar").should be_kind_of(Cinch::IRC::Message)
     end
