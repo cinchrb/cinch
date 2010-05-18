@@ -90,7 +90,10 @@ module Cinch
         m = IRC::Message.new(raw, prefix, command, params)
 
         if prefix && userhost = parse_userhost(prefix)
-          m.apply_user(*userhost)
+          nick, user, host = userhost.captures
+          m.add(:nick, nick)
+          m.add(:user, user)
+          m.add(:host, host)
 
           unless m.params.empty?
             m.add(:recipient, m.params.first)

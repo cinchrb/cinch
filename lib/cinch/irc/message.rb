@@ -91,13 +91,6 @@ module Cinch
         !private?
       end
 
-      # Add the nick/user/host attributes
-      def apply_user(nick, user, host)
-        @data[:nick] = nick
-        @data[:user] = user
-        @data[:host] = host
-      end
-
       # Reply to a channel or user, probably the most commonly used helper
       # method
       def reply(text)
