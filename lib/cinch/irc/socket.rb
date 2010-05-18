@@ -2,7 +2,7 @@ module Cinch
   module IRC
 
     # == Description
-    # This class has been directly take from the irc-socket library. Original documentation
+    # This class has been directly taken from the irc-socket library. Original documentation
     # for this class can be found {here}[http://rdoc.injekt.net/irc-socket].
     #
     # IRCSocket is an IRC wrapper around a TCPSocket. It implements all of the major 

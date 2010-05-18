@@ -1,8 +1,13 @@
 require "rake"
 require "rake/clean"
 require "rake/gempackagetask"
-require "rake/rdoctask"
 require "spec/rake/spectask"
+
+begin
+  require 'hanna/rdoctask'
+rescue LoadError
+  require 'rake/rdoctask'
+end
 
 require 'lib/cinch'
 
