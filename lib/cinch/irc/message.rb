@@ -74,6 +74,13 @@ module Cinch
         @data.delete(var)
       end
 
+      # Alter an attribute
+      def alter(var, val)
+        if @data.key?(var)
+          @data[var] = val
+        end
+      end
+
       # Check if our message was sent privately
       def private?
         !@data[:channel]
