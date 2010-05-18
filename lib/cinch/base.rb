@@ -269,6 +269,7 @@ module Cinch
         exit
       end
     end
+    alias :start :run
 
     # Process the next line read from the server
     def process(line)
