@@ -11,7 +11,7 @@ module Cinch
     #
     # TODO: Add more documentation
     # 
-    # # == Author
+    # == Author
     # * Lee Jarvis - ljjarvis@gmail.com
     class Message
 
