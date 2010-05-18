@@ -172,28 +172,28 @@ module Cinch
     # * upper - matches [A-Z]+
     #
     # == Examples
-    # For capturing individual words
+    # === Capturing individual words
     #  bot.plugin("say :text-word")
     # * Does match !say foo
     # * Does not match !say foo bar baz
     #
-    # For capturing digits
+    # === Capturing digits
     #  bot.plugin("say :text-digit")
     # * Does match !say 3
     # * Does not match !say 3 4
     # * Does not match !say foo
     #
-    # For both
+    # === Both digit and word
     #  bot.plugin("say :n-digit :text-word")
     # * Does match !say 3 foo
     # * Does not match !say 3 foo bar
     #
-    # For capturing until the end of the line
+    # === Capturing until the end of the line
     #  bot.plugin("say :text")
     # * Does match !say foo
     # * Does match !say foo bar
     #
-    # Or mix them all
+    # === Or mix them all
     #  bot.plugin("say :n-digit :who-word :text")
     #
     # Using "!say 3 injekt some text here" would provide
