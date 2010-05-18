@@ -1,7 +1,6 @@
 = Cinch: The IRC Bot Building Framework
 
 == Description
-
 Cinch is an IRC Bot Building Framework for quickly creating IRC bots
 in Ruby with minimal effort.
 It provides a minimal interface based on plugins and rules. It's as simple as creating a
@@ -14,7 +13,6 @@ If you'd like to test your own Cinch experiments you can do so in the cinch IRC 
 on {irc.freenode.org}[irc://irc.freenode.org/cinch]. Support is also welcome here.
 
 == Installation
-The latest version of Cinch is 0.2
 
 === RubyGems
 You can install the latest version of Cinch using RubyGems
@@ -25,7 +23,6 @@ Alternatively you can check out the latest code directly from Github
  git clone http://github.com/injekt/cinch.git
 
 == Example
-
 Your typical <em>Hello, World</em> application would go something like this:
 
  require 'cinch'
@@ -74,7 +71,6 @@ will be prefixed with a hash (#)
 character 
 
 == Plugins
-
 Plugins are invoked using the command prefix character (which by default is set to <b>!</b>). You can
 also tell Cinch to ignore any command prefix and instead use the bots username. This would provide
 a result similar to this:
@@ -174,8 +170,7 @@ before sending me a pull request. Alternatively paste the example and inform me 
 channel or by email
 
 == Authors
-Just me at the moment, sad poor lonely me...
-* {Lee Jarvis}[http://blog.injekt.net]
+* {Lee Jarvis}[http://injekt.net]
 
 == Notes
 * RDoc API documentation is available {here}[http://rdoc.injekt.net/cinch]
