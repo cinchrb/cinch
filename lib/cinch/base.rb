@@ -233,16 +233,16 @@ module Cinch
     # Add a custom 'type', for rule validation
     #
     # == Example
-    # bot = Cinch.setup do
-    #   server 'irc.freenode.org'
-    #   port 6667
-    # end
+    #  bot = Cinch.setup do
+    #    server 'irc.freenode.org'
+    #    port 6667
+    #  end
     #
-    # bot.add_custom_pattern(:number, "[0-9]")
+    #  bot.add_custom_pattern(:number, "[0-9]")
     #
-    # bot.plugin("getnum :foo-number") do |m|
-    #   m.reply "Your number was: #{m.args[:foo]}"
-    # end
+    #  bot.plugin("getnum :foo-number") do |m|
+    #    m.reply "Your number was: #{m.args[:foo]}"
+    #  end
     def add_custom_pattern(name, pattern)
       @custom_patterns[name.to_s] = "(#{pattern.to_s})"
     end
