@@ -62,13 +62,15 @@ other Ruby script.
 
  ruby hello.rb
 
-Cinch also parses the command line for options, to save you having to configure options within your script.
+Cinch also parses the command line for options, to save you having to configure 
+options within your script.
 
  ruby hello.rb -s irc.freenode.org -n Coolbot
- ruby hello.rb --channels foo,bar
+ ruby hello.rb -C foo,bar
 
-Doing a <b>ruby hello.rb -h</b> provides all possible command line options. When using the <em>--channels</em>
-option, the channel prefix is option, and if none is given the channel will be prefixed with a hash (#) 
+Doing a <b>ruby hello.rb -h</b> provides all possible command line options. When using the <em>-C</em>
+or <em>--channels</em> option, the channel prefix is option, and if none is given the channel
+will be prefixed with a hash (#) 
 character 
 
 == Plugins
@@ -189,5 +191,4 @@ request once one patch has been submitted. Any contribution is welcome and appre
 == TODO
 * More specs
 * More documentation
-* More examples
 
