@@ -1,8 +1,5 @@
 module Cinch
 
-  # == Author
-  # * Lee Jarvis - ljjarvis@gmail.com
-  #
   # == Description
   # Every rule defined through the Cinch::Base#plugin method becomes an instance 
   # of this class. Each rule consists of keys used for named parameters, a hash
@@ -10,6 +7,9 @@ module Cinch
   #
   # When a rule matches an IRC message, all options with be checked, then all
   # callbacks will be invoked.
+  #
+  # == Author
+  # * Lee Jarvis - ljjarvis@gmail.com
   class Rule < Struct.new(:rule, :keys, :options, :callbacks)
     def initialize(rule, keys, options, callback)
       callbacks = [callback]

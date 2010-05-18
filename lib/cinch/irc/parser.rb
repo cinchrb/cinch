@@ -1,9 +1,6 @@
 module Cinch
   module IRC
 
-    # == Author
-    # * Lee Jarvis - ljjarvis@gmail.com
-    #
     # == Description
     # Parse incoming IRC lines and extract data, returning a nicely
     # encapsulated Cinch::IRC::Message
@@ -19,6 +16,9 @@ module Cinch
     #  message.nick #=> foo
     #  message.channel #=> #mychan
     #  message.text #=> ding dong!
+    #
+    #  == Author
+    #  * Lee Jarvis - ljjarvis@gmail.com
     class Parser
 
       # A hash holding all of our patterns

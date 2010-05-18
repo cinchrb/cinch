@@ -1,9 +1,6 @@
 module Cinch
   module IRC
     
-    # == Author
-    # * Lee Jarvis - ljjarvis@gmail.com
-    #
     # == Description
     # IRC::Message is a nicely encapsulated IRC message object. Used directly by 
     # IRC::Parser#parse_servermessage and sent to every plugin defined. It does
@@ -13,6 +10,9 @@ module Cinch
     # * Cinch::IRC::Parser#parse_servermessage
     #
     # TODO: Add more documentation
+    # 
+    # # == Author
+    # * Lee Jarvis - ljjarvis@gmail.com
     class Message
 
       # Message prefix

@@ -1,8 +1,5 @@
 module Cinch
 
-  # == Author
-  # * Lee Jarvis - ljjarvis@gmail.com
-  #
   # == Description
   # The base for an IRC connection
   # TODO: More documentation
@@ -17,6 +14,9 @@ module Cinch
   #  bot.plugin "say :text" do |m|
   #    m.reply m.args[:text]
   #  end
+  #
+  #  == Author
+  #  * Lee Jarvis - ljjarvis@gmail.com
   class Base
 
     # A Hash holding rules and attributes

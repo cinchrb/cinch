@@ -1,8 +1,6 @@
 module Cinch
   module IRC
-    # == Author
-    # * Lee Jarvis - ljjarvis@gmail.com
-    #
+
     # == Description
     # This class has been directly take from the irc-socket library. Original documentation
     # for this class can be found {here}[http://rdoc.injekt.net/irc-socket].
@@ -37,6 +35,9 @@ module Cinch
     #
     #    puts irc.read
     #  end
+    #
+    # == Author
+    # * Lee Jarvis - ljjarvis@gmail.com 
     class Socket
 
       # The server our socket is connected to

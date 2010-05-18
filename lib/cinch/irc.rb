@@ -8,9 +8,7 @@ require 'irc/message'
 require 'irc/socket'
 
 module Cinch
-  # == Author
-  # * Lee Jarvis - ljjarvis@gmail.com
-  #
+
   # == Description
   # Cinch::IRC provides tools to interact with an IRC server, this
   # includes reading/writing/parsing and building a message response.
@@ -38,6 +36,8 @@ module Cinch
   #    end
   #  end
   #
+  # == Author
+  # * Lee Jarvis - ljjarvis@gmail.com
   module IRC
 
   end
