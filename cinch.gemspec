@@ -12,7 +12,7 @@ spec = Gem::Specification.new do |s|
   s.author = "Lee 'injekt' Jarvis"
   s.email = "ljjarvis@gmail.com"
   s.homepage = "http://rdoc.injekt.net/cinch"
-  s.required_ruby_version = ">= 1.8.6"
+  s.required_ruby_version = ">= 1.8.7"
   s.files = %w(README.rdoc Rakefile) + Dir["{rdoc,spec,lib,examples}/**/*"]
   s.require_path = "lib"
 
