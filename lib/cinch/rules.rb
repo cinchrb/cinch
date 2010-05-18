@@ -54,9 +54,6 @@ module Cinch
     end
   end
 
-  # == Author
-  # * Lee Jarvis - ljjarvis@gmail.com
-  #
   # == Description
   # This class provides an interface to manage rules. A rule should only ever be
   # added using the Rules#add_rule method and retrieved using the Rules#get_rule 
@@ -87,6 +84,9 @@ module Cinch
   #  rules.get_rule('foo')
   #  rules.options = {:foo => 'bar'}
   #  rules.options[:bar] = 'baz'
+  #
+  # == Author
+  # * Lee Jarvis - ljjarvis@gmail.com
   class Rules
     def initialize
       @rules = {}

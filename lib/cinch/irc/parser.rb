@@ -17,8 +17,8 @@ module Cinch
     #  message.channel #=> #mychan
     #  message.text #=> ding dong!
     #
-    #  == Author
-    #  * Lee Jarvis - ljjarvis@gmail.com
+    # == Author
+    # * Lee Jarvis - ljjarvis@gmail.com
     class Parser
 
       # A hash holding all of our patterns
