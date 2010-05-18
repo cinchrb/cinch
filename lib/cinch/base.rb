@@ -150,11 +150,17 @@ module Cinch
     # String and not Integer. This is because 001.to_s == "1" so the
     # command will not work as expected.
     def on(*commands, &blk)
-      commands.map {|x| x.to_s.downcase.to_sym }.each do |cmd|
-        if @listeners.key?(cmd)
-          @listeners[cmd] << blk
-        else
-          @listeners[cmd] = [blk]
+      if commands.first == :message
+        rule, options = commands[1..2]
+        options = {} unless options.is_a?(Hash)
+        plugin(rule, options, &blk)
+      else
+        commands.map {|x| x.to_s.downcase.to_sym }.each do |cmd|
+          if @listeners.key?(cmd)
+            @listeners[cmd] << blk
+          else
+            @listeners[cmd] = [blk]
+          end
         end
       end
     end
