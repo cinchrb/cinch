@@ -212,7 +212,7 @@ module Cinch
           Regexp.escape(match)
         else
           k = $2
-          if k =~ /\-(\w+)$/
+          if k =~ /\-\w+$/
             key, type = k.split('-')
             keys << key[1..-1]
             
