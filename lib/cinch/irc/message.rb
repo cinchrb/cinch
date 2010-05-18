@@ -8,7 +8,7 @@ module Cinch
     # TODO: Add more documentation
     # 
     # == See Also
-    # * Cinch::IRC::Parser#parse_servermessage
+    # * Cinch::IRC::Parser#parse
     #
     # == Author
     # * Lee Jarvis - ljjarvis@gmail.com
