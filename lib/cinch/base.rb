@@ -15,8 +15,8 @@ module Cinch
   #    m.reply m.args[:text]
   #  end
   #
-  #  == Author
-  #  * Lee Jarvis - ljjarvis@gmail.com
+  # == Author
+  # * Lee Jarvis - ljjarvis@gmail.com
   class Base
 
     # A Hash holding rules and attributes
