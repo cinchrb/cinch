@@ -86,6 +86,11 @@ module Cinch
         !@data[:channel]
       end
 
+      # Check if our message was sent publicly (in a channel)
+      def public?
+        !private?
+      end
+
       # Add the nick/user/host attributes
       def apply_user(nick, user, host)
         @data[:nick] = nick
