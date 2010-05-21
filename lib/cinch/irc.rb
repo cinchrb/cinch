@@ -2,6 +2,7 @@ lib = File.dirname(__FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'socket'
+require 'timeout'
 
 require 'irc/parser'
 require 'irc/message'
