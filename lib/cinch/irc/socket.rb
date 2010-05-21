@@ -114,6 +114,7 @@ module Cinch
           @socket.connect
         else
           @socket = socket
+        end
   
         Timeout.timeout(@timeout) do
           @socket = TCPSocket.new(@server, @port)
