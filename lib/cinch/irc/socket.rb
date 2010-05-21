@@ -57,7 +57,7 @@ module Cinch
       #  while data = irc.read
       #    puts data
       #  end
-      def self.open(server, port=6667)
+      def self.open(server, port=6667, ssl=false)
         irc = new(server, port)
         irc.connect
         irc
@@ -67,9 +67,10 @@ module Cinch
       # If an optional code block is given, it will be passed an instance of the IRCSocket.
       # NOTE: Using the block form does not mean the socket will send the applicable QUIT
       # command to leave the IRC server. You must send this yourself.
-      def initialize(server, port=6667)
+      def initialize(server, port=6667, ssl=false)
         @server = server
         @port = port
+        @ssl = ssl
 
         @socket = nil
         @connected = false
@@ -88,11 +89,24 @@ module Cinch
       
       # Connect to an IRC server, returns true on a successful connection, or
       # raises otherwise
-      def connect(server=nil, port=nil)
+      def connect(server=nil, port=nil, ssl=false)
         @server = server if server
         @port = port if port
+        @ssl = ssl if ssl
 
-        @socket = TCPSocket.new(@server, @port)
+        socket = TCPSocket.new(@server, @port)
+
+        if @ssl
+          require 'openssl'
+
+          ssl = OpenSSL::SSL::SSLContext.new
+          ssl.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          @socket = OpenSSL::SSL::SSLSocket.new(socket, ssl)
+          @socket.sync = true
+          @socket.connect
+        else
+          @socket = socket
+        end
       rescue Interrupt
         raise
       rescue Exception

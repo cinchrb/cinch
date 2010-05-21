@@ -43,7 +43,8 @@ module Cinch
       :realname => "Cinch IRC Microframework",
       :prefix => '!',
       :usermode => 0,
-      :password => nil
+      :password => nil,
+      :ssl => false,
     }
 
     # Options can be passed via a hash, a block, or on the instance
@@ -79,7 +80,7 @@ module Cinch
         'lower' => "([a-z]+?)",
       }
 
-      @irc = IRC::Socket.new(options[:server], options[:port])
+      @irc = IRC::Socket.new(options[:server], options[:port], options[:ssl])
       @parser = IRC::Parser.new
 
       # Default listeners
@@ -106,6 +107,7 @@ module Cinch
             op.on("-n nick") {|v| options[:nick] = v }
             op.on("-c command_prefix") {|v| options[:prefix] = v }
             op.on("-v", "--verbose", "Enable verbose mode") {|v| options[:verbose] = true }
+            op.on("--ssl") {|v| options[:ssl] = true }
             op.on("-C", "--channels x,y,z", Array, "Autojoin channels") {|v|
               options[:channels] = v.map {|c| %w(# + &).include?(c[0].chr) ? c : c.insert(0, '#') }
             }
