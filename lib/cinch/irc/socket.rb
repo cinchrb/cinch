@@ -101,23 +101,21 @@ module Cinch
         @server = server if server
         @port = port if port
         @ssl = ssl if ssl
-
-        socket = TCPSocket.new(@server, @port)
-
-        if @ssl
-          require 'openssl'
-
-          ssl = OpenSSL::SSL::SSLContext.new
-          ssl.verify_mode = OpenSSL::SSL::VERIFY_NONE
-          @socket = OpenSSL::SSL::SSLSocket.new(socket, ssl)
-          @socket.sync = true
-          @socket.connect
-        else
-          @socket = socket
-        end
   
         Timeout.timeout(@timeout) do
-          @socket = TCPSocket.new(@server, @port)
+          socket = TCPSocket.new(@server, @port)
+
+          if @ssl
+            require 'openssl'
+
+            ssl = OpenSSL::SSL::SSLContext.new
+            ssl.verify_mode = OpenSSL::SSL::VERIFY_NONE
+            @socket = OpenSSL::SSL::SSLSocket.new(socket, ssl)
+            @socket.sync = true
+            @socket.connect
+          else
+            @socket = socket
+          end
         end
       rescue Timeout::Error
         if @attempts == 0
