@@ -49,6 +49,9 @@ module Cinch
       # The TCPSocket instance
       attr_reader :socket
 
+      # Maximum attempts to retry failed connection
+      attr_reader :attempts
+
       # Creates a new IRCSocket and automatically connects
       #
       # === Example
@@ -73,6 +76,7 @@ module Cinch
 
         @socket = nil
         @connected = false
+        @attempts = 5
 
         if block_given?
           connect
@@ -91,10 +95,22 @@ module Cinch
       def connect(server=nil, port=nil)
         @server = server if server
         @port = port if port
-
-        @socket = TCPSocket.new(@server, @port)
+  
+        Timeout.timeout(5) do
+          @socket = TCPSocket.new(@server, @port)
+        end
+      rescue Timeout::Error
+        if @attempts == 0
+          puts "Maximum attempts reached. Aborting .."
+          exit 1
+        else
+          puts "Connection timed out. Retrying #{@attempts} more times .."
+          @attempts -= 1
+          connect(server, port)
+        end
       rescue Interrupt
-        raise
+        puts "\nAborting connection .."
+        exit
       rescue Exception
         raise
       else
