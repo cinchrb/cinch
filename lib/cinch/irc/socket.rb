@@ -122,7 +122,7 @@ module Cinch
           puts "Maximum attempts reached. Aborting .."
           exit 1
         else
-          puts "Connection timed out. Retrying #{@attempts} more times .."
+          puts "Connection timed out. Retrying #{@attempts} more time#{'s' unless @attempts == 1} .."
           @attempts -= 1
           connect(server, port)
         end
