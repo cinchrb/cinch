@@ -29,7 +29,7 @@ describe "Cinch::Base options" do
       :nick => 'Cinch',
       :nick_suffix => '_',
       :username => 'cinch',
-      :realname => 'Cinch IRC Microframework',
+      :realname => 'Cinch IRC Bot Building Framework',
       :usermode => 0,
       :prefix => '!',
       :password => nil,

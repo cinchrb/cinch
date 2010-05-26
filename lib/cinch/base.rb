@@ -40,7 +40,7 @@ module Cinch
       :nick => "Cinch",
       :nick_suffix => '_',
       :username => 'cinch',
-      :realname => "Cinch IRC Microframework",
+      :realname => "Cinch IRC Bot Building Framework",
       :prefix => '!',
       :usermode => 0,
       :password => nil,
