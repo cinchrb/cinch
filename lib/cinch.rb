@@ -11,9 +11,13 @@ require 'cinch/base'
 module Cinch
   VERSION = '0.3.0'
 
-  # Setup bot options and return a new Cinch::Base instance
-  def self.setup(ops={}, &blk)
-    Cinch::Base.new(ops, &blk)
+  class << self
+
+    # Setup bot options and return a new Cinch::Base instance
+    def setup(ops={}, &blk)
+      Cinch::Base.new(ops, &blk)
+    end
+    alias_method :configure, :setup
   end
 
 end
