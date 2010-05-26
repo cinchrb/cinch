@@ -7,9 +7,8 @@ module Cinch
     #
     # == Example
     #  require 'cinch/irc/parser'
-    #  include Cinch::IRC::Parser
     #
-    #  message = parse(":foo!bar@myhost.com PRIVMSG #mychan :ding dong!")
+    #  message = Cinch::IRC::Parser.parse(":foo!bar@myhost.com PRIVMSG #mychan :ding dong!")
     #
     #  message.class #=> Cinch::IRC::Message
     #  message.command #=> PRIVMSG
