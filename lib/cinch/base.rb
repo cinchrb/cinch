@@ -262,10 +262,10 @@ module Cinch
     #  bot.plugin("getnum :foo-number") do |m|
     #    m.reply "Your number was: #{m.args[:foo]}"
     #  end
-    def add_custom_pattern(name, pattern)
+    def add_pattern(name, pattern)
       @custom_patterns[name.to_s] = "(#{pattern.to_s})"
     end
-    alias :add_pattern :add_custom_pattern
+    alias :add_custom_pattern :add_pattern
 
     # Run run run
     def run
