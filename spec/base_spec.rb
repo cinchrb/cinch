@@ -28,6 +28,11 @@ describe "Cinch::Base" do
     it "should add a 433 nick taken listener" do
       @base.listeners.should include :'433'
     end
+    
+    it "should add a ctcp version listener" do 
+      @base.listeners.should include :ctcp
+      @base.listeners[:ctcp].should include :version
+    end
 
     it "should add default custom_patterns" do
       [:digit, :word, :string, :upper, :lower].each do |l|

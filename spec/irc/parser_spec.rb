@@ -5,11 +5,11 @@ commands = {
   :ping => "PING :foobar",
   :nick => ":foo!~baz@host.com NICK Baz",
   :join => ":foo!~bar@host.com JOIN #baz",
+  :ctcp => ":foo!~bar@host.com PRIVMSG Baz :\001VERSION\001",
 
   :privmsg => {
     "to a channel" => ":foo!~bar@host.com PRIVMSG #baz :hello world",
     "to a user" => ":foo!~bar@host.com PRIVMSG Baz :hello world",
-    "with an action" => ":foo!~bar@host.com PRIVMSG #baz :\001ACTION hello word\001",
   },
 
   :notice => {

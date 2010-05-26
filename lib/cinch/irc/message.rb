@@ -24,7 +24,7 @@ module Cinch
       attr_reader :params
 
       # Message symbol (lowercase command, ie. :privmsg, :join, :kick)
-      attr_reader :symbol
+      attr_accessor :symbol
       
       # The raw string passed to ::new
       attr_reader :raw
@@ -33,7 +33,7 @@ module Cinch
       attr_reader :data
 
       # Message text
-      attr_reader :text
+      attr_accessor :text
 
       # Arguments parsed from a rule
       attr_accessor :args
@@ -94,6 +94,7 @@ module Cinch
       # method
       def reply(text)
         recipient = data[:channel] || data[:nick]
+        text = "\001#{@data[:ctcp_action]} #{text}\001" if @data[:ctcp_action]
         @irc.privmsg(recipient, text)
       end
 
@@ -103,8 +104,15 @@ module Cinch
         @irc.privmsg(data[:channel], "#{data[:nick]}: #{text}")
       end
 
+      # Send a CTCP reply
+      def ctcp_reply(text)
+        recipient = data[:channel] || data[:nick]
+        @irc.notice(recipient, "\001#{@data[:ctcp_action]} #{text}\001")
+      end
+
       # The deadly /me action
       def action(text)
+        @data[:ctcp_action] = false
         reply("\001ACTION #{text}\001")
       end
 

@@ -71,6 +71,7 @@ module Cinch
 
       @rules = Rules.new
       @listeners = {}
+      @listeners[:ctcp] = {}
 
       @custom_patterns = {
         'digit' => "(\\d+?)",
@@ -94,6 +95,8 @@ module Cinch
       if @options.respond_to?(:channels)
         on("004") { @options.channels.each {|c| @irc.join(c) } }
       end
+
+      on(:ctcp, :version) {|m| m.ctcp_reply "Cinch IRC Bot Building Framework v#{Cinch::VERSION}"}
     end
 
     # Parse command line options
@@ -156,6 +159,14 @@ module Cinch
         rule, options = commands[1..2]
         options = {} unless options.is_a?(Hash)
         plugin(rule, options, &blk)
+      elsif commands.first == :ctcp
+        action = commands[1]
+
+        if @listeners[:ctcp].key?(action)
+          @listeners[:ctcp][action] << blk
+        else
+          @listeners[:ctcp][action] = [blk]
+        end
       else
         commands.map {|x| x.to_s.downcase.to_sym }.each do |cmd|
           if @listeners.key?(cmd)
@@ -284,7 +295,15 @@ module Cinch
       @listeners[:any].each { |l| l.call(message) } if @listeners.key?(:any)
 
       if @listeners.key?(message.symbol)
-        @listeners[message.symbol].each {|l| l.call(message) }
+        if message.symbol == :ctcp
+          action = message.ctcp_action.downcase.to_sym
+
+          if @listeners[:ctcp].include?(action)
+            @listeners[:ctcp][action].each {|l| l.call(message) }
+          end
+        else
+          @listeners[message.symbol].each {|l| l.call(message) }
+        end
       end
 
       if [:privmsg].include?(message.symbol)

@@ -49,31 +49,33 @@ module Cinch
       # Set up some default patterns used directly by this class
       def setup_patterns
         add_pattern :letter, /[a-zA-Z]/
-          add_pattern :hex, /[\dA-Fa-f]/
+        add_pattern :hex, /[\dA-Fa-f]/
 
-          add_pattern :ip4addr, /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/
-          add_pattern :ip6addr, /[\dA-Fa-f](?::[\dA-Fa-f]){7}|0:0:0:0:0:(?:0|[Ff]{4}):#{pattern(:ip4addr)}/
-          add_pattern :hostaddr, /#{pattern(:ip4addr)}|#{pattern(:ip6addr)}/
-          add_pattern :shortname, /[A-Za-z0-9][A-Za-z0-9-]*/
-          add_pattern :hostname, /#{pattern(:shortname)}(?:\.#{pattern(:shortname)})*/
-          add_pattern :host, /#{pattern(:hostname)}|#{pattern(:hostaddr)}/
+        add_pattern :ip4addr, /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/
+        add_pattern :ip6addr, /[\dA-Fa-f](?::[\dA-Fa-f]){7}|0:0:0:0:0:(?:0|[Ff]{4}):#{pattern(:ip4addr)}/
+        add_pattern :hostaddr, /#{pattern(:ip4addr)}|#{pattern(:ip6addr)}/
+        add_pattern :shortname, /[A-Za-z0-9][A-Za-z0-9-]*/
+        add_pattern :hostname, /#{pattern(:shortname)}(?:\.#{pattern(:shortname)})*/
+        add_pattern :host, /#{pattern(:hostname)}|#{pattern(:hostaddr)}/
 
-          add_pattern :user, /[^\x00\x10\x0D\x20@]+/
-          add_pattern :nick, /[A-Za-z\[\]\\`_^{|}][A-Za-z\d\[\]\\`_^{|}-]{0,19}/
+        add_pattern :user, /[^\x00\x10\x0D\x20@]+/
+        add_pattern :nick, /[A-Za-z\[\]\\`_^{|}][A-Za-z\d\[\]\\`_^{|}-]{0,19}/
 
-          add_pattern :userhost, /(#{pattern(:nick)})(?:(?:!(#{pattern(:user)}))?@(#{pattern(:host)}))?/
+        add_pattern :ctcp, /\001(\S+)(?:\s([^\x00\r\n\001]+))?\001$/
 
-          add_pattern :channel, /(?:[#+&]|![A-Z\d]{5})[^\x00\x07\x10\x0D\x20,:]/
+        add_pattern :userhost, /(#{pattern(:nick)})(?:(?:!(#{pattern(:user)}))?@(#{pattern(:host)}))?/
 
-          # Server message parsing patterns
-          add_pattern :prefix, /(?:(\S+)\x20)?/
-          add_pattern :command, /([A-Za-z]+|\d{3})/
-          add_pattern :middle, /[^\x00\x20\r\n:][^\x00\x20\r\n]*/
-          add_pattern :trailing, /[^\x00\r\n]*/
-          add_pattern :params, /(?:((?:#{pattern(:middle)}){0,14}(?::?#{pattern(:trailing)})?))/
-          add_pattern :message, /\A#{pattern(:prefix)}#{pattern(:command)}#{pattern(:params)}\Z/
+        add_pattern :channel, /(?:[#+&]|![A-Z\d]{5})[^\x00\x07\x10\x0D\x20,:]/
 
-          add_pattern :params_scan, /(?!:)([^\x00\x20\r\n:]+)|:([^\x00\r\n]*)/
+        # Server message parsing patterns
+        add_pattern :prefix, /(?:(\S+)\x20)?/
+        add_pattern :command, /([A-Za-z]+|\d{3})/
+        add_pattern :middle, /[^\x00\x20\r\n:][^\x00\x20\r\n]*/
+        add_pattern :trailing, /[^\x00\r\n]*/
+        add_pattern :params, /(?:((?:#{pattern(:middle)}){0,14}(?::?#{pattern(:trailing)})?))/
+        add_pattern :message, /\A#{pattern(:prefix)}#{pattern(:command)}#{pattern(:params)}\Z/
+
+        add_pattern :params_scan, /(?!:)([^\x00\x20\r\n:]+)|:([^\x00\r\n]*)/
       end
       private :setup_patterns
 
@@ -99,6 +101,13 @@ module Cinch
             m.add(:recipient, m.params.first)
             m.add(:channel, m.recipient) if valid_channel?(m.recipient)
           end
+        end
+
+        # Parse CTCP response
+        if m.symbol == :privmsg && data = m.text.match(pattern(:ctcp))
+          m.symbol = :ctcp
+          m.text = data[2]
+          m.add(:ctcp_action, data[1])
         end
 
         m # Return our IRC::Message
