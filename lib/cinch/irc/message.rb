@@ -94,7 +94,6 @@ module Cinch
       # method
       def reply(text)
         recipient = data[:channel] || data[:nick]
-        text = "\001#{@data[:ctcp_action]} #{text}\001" if @data[:ctcp_action]
         @irc.privmsg(recipient, text)
       end
 
