@@ -323,7 +323,11 @@ module Cinch
                 prefix = rule.options[:prefix]
               end
             else
-              prefix = options.prefix
+              if [:bot, :botnick, options.nick].include? options.prefix
+                prefix = options.nick + "[:,] "
+              else
+                prefix = options.prefix
+              end
             end
           else
             prefix = nil
