@@ -111,7 +111,6 @@ module Cinch
 
       # The deadly /me action
       def action(text)
-        @data[:ctcp_action] = false
         reply("\001ACTION #{text}\001")
       end
 
