@@ -176,7 +176,6 @@ channel or by email
 
 == Notes
 * RDoc API documentation is available {here}[http://rdoc.injekt.net/cinch]
-* Wiki is available {here}[https://github.com/injekt/cinch/wikis]
 * Issue and feature tracking is available {here}[https://github.com/injekt/cinch/issues]
 * Contribution in the form of bugfixes or feature requests is welcome and encouraged
 
