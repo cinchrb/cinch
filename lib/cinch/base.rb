@@ -230,7 +230,7 @@ module Cinch
         process(@irc.read) while @irc.connected?
       rescue Interrupt
         @irc.quit("Interrupted")
-        puts "\nInterrupted. Shutting down.."
+        puts "\nInterrupted. Shutting down .."
         exit
       end
     end
@@ -242,7 +242,7 @@ module Cinch
     def process(line)
       return unless line
       message = @parser.parse(line)
-      message.irc = @irc
+      message.irc = @irc unless message.irc
       puts message if options.verbose
 
       # runs on any symbol
