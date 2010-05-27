@@ -5,8 +5,8 @@ bot = Cinch.setup do
   channels %w{ #cinch }
 end
 
-bot.add_custom_pattern(:friends, "injekt|lee|john|bob")
-bot.add_custom_pattern(:hex, "[\\dA-Fa-f]+")
+bot.add_custom_pattern(:friends, /injekt|lee|john|bob/)
+bot.add_custom_pattern(:hex, /[\dA-Fa-f]+/)
 
 bot.plugin("I like :person-friends", :prefix => false) do |m|
   m.reply "I like #{m.args[:person]} too!"
