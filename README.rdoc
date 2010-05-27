@@ -150,7 +150,7 @@ This would provide the following output on IRC
 Cinch also supports custom named parameter patterns. That's right, you can define you own 
 pattern. Just like this:
 
- bot.add_custom_pattern(:friends, "injekt|lee|john|bob")
+ bot.add_custom_pattern(:friends, /injekt|lee|john|bob/)
 
  bot.plugin("I like :friend-friends", :prefix => false) do |m|
    m.reply "I like #{m.args[:friend]} too!"
