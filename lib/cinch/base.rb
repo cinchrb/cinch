@@ -88,32 +88,6 @@ module Cinch
       on(:ctcp, :version) {|m| m.ctcp_reply "Cinch IRC Bot Building Framework v#{Cinch::VERSION}"}
     end
 
-    # Parse command line options
-    def cli_ops
-      options = {}
-      if ARGV.any?
-        begin
-          OptionParser.new do |op|
-            op.on("-s server") {|v| options[:server] = v }
-            op.on("-p port") {|v| options[:port] = v.to_i }
-            op.on("-n nick") {|v| options[:nick] = v }
-            op.on("-c command_prefix") {|v| options[:prefix] = v }
-            op.on("-v", "--verbose", "Enable verbose mode") {|v| options[:verbose] = true }
-            op.on("--ssl") {|v| options[:ssl] = true }
-            op.on("-C", "--channels x,y,z", Array, "Autojoin channels") {|v|
-              options[:channels] = v.map {|c| %w(# + &).include?(c[0].chr) ? c : c.insert(0, '#') }
-            }
-          end.parse(ARGV)
-        rescue OptionParser::MissingArgument => err
-          warn "Missing values for options: #{err.args.join(', ')}\nFalling back to default"
-        rescue OptionParser::InvalidOption => err
-          warn err.message
-          exit
-        end
-      end
-      options
-    end
-
     # Add a new plugin
     #
     # == Example
@@ -262,6 +236,8 @@ module Cinch
     end
     alias :start :run
 
+    private
+
     # Process the next line read from the server
     def process(line)
       return unless line
@@ -325,6 +301,32 @@ module Cinch
           end
         end
       end
+    end
+
+    # Parse command line options
+    def cli_ops
+      options = {}
+      if ARGV.any?
+        begin
+          OptionParser.new do |op|
+            op.on("-s server") {|v| options[:server] = v }
+            op.on("-p port") {|v| options[:port] = v.to_i }
+            op.on("-n nick") {|v| options[:nick] = v }
+            op.on("-c command_prefix") {|v| options[:prefix] = v }
+            op.on("-v", "--verbose", "Enable verbose mode") {|v| options[:verbose] = true }
+            op.on("--ssl") {|v| options[:ssl] = true }
+            op.on("-C", "--channels x,y,z", Array, "Autojoin channels") {|v|
+              options[:channels] = v.map {|c| %w(# + &).include?(c[0].chr) ? c : c.insert(0, '#') }
+            }
+          end.parse(ARGV)
+        rescue OptionParser::MissingArgument => err
+          warn "Missing values for options: #{err.args.join(', ')}\nFalling back to default"
+        rescue OptionParser::InvalidOption => err
+          warn err.message
+          exit
+        end
+      end
+      options
     end
 
     # Catch methods
