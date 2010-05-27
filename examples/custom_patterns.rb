@@ -1,4 +1,4 @@
-require '/home/injekt/code/cinch/lib/cinch'
+require 'cinch'
 
 bot = Cinch.setup do 
   server "irc.freenode.org"
