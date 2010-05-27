@@ -38,10 +38,6 @@ describe "IRC::Parser" do
       @parser.add_pattern(:custom, /foo/)
       @parser.patterns.key?(:custom)
     end
-
-    it "should raise ArgumentError if pattern is not Regexp" do
-      lambda { @parser.add_pattern(:custom, 'foo') }.should raise_error(ArgumentError)
-    end
   end
 
   describe "#remove_pattern" do

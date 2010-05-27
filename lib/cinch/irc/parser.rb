@@ -30,24 +30,30 @@ module Cinch
 
       # Add a new pattern
       def add_pattern(key, pattern)
-        raise ArgumentError, "Pattern is not a regular expression" unless pattern.is_a?(Regexp)
         @patterns[key.to_sym] = pattern
       end
 
       # Remove a pattern
       def remove_pattern(key)
-        key = key.to_sym
-        @patterns.delete(key) if @patterns.key?(key)
+        @patterns.delete(key.to_sym)
       end
 
       # Helper for our patterns Hash
       def pattern(key)
-        @patterns[key]
+        @patterns[key.to_sym]
+      end
+
+      # Check if a pattern exists
+      def has_pattern?(key)
+        @patterns.key?(key.to_sym)
       end
 
       # Set up some default patterns used directly by this class
       def setup_patterns
         add_pattern :letter, /[a-zA-Z]/
+        add_pattern :word, /\w+/
+        add_pattern :upper, /[A-Z]+/
+        add_pattern :lower, /[a-z]+/
         add_pattern :hex, /[\dA-Fa-f]/
 
         add_pattern :ip4addr, /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/

@@ -33,12 +33,6 @@ describe "Cinch::Base" do
       @base.listeners.should include :ctcp
       @base.listeners[:ctcp].should include :version
     end
-
-    it "should add default custom_patterns" do
-      [:digit, :word, :string, :upper, :lower].each do |l|
-        @base.custom_patterns.should include l.to_s
-      end
-    end
   end
 
   describe "#plugin" do 
@@ -99,31 +93,6 @@ describe "Cinch::Base" do
       rule, keys = @base.compile(/foo/)
       rule.should be_kind_of(Regexp)
       keys.should be_empty
-    end
-
-    it "should convert a digit pattern" do
-      rule, keys = @base.compile(":foo-digit")
-      rule.should == "^(\\d+?)$"
-    end
-
-    it "should convert a string pattern" do
-      rule, keys = @base.compile(":foo-string")
-      rule.should == "^(\\w+?)$"
-    end
-
-    it "should convert a word pattern" do
-      rule, keys = @base.compile(":foo-word")
-      rule.should == "^([a-zA-Z_]+?)$"
-    end
-
-    it "should convert a lowercase pattern" do
-      rule, keys = @base.compile(":foo-lower")
-      rule.should == "^([a-z]+?)$"
-    end
-
-    it "should convert an uppercase pattern" do
-      rule, keys = @base.compile(":foo-upper")
-      rule.should == "^([A-Z]+?)$"
     end
 
     it "should convert a custom pattern" do

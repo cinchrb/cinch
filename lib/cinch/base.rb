@@ -28,9 +28,6 @@ module Cinch
     # An OpenStruct holding all configuration options
     attr_reader :options
 
-    # Hash of custom rule patterns
-    attr_reader :custom_patterns
-
     # Our IRC::Socket instance
     attr_reader :irc
 
@@ -72,14 +69,6 @@ module Cinch
       @rules = Rules.new
       @listeners = {}
       @listeners[:ctcp] = {}
-
-      @custom_patterns = {
-        'digit' => "(\\d+?)",
-        'word' => "([a-zA-Z_]+?)",
-        'string' => "(\\w+?)",
-        'upper' => "([A-Z]+?)",
-        'lower' => "([a-z]+?)",
-      }
 
       @irc = IRC::Socket.new(options[:server], options[:port], options[:ssl])
       @parser = IRC::Parser.new
@@ -182,20 +171,9 @@ module Cinch
     # and defines all named parameters, as well as dealing with
     # patterns.
     #
-    # So far 3 patterns are supported:
-    #
-    # * word - matches [a-zA-Z_]+
-    # * string - matches \w+
-    # * digit - matches \d+
-    # * lower - matches [a-z]+
-    # * upper - matches [A-Z]+
+    # All patterns which exist in Cinch::IRC::Parser are supported
     #
     # == Examples
-    # === Capturing individual words
-    #  bot.plugin("say :text-word")
-    # * Does match !say foo
-    # * Does not match !say foo bar baz
-    #
     # === Capturing digits
     #  bot.plugin("say :text-digit")
     # * Does match !say 3
@@ -235,8 +213,8 @@ module Cinch
             key, type = k.split('-')
             keys << key[1..-1]
             
-            if @custom_patterns.include?(type)
-              @custom_patterns[type]
+            if @parser.has_pattern?(type)
+              "(#{@parser.pattern(type)})"
             else
               "([^\x00\r\n]+?)"
             end
@@ -257,13 +235,13 @@ module Cinch
     #    port 6667
     #  end
     #
-    #  bot.add_custom_pattern(:number, "[0-9]")
+    #  bot.add_custom_pattern(:number, /[0-9]/)
     #
     #  bot.plugin("getnum :foo-number") do |m|
     #    m.reply "Your number was: #{m.args[:foo]}"
     #  end
     def add_pattern(name, pattern)
-      @custom_patterns[name.to_s] = "(#{pattern.to_s})"
+      @parser.add_pattern(name, pattern)
     end
     alias :add_custom_pattern :add_pattern
 
