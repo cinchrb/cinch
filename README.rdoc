@@ -41,14 +41,19 @@ Your typical <em>Hello, World</em> application would go something like this:
 It doesn't take much to work out what's happening here, but I'll explain it anyway.
 
 First we run the <em>Cinch::setup</em> block which is required in every application. Cinch is boxed
-with a load of default values, so the <b>only</b> option required in this block is the <em>server</em>
-option. 
+with a load of default values, so the <b>only</b> option required in this block is the server. 
 
 We then define a plugin using the <em>plugin</em> method and pass it a rule (a String in this
 case). Every plugin must be mapped to a rule. When the rule matches an IRC message its block is
 invoked, the contents of which contains your plugin interface. The variable passed to the block is
-an instance of IRC::Message. This provides us with a couple of helper methods which can be used to
-reply to a message. See Cinch::IRC::Message#reply and Cinch::IRC::Message#answer
+an instance of Cinch::IRC::Message.
+
+Cinch::IRC::Message also supplies us with some helper methods which aid in replying to users and 
+channels.
+
+=== See Also
+* Cinch::IRC::Message#reply
+* Cinch::IRC::Message#answer
 
 This example would provide the following response on IRC:
 
@@ -67,10 +72,10 @@ options within your script.
  ruby hello.rb -s irc.freenode.org -n Coolbot
  ruby hello.rb -C foo,bar
 
-Doing a <b>ruby hello.rb -h</b> provides all possible command line options. When using the <em>-C</em>
-or <em>--channels</em> option, the channel prefix is option, and if none is given the channel
-will be prefixed with a hash (#) 
-character 
+Doing a <b>ruby hello.rb -h</b> provides all possible command line options. 
+
+When using the <em>-C</em> or <em>--channels</em> option, the channel prefix is 
+optional, and if none is given the channel will be prefixed with a hash (#) character.
 
 == Plugins
 Plugins are invoked using the command prefix character (which by default is set to <b>!</b>). You can
