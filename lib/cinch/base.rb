@@ -113,6 +113,21 @@ module Cinch
     #    m.join "#mychan"
     #  end
     #
+    # This method also provides an alternative way to define a rule.
+    # The following are equivalent
+    #   plugin("foo bar") do |m|
+    #     m.reply "baz!"
+    #   end
+    #
+    #   on(:message, "foo bar") do |m|
+    #     m.reply "baz!"
+    #   end
+    # 
+    # This also gives us the opportunity to reply to CTCP messages
+    #  on(:ctcp, :time) do |m|
+    #    m.ctcp_reply Time.now.asctime
+    #  end
+    #
     # Note that when adding listeners for numberic IRC replies which
     # begin with a 0 (digit), make sure you define the command as a
     # String and not Integer. This is because 001.to_s == "1" so the
@@ -169,9 +184,9 @@ module Cinch
     #
     # Using "!say 3 injekt some text here" would provide
     # the following attributes
-    # m.args[:n] => 3
-    # m.args[:who] => injekt
-    # m.args[:text] => some text here
+    # * m.args[:n] => 3
+    # * m.args[:who] => injekt
+    # * m.args[:text] => some text here
     def compile(rule)
       return [rule, []] if rule.is_a?(Regexp)
       keys = []
@@ -201,7 +216,7 @@ module Cinch
       ["^#{pattern}$", keys]
     end
 
-    # Add a custom 'type', for rule validation
+    # Add a custom pattern for rule validation
     #
     # == Example
     #  bot = Cinch.setup do
@@ -209,7 +224,7 @@ module Cinch
     #    port 6667
     #  end
     #
-    #  bot.add_custom_pattern(:number, /[0-9]/)
+    #  bot.add_pattern(:number, /[0-9]/)
     #
     #  bot.plugin("getnum :foo-number") do |m|
     #    m.reply "Your number was: #{m.args[:foo]}"
@@ -261,13 +276,10 @@ module Cinch
       end
 
       if [:privmsg].include?(message.symbol)
-
-        # At the moment we must traverse all possible rules, which
-        # could get clunky with a lot of rules. This is because each
-        # rule can be unique in what prefix it uses, in future some kind
-        # of loose checking should be put in place
         rules.each do |rule|
           pattern = rule.to_s
+          rule.keys.map! {|key| key.to_sym }
+          prefix = nil
           
           if options.prefix
             if rule.options.key?(:prefix)
@@ -283,17 +295,14 @@ module Cinch
                 prefix = options.prefix
               end
             end
-          else
-            prefix = nil
           end
-
-          if prefix && pattern[1..prefix.size] != prefix
-            pattern.insert(1, prefix)
-          end
+          
+          # insert prefix unless it already exists
+          pattern.insert(1, prefix) unless pattern[1..prefix.size] == prefix
 
           if message.text && mdata = message.text.rstrip.match(Regexp.new(pattern))
             unless rule.keys.empty? || mdata.captures.empty?
-              args = Hash[rule.keys.map {|k| k.to_sym}.zip(mdata.captures)]
+              args = Hash[rule.keys.zip(mdata.captures)]
               message.args = args
             end
             # execute rule
@@ -323,7 +332,6 @@ module Cinch
           warn "Missing values for options: #{err.args.join(', ')}\nFalling back to default"
         rescue OptionParser::InvalidOption => err
           warn err.message
-          exit
         end
       end
       options
