@@ -300,7 +300,13 @@ module Cinch
           # insert prefix unless it already exists
           pattern.insert(1, prefix) unless pattern[1..prefix.size] == prefix
 
-          if message.text && mdata = message.text.rstrip.match(Regexp.new(pattern))
+          if rule.options[:ignore_case]
+            regex = Regexp.new(pattern, Regexp::IGNORECASE)
+          else
+            regex = Regexp.new(pattern)
+          end
+
+          if message.text && mdata = message.text.rstrip.match(regex)
             unless rule.keys.empty? || mdata.captures.empty?
               args = Hash[rule.keys.zip(mdata.captures)]
               message.args = args
