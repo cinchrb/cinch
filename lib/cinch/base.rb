@@ -76,15 +76,6 @@ module Cinch
       # Default listeners
       on(:ping) {|m| @irc.pong(m.text) }
 
-      on(433) do |m|
-        @options.nick += @options.nick_suffix
-        @irc.nick @options.nick
-      end
-
-      if @options.respond_to?(:channels)
-        on("004") { @options.channels.each {|c| @irc.join(c) } }
-      end
-
       on(:ctcp, :version) {|m| m.ctcp_reply "Cinch IRC Bot Building Framework v#{Cinch::VERSION}"}
     end
 
@@ -236,6 +227,16 @@ module Cinch
 
     # Run run run
     def run
+      # Configure some runtime listeners
+      on(433) do |m|
+        @options.nick += @options.nick_suffix
+        @irc.nick @options.nick
+      end
+
+      if @options.respond_to?(:channels)
+        on("004") { @options.channels.each {|c| @irc.join(c) } }
+      end
+
       @irc.connect options.server, options.port
       @irc.pass options.password if options.password
       @irc.nick options.nick
