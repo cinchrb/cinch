@@ -11,24 +11,7 @@ describe "Cinch::Base" do
     )
   end
 
-  describe "::new" do 
-    it "should add a default ping listener" do
-      @base.listeners.should include :ping
-    end
-
-    it "should add a default nick-taken listener" do
-      @base.listeners.should include :"433"
-    end
-
-    it "should add a 004 listener, only if channels are set" do
-      @base.listeners.should_not include :'004'
-      @full.listeners.should include :'004'
-    end
-
-    it "should add a 433 nick taken listener" do
-      @base.listeners.should include :'433'
-    end
-    
+  describe "::new" do     
     it "should add a ctcp version listener" do 
       @base.listeners.should include :ctcp
       @base.listeners[:ctcp].should include :version
