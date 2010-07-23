@@ -186,6 +186,19 @@ describe Cinch::Base do
         @listener.call(@message)
         @bot.channel_names[@message.channel].should == @nicks
       end
+
+      describe 'and the parter is the bot' do
+        before :each do
+          @message.nick = @bot.nick
+        end
+        
+        it 'should completely remove the channel from the names hash' do
+          channel_names = { '#otherchan' => %w[some people], @message.channel => %w[bunch of people] }
+          @bot.instance_variable_set('@channel_names', channel_names.dup)
+          @listener.call(@message)
+          @bot.channel_names.should == { '#otherchan' => %w[some people] }
+        end
+      end
     end
   end
 end

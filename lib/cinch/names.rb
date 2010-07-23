@@ -22,8 +22,12 @@ module Cinch
       end
       
       on(:part) do |m|
-        channel_names[m.channel] ||= []
-        channel_names[m.channel].delete m.nick
+        if m.nick == nick
+          channel_names.delete(m.channel)
+        else
+          channel_names[m.channel] ||= []
+          channel_names[m.channel].delete m.nick
+        end
       end
     end
   end
