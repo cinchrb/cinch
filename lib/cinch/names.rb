@@ -4,6 +4,11 @@ module Cinch
     
     def track_names
       @channel_names = {}
+      
+      on(:join) do |m|
+        channel_names[m.channel] ||= []
+        channel_names[m.channel].push m.nick
+      end
     end
   end
 end
