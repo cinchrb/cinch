@@ -29,6 +29,10 @@ module Cinch
           channel_names[m.channel].delete m.nick
         end
       end
+      
+      on(:quit) do |m|
+        channel_names.each_value { |names|  names.delete m.nick }
+      end
     end
   end
 end
