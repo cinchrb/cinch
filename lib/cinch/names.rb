@@ -7,6 +7,8 @@ module Cinch
     end
     
     def track_names
+      return if tracking_names?
+      
       @tracking_names = true
       
       @channel_names = {}

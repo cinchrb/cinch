@@ -342,6 +342,19 @@ describe Cinch::Base do
       @bot_one.channel_names.should == { @message_one.channel => [@message_one.nick] }
       @bot_two.channel_names.should == { @message_two.channel => [@message_two.nick] }
     end
+    
+    it 'should not re-add listeners when asked to track names again' do
+      @bot.track_names
+      @bot.listeners[:join].length.should == 1
+    end
+    
+    it 'should not reset the channel name list when asked to track names again' do
+      @message = Struct.new(:nick, :channel).new('someguy', '#somechan')
+      @bot.listeners[:join].first.call(@message)
+      
+      @bot.track_names
+      @bot.channel_names.should == { @message.channel => [@message.nick] }
+    end
   end
   
   describe 'before tracking names' do
