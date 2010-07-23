@@ -14,6 +14,10 @@ describe Cinch::Base do
       @bot.track_names
     end
     
+    it 'should indicate it is tracking names' do
+      @bot.tracking_names?.should == true
+    end
+    
     it 'should provide access to the stored channel names' do
       @bot.should respond_to(:channel_names)
     end
@@ -341,6 +345,10 @@ describe Cinch::Base do
   end
   
   describe 'before tracking names' do
+    it 'should indicate it is not tracking names' do
+      @bot.tracking_names?.should == false
+    end
+    
     it 'should have no channel name list' do
       @bot.channel_names.should be_nil
     end

@@ -2,7 +2,13 @@ module Cinch
   module Names
     attr_reader :channel_names
     
+    def tracking_names?
+      !!@tracking_names
+    end
+    
     def track_names
+      @tracking_names = true
+      
       @channel_names = {}
       
       on(:join) do |m|
