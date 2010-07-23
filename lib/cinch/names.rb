@@ -33,6 +33,10 @@ module Cinch
       on(:quit, :kill) do |m|
         channel_names.each_value { |names|  names.delete m.nick }
       end
+      
+      on(:nick) do |m|
+        channel_names.each_value { |names|  names.push m.recipient if names.delete m.nick }
+      end
     end
   end
 end
