@@ -62,6 +62,27 @@ describe Cinch::Base do
         @listener.call(@message)
         @bot.channel_names[@message.channel].should == [@message.nick]
       end
+      
+      it 'should not issue a names command to the channel' do
+        @bot.should_receive(:names).never
+        @listener.call(@message)
+      end
+      
+      describe 'and the joiner is the bot' do
+        before :each do
+          @message.nick = @bot.nick
+        end
+        
+        it 'should not add the nick to the name list' do
+          @listener.call(@message)
+          @bot.channel_names[@message.channel].should_not include(@message.nick)
+        end
+        
+        it 'should issue a names command to the channel' do
+          @bot.should_receive(:names).with(@message.channel)
+          @listener.call(@message)
+        end
+      end
     end
   end
 end

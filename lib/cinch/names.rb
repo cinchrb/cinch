@@ -6,8 +6,12 @@ module Cinch
       @channel_names = {}
       
       on(:join) do |m|
-        channel_names[m.channel] ||= []
-        channel_names[m.channel].push m.nick
+        if m.nick == nick
+          names(m.channel)
+        else
+          channel_names[m.channel] ||= []
+          channel_names[m.channel].push m.nick
+        end
       end
     end
   end
