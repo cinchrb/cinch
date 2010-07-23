@@ -84,5 +84,53 @@ describe Cinch::Base do
         end
       end
     end
+    
+    it 'should provide a names listener' do
+      @bot.listeners[:'353'].should_not be_nil
+    end
+    
+    describe 'names listener' do
+      before :each do
+        @listener = @bot.listeners[:'353'].first
+        @nick_text = 'cardroid admc cldwalker bmizerany'
+        @nicks = %w[cardroid admc cldwalker bmizerany]
+        @channel = '#github'
+        @message = Struct.new(:params, :text).new(['cardroid', '@', @channel, @nick_text], @nick_text)
+      end
+      
+      it 'should be callable' do
+        @listener.should respond_to(:call)
+      end
+      
+      it 'should set the channel name list to the given nick list' do
+        @listener.call(@message)
+        @bot.channel_names[@channel].should == @nicks
+      end
+      
+      it 'should add the given nicks to an already-present channel name list' do
+        nicks = %w[other people already present]
+        @bot.instance_variable_set('@channel_names', { @channel => nicks.dup })
+        
+        @listener.call(@message)
+        @bot.channel_names[@channel].should == (nicks + @nicks)
+      end
+      
+      it 'should not affect any other channel name lists' do
+        channel_names = { '#otherchan' => %w[some people], @channel => [] }
+        @bot.instance_variable_set('@channel_names', channel_names.dup)
+        @listener.call(@message)
+        @bot.channel_names.should == { '#otherchan' => %w[some people], @channel => @nicks }
+      end
+      
+      it 'should strip extra marking characters from the given nick list' do
+        nick_text = 'cardroid admc cldwalker bmizerany programble @luckiestmonkey @tekkub binjured ceej'
+        nicks = %w[cardroid admc cldwalker bmizerany programble luckiestmonkey tekkub binjured ceej]
+        @message.params[-1] = nick_text
+        @message.text       = nick_text
+        
+        @listener.call(@message)
+        @bot.channel_names[@channel].should == nicks
+      end
+    end
   end
 end

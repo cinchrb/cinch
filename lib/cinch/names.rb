@@ -13,6 +13,13 @@ module Cinch
           channel_names[m.channel].push m.nick
         end
       end
+      
+      on(353) do |m|
+        channel = m.params.detect { |c|  c.match(/^#/) }
+        names   = m.text.split.collect { |n|  n.sub(/^@/, '') }
+        channel_names[channel] ||= []
+        channel_names[channel] += names
+      end
     end
   end
 end
