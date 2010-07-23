@@ -320,6 +320,24 @@ describe Cinch::Base do
         @bot.channel_names.should == { @channel => (@nicks + [@message.recipient]), @other_chan => @other_nicks }
       end
     end
+    
+    it 'should not interfere with other bots' do
+      @bot_one = Cinch::Base.new
+      @bot_two = Cinch::Base.new
+      
+      @bot_one.track_names
+      @bot_two.track_names
+      
+      @message = Struct.new(:nick, :channel)
+      @message_one = @message.new('someguy', '#somechan')
+      @message_two = @message.new('otherguy', '#otherchan')
+      
+      @bot_one.listeners[:join].first.call(@message_one)
+      @bot_two.listeners[:join].first.call(@message_two)
+      
+      @bot_one.channel_names.should == { @message_one.channel => [@message_one.nick] }
+      @bot_two.channel_names.should == { @message_two.channel => [@message_two.nick] }
+    end
   end
   
   describe 'before tracking names' do
