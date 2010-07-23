@@ -240,5 +240,45 @@ describe Cinch::Base do
         @bot.channel_names.should == { @channel => @nicks, @other_chan => @other_nicks }
       end
     end
+    
+    it 'should provide a kill listener' do
+      @bot.listeners[:kill].should_not be_nil
+    end
+    
+    describe 'kill listener' do
+      before :each do
+        @listener = @bot.listeners[:kill].first
+        @message = Struct.new(:nick).new('someguy')
+        @channel = '#somechan'
+        @nicks = %w[bunch of people]
+        @other_chan = '#otherchan'
+        @other_nicks = %w[other people here]
+      end
+      
+      it 'should be callable' do
+        @listener.should respond_to(:call)
+      end
+      
+      it 'should remove the killed nick from every channel name list' do
+        @bot.instance_variable_set('@channel_names', { @channel => (@nicks + [@message.nick]), @other_chan => (@other_nicks + [@message.nick]) })
+        
+        @listener.call(@message)
+        @bot.channel_names.should == { @channel => @nicks, @other_chan => @other_nicks }
+      end
+      
+      it 'should remove the killed nick from every channel name list no matter where or how many times it occurs' do
+        @bot.instance_variable_set('@channel_names', { @channel => @nicks.join(" #{@message.nick} ").split, @other_chan => @other_nicks.join(" #{@message.nick} ").split })
+        
+        @listener.call(@message)
+        @bot.channel_names.should == { @channel => @nicks, @other_chan => @other_nicks }
+      end
+      
+      it 'should not affect any other channel name lists' do
+        @bot.instance_variable_set('@channel_names', { @channel => (@nicks + [@message.nick]), @other_chan => @other_nicks.dup })
+        
+        @listener.call(@message)
+        @bot.channel_names.should == { @channel => @nicks, @other_chan => @other_nicks }
+      end
+    end
   end
 end

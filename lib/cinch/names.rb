@@ -30,7 +30,7 @@ module Cinch
         end
       end
       
-      on(:quit) do |m|
+      on(:quit, :kill) do |m|
         channel_names.each_value { |names|  names.delete m.nick }
       end
     end
