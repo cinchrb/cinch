@@ -20,6 +20,11 @@ module Cinch
         channel_names[channel] ||= []
         channel_names[channel] += names
       end
+      
+      on(:part) do |m|
+        channel_names[m.channel] ||= []
+        channel_names[m.channel].delete m.nick
+      end
     end
   end
 end
