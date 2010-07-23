@@ -321,4 +321,34 @@ describe Cinch::Base do
       end
     end
   end
+  
+  describe 'before tracking names' do
+    it 'should have no channel name list' do
+      @bot.channel_names.should be_nil
+    end
+    
+    it 'should have no join listener' do
+      @bot.listeners[:join].should be_nil
+    end
+    
+    it 'should have no names listener' do
+      @bot.listeners[:'353'].should be_nil
+    end
+    
+    it 'should have no part listener' do
+      @bot.listeners[:part].should be_nil
+    end
+    
+    it 'should have no quit listener' do
+      @bot.listeners[:quit].should be_nil
+    end
+    
+    it 'should have no kill listener' do
+      @bot.listeners[:kill].should be_nil
+    end
+    
+    it 'should have no nick listener' do
+      @bot.listeners[:nick].should be_nil
+    end
+  end
 end
