@@ -7,6 +7,7 @@ require 'optparse'
 require 'cinch/irc'
 require 'cinch/rules'
 require 'cinch/base'
+require 'cinch/names'
 
 module Cinch
   VERSION = '0.3.2'
