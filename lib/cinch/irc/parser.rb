@@ -59,7 +59,7 @@ module Cinch
         add_pattern :ip4addr, /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/
         add_pattern :ip6addr, /[\dA-Fa-f](?::[\dA-Fa-f]){7}|0:0:0:0:0:(?:0|[Ff]{4}):#{pattern(:ip4addr)}/
         add_pattern :hostaddr, /#{pattern(:ip4addr)}|#{pattern(:ip6addr)}/
-        add_pattern :shortname, /[A-Za-z0-9][A-Za-z0-9-]*/
+        add_pattern :shortname, /[A-Za-z0-9][A-Za-z0-9\-\/]*/
         add_pattern :hostname, /#{pattern(:shortname)}(?:\.#{pattern(:shortname)})*/
         add_pattern :host, /#{pattern(:hostname)}|#{pattern(:hostaddr)}/
 
