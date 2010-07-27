@@ -180,7 +180,7 @@ channel or by email
 * {Lee Jarvis}[http://injekt.net]
 
 == Notes
-* RDoc API documentation is available {here}[http://rdoc.injekt.net/cinch]
+* RDoc API documentation is available {here}[http://doc.injekt.net/cinch]
 * Issue and feature tracking is available {here}[https://github.com/injekt/cinch/issues]
 * Contribution in the form of bugfixes or feature requests is welcome and encouraged
 
