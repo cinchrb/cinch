@@ -3,28 +3,22 @@ require "rake/clean"
 require "rake/gempackagetask"
 require "spec/rake/spectask"
 
-begin
-  require 'hanna/rdoctask'
-rescue LoadError
-  require 'rake/rdoctask'
-end
-
 require 'lib/cinch'
 
 NAME = 'cinch'
 VERSION = Cinch::VERSION
 TITLE = "Cinch: The IRC Bot Building Framework"
 CLEAN.include ["*.gem", "rdoc"]
-RDOC_OPTS = [
-  "-U", "--title", TITLE,
-  "--op", "rdoc",
-  "--main", "README.rdoc"
-]
 
-Rake::RDocTask.new do |rdoc|
-  rdoc.rdoc_dir = "rdoc"
-  rdoc.options += RDOC_OPTS
-  rdoc.rdoc_files.add %w(README.rdoc lib/**/*.rb)
+require 'hanna'
+require 'rdoc/task'
+RDoc::Task.new do |rdoc|
+  rdoc.options.push '-f', 'hanna'
+  rdoc.main = 'README.rdoc'
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title = TITLE
+  rdoc.rdoc_files.include('README.rdoc')
+  rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
 desc "Package"
