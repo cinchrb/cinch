@@ -9,10 +9,10 @@ spec = Gem::Specification.new do |s|
   s.rdoc_options += ["--quiet",  '--title', 'Cinch: The IRC Bot Building Framework', '--main', 'README.rdoc']
   s.summary = "An IRC Bot Building Framework"
   s.description = s.summary
-  s.author = "Lee 'injekt' Jarvis"
-  s.email = "ljjarvis@gmail.com"
+  s.authors = ["Lee 'injekt' Jarvis", "Dominik Honnef"]
+  s.email = ["ljjarvis@gmail.com", "dominikh@fork-bomb.org"]
   s.homepage = "http://doc.injekt.net/cinch"
-  s.required_ruby_version = ">= 1.8.7"
+  s.required_ruby_version = ">= 1.9.1"
   s.files = %w(README.rdoc Rakefile) + Dir["{rdoc,spec,lib,examples}/**/*"]
   s.require_path = "lib"
 
