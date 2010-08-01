@@ -2,29 +2,29 @@
 require 'socket'
 require "thread"
 require "ostruct"
-require "newton/rubyext/module"
-require "newton/rubyext/queue"
-require "newton/rubyext/string"
-require "newton/rubyext/infinity"
+require "cinch/rubyext/module"
+require "cinch/rubyext/queue"
+require "cinch/rubyext/string"
+require "cinch/rubyext/infinity"
 
-require "newton/exceptions"
+require "cinch/exceptions"
 
-require "newton/formatted_logger"
-require "newton/syncable"
-require "newton/message"
-require "newton/message_queue"
-require "newton/irc"
-require "newton/channel"
-require "newton/user"
-require "newton/constants"
-require "newton/callback"
-require "newton/ban"
-require "newton/mask"
-require "newton/isupport"
-require "newton/plugin"
+require "cinch/formatted_logger"
+require "cinch/syncable"
+require "cinch/message"
+require "cinch/message_queue"
+require "cinch/irc"
+require "cinch/channel"
+require "cinch/user"
+require "cinch/constants"
+require "cinch/callback"
+require "cinch/ban"
+require "cinch/mask"
+require "cinch/isupport"
+require "cinch/plugin"
 
 Thread.abort_on_exception = true
-module Newton
+module Cinch
   VERSION = '0.1.0'
 
   class Bot
@@ -97,8 +97,8 @@ module Newton
                                  :port   => 6667,
                                  :ssl    => false,
                                  :password => nil,
-                                 :nick   => "newton",
-                                 :realname => "Newton",
+                                 :nick   => "cinch",
+                                 :realname => "cinch",
                                  :verbose => false,
                                  :messages_per_second => 0.5,
                                  :server_queue_size => 10,
@@ -126,12 +126,12 @@ module Newton
       yield @config
     end
 
-    # Since Newton uses threads, all handlers can be run
+    # Since Cinch uses threads, all handlers can be run
     # simultaneously, even the same handler multiple times. This also
     # means, that your code has to be thread-safe. Most of the time,
     # this is not a problem, but if you are accessing stored data, you
     # will most likely have to synchronize access to it. Instead of
-    # managing all mutexes yourself, Newton provides a synchronize
+    # managing all mutexes yourself, Cinch provides a synchronize
     # method, which takes a name and block.
     #
     # Synchronize blocks with the same name share the same mutex,
@@ -283,7 +283,7 @@ module Newton
     # @see Channel#safe_send
     # @todo Handle mIRC color codes more gracefully.
     def safe_msg(recipient, text)
-      msg(recipient, Newton.filter_string(text))
+      msg(recipient, Cinch.filter_string(text))
     end
     alias_method :safe_privmsg, :safe_msg
     alias_method :safe_send, :safe_msg
@@ -315,7 +315,7 @@ module Newton
     # @see User#safe_action
     # @todo Handle mIRC color codes more gracefully.
     def safe_action(recipient, text)
-      action(recipient, Newton.filter_string(text))
+      action(recipient, Cinch.filter_string(text))
     end
 
     # Joins a list of channels.

@@ -1,5 +1,5 @@
-require "newton/mask"
-module Newton
+require "cinch/mask"
+module Cinch
   class Ban
     # @return [Mask, String]
     attr_reader :mask
@@ -25,7 +25,7 @@ module Newton
     end
 
     # @return [Boolean] true if the ban matches `user`
-    # @raise [Exceptions::UnsupportedFeature] Newton does not support
+    # @raise [Exceptions::UnsupportedFeature] Cinch does not support
     #   Freenode's extended bans
     def match(user)
       raise UnsupportedFeature, "extended bans (freenode) are not supported yet" if @extended

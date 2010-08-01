@@ -1,6 +1,6 @@
-require 'newton/bot'
+require 'cinch/bot'
 
-module Newton
+module Cinch
   # @todo Handle mIRC color codes more gracefully.
   # @api private
   def self.filter_string(string)

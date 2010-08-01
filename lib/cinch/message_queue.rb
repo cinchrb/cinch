@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "thread"
 
-module Newton
+module Cinch
   # @api private
   class MessageQueue
     def initialize(socket, bot)

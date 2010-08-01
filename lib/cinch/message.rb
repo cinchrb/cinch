@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-module Newton
+module Cinch
   class Message
     # @return [String]
     attr_accessor :raw

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "set"
 
-module Newton
+module Cinch
   class Channel
     include Syncable
     @channels = {}

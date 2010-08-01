@@ -1,4 +1,4 @@
-module Newton
+module Cinch
   class Mask
     # @return [String]
     attr_reader :nick

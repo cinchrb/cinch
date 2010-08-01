@@ -1,4 +1,4 @@
-module Newton
+module Cinch
   class Plugin
     class << self
       # Set the match pattern.

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-module Newton
+module Cinch
   class User
     include Syncable
 

@@ -1,4 +1,4 @@
-module Newton
+module Cinch
   class FormattedLogger
     COLORS = {
       :reset => "\e[0m",

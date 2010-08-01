@@ -1,4 +1,4 @@
-module Newton
+module Cinch
   ERR_NOSUCHNICK       = 401
   ERR_NOSUCHSERVER     = 402
   ERR_NOSUCHCHANNEL    = 403

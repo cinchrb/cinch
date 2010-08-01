@@ -1,4 +1,4 @@
-module Newton
+module Cinch
   module Syncable
     # Blocks until the object is synced.
     #

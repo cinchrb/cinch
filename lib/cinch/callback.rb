@@ -1,4 +1,4 @@
-module Newton
+module Cinch
   # @api private
   class Callback
     attr_reader :bot

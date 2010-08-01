@@ -1,6 +1,6 @@
-module Newton
+module Cinch
   module Exceptions
-    # Generic error. Superclass for all Newton-specific errors.
+    # Generic error. Superclass for all Cinch-specific errors.
     class Generic < ::StandardError
     end
 
