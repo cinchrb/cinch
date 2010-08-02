@@ -154,6 +154,19 @@ module Cinch
       (channel || user).send(text)
     end
 
+    # Like #reply, but using {Channel#safe_send}/{User#safe_send}
+    # instead
+    #
+    # @param (see #reply)
+    # @return (see #reply)
+    def safe_reply(text, prefix)
+      text = text.to_s
+      if channel && prefix
+        text = "#{user.nick}: #{text}"
+      end
+      (channel || user).safe_send(text)
+    end
+
     # Reply to a CTCP message
     #
     # @return [void]
