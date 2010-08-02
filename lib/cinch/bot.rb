@@ -103,8 +103,8 @@ module Cinch
     #
     # @yieldparam [Struct] config the bot's config
     # @return [void]
-    def configure
-      yield @config
+    def configure(&block)
+      @callback.call(@config, block)
     end
 
     # Since Cinch uses threads, all handlers can be run
