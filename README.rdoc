@@ -1,5 +1,10 @@
 = Cinch: The IRC Bot Building Framework
 
+== ALERT
+Cinch will soon be undergoing a huge update. We're officially merging with the Newton IRC library. This means there are likely to be some incompatible changes coming soon. Please stay updated. Here's a {blog post}[http://blog.injekt.net/19/cinch-and-newton-join-forces] on this.
+
+Stay tuned!
+
 == Description
 Cinch is an IRC Bot Building Framework for quickly creating IRC bots
 in Ruby with minimal effort.
