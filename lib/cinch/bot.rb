@@ -25,7 +25,6 @@ require "cinch/plugin"
 
 Thread.abort_on_exception = true
 module Cinch
-  VERSION = '0.1.0'
 
   class Bot
     # @return [Config]
