@@ -15,7 +15,7 @@ bot = Cinch::Bot.new do
   end
 
   on :connect do
-    bot.join "#dominikh"
+    bot.join "#cinch"
   end
 
   on :join do |m|
