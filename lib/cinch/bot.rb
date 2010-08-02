@@ -352,7 +352,7 @@ module Cinch
       if new_nick.size > @irc.isupport["NICKLEN"] && strict?
         raise Exceptions::NickTooLong, new_nick
       end
-
+      @config.nick = new_nick
       raw "NICK #{new_nick}"
     end
 
