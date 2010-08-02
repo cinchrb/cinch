@@ -123,12 +123,9 @@ module Cinch
 
     # @return [Bot]
     attr_reader :bot
-    # @return [Hash]
-    attr_reader :store
     # @api private
     def initialize(bot)
       @bot = bot
-      @store = bot.store[self] = {}
       self.class.__register_with_bot(bot, self)
     end
 

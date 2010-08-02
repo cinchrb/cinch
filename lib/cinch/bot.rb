@@ -33,24 +33,6 @@ module Cinch
     # @return [IRC]
     attr_accessor :irc
 
-    # The store is used for storing state and information bot-wide,
-    # mainly because the use of instance variables in bots is not
-    # possible.
-    #
-    # @example
-    #   configure do |c|
-    #     …
-    #     store[:message_counter] = 0
-    #   end
-    #
-    #   on :message do
-    #     store[:message_counter] += 1
-    #     channel.send "This was message ##{store[:message_counter]}"
-    #   end
-    #
-    # @return [Hash]
-    attr_reader :store
-
     # Helper method for turning a String into a {Channel} object.
     #
     # @param [String] channel a channel name
@@ -111,7 +93,6 @@ module Cinch
                                                             }),
                                })
 
-      @store = {}
       @semaphores = {}
       @plugins = []
       @callback = Callback.new(self)
@@ -145,16 +126,16 @@ module Cinch
     # @example
     #    configure do |c|
     #      …
-    #      store[:i] = 0
+    #      @i = 0
     #    end
     #
     #    on :channel, /^start counting!/ do
     #      synchronize(:my_counter) do
     #        10.times do
-    #          val = store[:i]
+    #          val = @i
     #          # at this point, another thread might've incremented :i already.
     #          # this thread wouldn't know about it, though.
-    #          store[:i] = val + 1
+    #          @i = val + 1
     #        end
     #      end
     #    end
