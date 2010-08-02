@@ -241,7 +241,7 @@ module Cinch
       split_start = @config.message_split_start || ""
       split_end   = @config.message_split_end   || ""
 
-      text.split(/\r\n|\r|\n/).each do |line|
+      text.split(/[\r\n]/).each do |line|
         # 498 = 510 - length(":" . " PRIVMSG " . " :");
         maxlength = 498 - self.mask.to_s.length - recipient.to_s.length
         maxlength_without_end = maxlength - split_end.length
