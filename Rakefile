@@ -47,6 +47,14 @@ namespace :gem do
   end
 end
 
+namespace :doc do
+  desc "Upload documentation"
+  task :push => [:yard] do
+    # XXX rename once merge is complete
+    sh("scp -r doc injekt:injekt.net/doc/cinch-merge")
+  end
+end
+
 task :version do
   puts "Cinch version #{Cinch::VERSION}"
 end
