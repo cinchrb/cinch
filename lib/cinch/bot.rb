@@ -114,6 +114,7 @@ module Cinch
       @store = {}
       @semaphores = {}
       @plugins = []
+      @callback = Callback.new(self)
       instance_eval(&b) if block_given?
     end
 
@@ -459,7 +460,7 @@ module Cinch
       Thread.new do
         begin
           catch(:halt) do
-            Callback.new(block, args, msg, self).call(*bargs)
+            @callback.call(msg, *args, *bargs, block)
           end
         rescue => e
           FormattedLogger.debug "#{e.backtrace.first}: #{e.message} (#{e.class})"

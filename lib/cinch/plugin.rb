@@ -73,7 +73,7 @@ module Cinch
 
         (@__newton_listen_to || []).each do |type|
           bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{type}`"
-          bot.on(type, [], instance) do |plugin|
+          bot.on(type, [], instance) do |message, plugin|
             plugin.listen(message) if plugin.respond_to?(:listen)
           end
         end
@@ -93,7 +93,7 @@ module Cinch
 
         bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern}`, reacting on `#{react_on}`"
 
-        bot.on(react_on, pattern, instance) do |plugin, *args|
+        bot.on(react_on, pattern, instance) do |message, plugin, *args|
           if plugin.respond_to?(:execute)
             arity = plugin.method(:execute).arity - 1
             if arity > 0
@@ -107,15 +107,15 @@ module Cinch
 
         (@__newton_ctcps || []).each do |ctcp|
           bot.debug "[plugin] #{plugin_name}: Registering CTCP `#{ctcp}`"
-          bot.on(:ctcp, ctcp, instance, ctcp) do |plugin, ctcp, *args|
+          bot.on(:ctcp, ctcp, instance, ctcp) do |message, plugin, ctcp, *args|
             plugin.__send__("ctcp_#{ctcp.downcase}", message, *args)
           end
         end
 
         if @__newton_help_message
           bot.debug "[plugin] #{plugin_name}: Registering help message"
-          bot.on(:message, "#{prefix}help #{plugin_name}", @__newton_help_message) do |message|
-            reply(message)
+          bot.on(:message, "#{prefix}help #{plugin_name}", @__newton_help_message) do |message, help_message|
+            message.reply(help_message)
           end
         end
       end
