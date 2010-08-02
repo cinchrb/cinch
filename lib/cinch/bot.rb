@@ -317,7 +317,7 @@ module Cinch
       action(recipient, Cinch.filter_string(text))
     end
 
-    # Joins a list of channels.
+    # Join a channel.
     #
     # @param [String, Channel] channel either the name of a channel or a {Channel} object
     # @param [String] key optionally the key of the channel
@@ -327,7 +327,7 @@ module Cinch
       Channel(channel).join(key)
     end
 
-    # Parts a list of channels.
+    # Part a channel.
     #
     # @param [String, Channel] channel either the name of a channel or a {Channel} object
     # @param [String] reason an optional reason/part message
@@ -382,7 +382,7 @@ module Cinch
       raw command
     end
 
-    # Connects the bot to an server.
+    # Connects the bot to a server.
     #
     # @param [Boolean] plugins Automatically register plugins from
     #   `@config.plugins.plugins`?
