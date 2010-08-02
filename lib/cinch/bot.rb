@@ -80,7 +80,7 @@ module Cinch
                                  :password => nil,
                                  :nick   => "cinch",
                                  :realname => "cinch",
-                                 :verbose => false,
+                                 :verbose => true,
                                  :messages_per_second => 0.5,
                                  :server_queue_size => 10,
                                  :strictness => :forgiving,
