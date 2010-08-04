@@ -168,7 +168,6 @@ module Cinch
     end
 
     def self.included(by)
-      p by
       by.extend ClassMethods
     end
   end
