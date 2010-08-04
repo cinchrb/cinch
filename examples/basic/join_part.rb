@@ -1,26 +1,37 @@
 require 'cinch'
 
-bot = Cinch.setup do 
-  server "irc.freenode.org"
-  nick "CinchBot"
-  channels %w( #cinch )
+bot = Cinch::Bot.new do
+  configure do |c|
+    c.server = "irc.freenode.org"
+    c.nick   = "CinchBot"
+
+    # Who should be able to access these plugins
+    @admin = "injekt"
+  end
+
+  on :connect do
+    bot.join "#cinch"
+  end
+
+  helpers do
+    def is_admin?(user)
+      true if user.nick == @admin
+    end
+  end
+
+  on :message, /^!join (.+)/ do |m, channel|
+    bot.join(channel) if is_admin?(m.user)
+  end
+
+  on :message, /^!part(?: (.+))?/ do |m, channel|
+    # Part current channel if none is given
+    channel = channel || m.channel
+
+    if channel
+      bot.part(channel) if is_admin?(m.user)
+    end
+  end
 end
 
-# Who should be able to access these plugins
-admin = 'injekt'
-
-bot.plugin "join :channel", :nick => admin do |m|
-  bot.join m.args[:channel]
-end
-
-bot.plugin "part :channel", :nick => admin do |m|
-  bot.part m.args[:channel]
-end
-
-# Part current channel if none is given
-bot.plugin "part", :nick => admin do |m|
-  bot.part m.channel
-end
-
-bot.run
+bot.start
 
