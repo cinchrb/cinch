@@ -137,6 +137,7 @@ module Cinch
       @in_whois = true
       @bot.raw "WHOIS #@nick #@nick"
     end
+    alias_method :refresh, :whois
 
     # Send a message to the user.
     #
