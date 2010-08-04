@@ -1,15 +1,19 @@
 module Cinch
   class Plugin
     class << self
-      # Set the match pattern.
+      Pattern = Struct.new(:pattern, :use_prefix, :method)
+      # Set a match pattern.
       #
       # @param [Regexp, String] pattern A pattern
-      # @param [Boolean] prefix If true, the plugin prefix will
-      #   automatically be prepended to the pattern.
+      # @option options [Symbol] :method (:execute) The method to execute
+      # @option options [Boolean] :use_prefix (true) If true, the
+      #   plugin prefix will automatically be prepended to the
+      #   pattern.
       # @return [void]
-      def match(pattern, prefix = true)
-        @__newton_pattern = pattern
-        @__newton_use_prefix = prefix
+      def match(pattern, options = {})
+        options = {:use_prefix => true, :method => :execute}.merge(options)
+        @__newton_patterns ||= []
+        @__newton_patterns << Pattern.new(pattern, options[:use_prefix], options[:method])
       end
 
       # Events to listen to.
@@ -78,30 +82,36 @@ module Cinch
           end
         end
 
-        pattern = @__newton_pattern || plugin_name
-        prefix = @__newton_prefix || bot.config.plugins.prefix
-        if (@__newton_use_prefix || @__newton_use_prefix.nil?) && prefix
-          case pattern
-          when Regexp
-            pattern = /^#{prefix}#{pattern}/
-          when String
-            pattern = prefix + pattern
-          end
+        if @__newton_patterns.empty?
+          @__newton_patterns << Pattern.new(plugin_name, true, nil)
         end
 
-        react_on = @__newton_react_on || :message
-
-        bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern}`, reacting on `#{react_on}`"
-
-        bot.on(react_on, pattern, instance) do |message, plugin, *args|
-          if plugin.respond_to?(:execute)
-            arity = plugin.method(:execute).arity - 1
-            if arity > 0
-              args = args[0..arity - 1]
-            elsif arity == 0
-              args = []
+        @__newton_patterns.each do |pattern|
+          prefix = @__newton_prefix || bot.config.plugins.prefix
+          if pattern.use_prefix && prefix
+            case pattern.pattern
+            when Regexp
+              pattern.pattern = /^#{prefix}#{pattern.pattern}/
+            when String
+              pattern.pattern = prefix + pattern.pattern
             end
-            plugin.execute(message, *args)
+          end
+
+          react_on = @__newton_react_on || :message
+
+          bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern.pattern}`, reacting on `#{react_on}`"
+
+          bot.on(react_on, pattern.pattern, instance, pattern) do |message, plugin, pattern, *args|
+            if plugin.respond_to?(pattern.method)
+              method = plugin.method(pattern.method)
+              arity = method.arity - 1
+              if arity > 0
+                args = args[0..arity - 1]
+              elsif arity == 0
+                args = []
+              end
+              method.call(message, *args)
+            end
           end
         end
 
