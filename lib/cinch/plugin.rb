@@ -1,6 +1,6 @@
 module Cinch
-  class Plugin
-    class << self
+  module Plugin
+    module ClassMethods
       Pattern = Struct.new(:pattern, :use_prefix, :method)
       # Set a match pattern.
       #
@@ -163,6 +163,11 @@ module Cinch
     # @return [void]
     # @see Plugin.match
     def execute(*args)
+    end
+
+    def self.included(by)
+      p by
+      by.extend ClassMethods
     end
   end
 end
