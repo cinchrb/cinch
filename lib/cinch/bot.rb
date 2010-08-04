@@ -9,6 +9,7 @@ require "cinch/rubyext/infinity"
 
 require "cinch/exceptions"
 
+require "cinch/helpers"
 require "cinch/formatted_logger"
 require "cinch/syncable"
 require "cinch/message"

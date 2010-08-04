@@ -1,5 +1,7 @@
 module Cinch
   module Plugin
+    include Helpers
+
     module ClassMethods
       Pattern = Struct.new(:pattern, :use_prefix, :method)
       # Set a match pattern.
