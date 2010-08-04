@@ -8,34 +8,32 @@ class Seen < Struct.new(:who, :where, :what, :time)
   end
 end
 
-bot = Cinch.setup(
-  :server => 'irc.freenode.org',
-  :channels => ['#cinch'],
-  :prefix => '!',
-  :verbose => true,
-)
+bot = Cinch::Bot.new do
+  configure do |c|
+    c.server = 'irc.freenode.org'
+  end
 
-# Only log a PRIVMSG
-bot.on :privmsg do |m|
-  # Dont record a private message
-  unless m.private?
-    users[m.nick] = Seen.new(m.nick, m.channel, m.text, Time.new)
+  on :connect do
+    bot.join "#cinch"
+  end
+
+  # Only log channel messages
+  on :channel do |m|
+    users[m.user.nick] = Seen.new(m.user.nick, m.channel, m.message, Time.new)
+  end
+
+  on :channel, /^!seen (.+)/ do |m, nick|
+    if nick == bot.nick
+      m.reply "That's me!"
+    elsif nick == m.user.nick
+      m.reply "That's you!"
+    elsif users.key?(nick)
+      m.reply users[nick].to_s
+    else
+      m.reply "I haven't seen #{nick}"
+    end
   end
 end
 
-bot.plugin("seen :nick") do |m|
-  nick = m.args[:nick]
-
-  if nick == bot.nick
-    m.reply "That's me!"
-  elsif nick == m.nick
-    m.reply "That's you!"
-  elsif users.key?(nick)
-    m.reply users[nick].to_s
-  else
-    m.reply "I haven't seen #{nick}"
-  end
-end
-
-bot.run
+bot.start
 
