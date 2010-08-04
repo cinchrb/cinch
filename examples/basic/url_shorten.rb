@@ -22,8 +22,8 @@ bot = Cinch::Bot.new do
     end
   end
 
-  on :channel, /(.+)/ do |m, text|
-    urls = URI.extract(text, "http")
+  on :channel do |m|
+    urls = URI.extract(m.message, "http")
 
     unless urls.empty?
       short_urls = urls.map {|url| shorten(url) }.compact
