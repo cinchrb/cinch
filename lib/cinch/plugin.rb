@@ -4,6 +4,8 @@ module Cinch
 
     module ClassMethods
       Pattern = Struct.new(:pattern, :use_prefix, :method)
+      Listener = Struct.new(:event, :method)
+
       # Set a match pattern.
       #
       # @param [Regexp, String] pattern A pattern
@@ -19,19 +21,32 @@ module Cinch
       end
 
       # Events to listen to.
+      # @overload listen_to(*types, options = {})
+      #   @param [String, Symbol, Integer] *types Events to listen to. Available
+      #     events are all IRC commands in lowercase as symbols, all numeric
+      #     replies, and the following:
       #
-      # @param [String, Symbol, Integer] *types Events to listen to. Available
-      #   events are all IRC commands in lowercase as symbols, all numeric
-      #   replies, and the following:
+      #       - :channel (a channel message)
+      #       - :private (a private message)
+      #       - :message (both channel and private messages)
+      #       - :error   (IRC errors)
+      #       - :ctcp    (ctcp requests)
       #
-      #     - :channel (a channel message)
-      #     - :private (a private message)
-      #     - :message (both channel and private messages)
-      #     - :error   (IRC errors)
-      #     - :ctcp    (ctcp requests)
-      # @return [void]
+      #   @param [Hash] options
+      #   @option options [Symbol] :method (:listen) The method to
+      #     execute
+      #   @return [void]
       def listen_to(*types)
-        @__cinch_listen_to = types
+        options = {:method => :listen}
+        if types.last.is_a?(Hash)
+          options.merge!(types.pop)
+        end
+
+        @__cinch_listeners ||= []
+
+        types.each do |type|
+          @__cinch_listeners << Listener.new(type, options[:method])
+        end
       end
 
       def ctcp(command)
@@ -77,10 +92,10 @@ module Cinch
       def __register_with_bot(bot, instance)
         plugin_name = @__cinch_name || self.name.split("::").last.downcase
 
-        (@__cinch_listen_to || []).each do |type|
-          bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{type}`"
-          bot.on(type, [], instance) do |message, plugin|
-            plugin.listen(message) if plugin.respond_to?(:listen)
+        (@__cinch_listeners || []).each do |listener|
+          bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
+          bot.on(listener.event, [], instance) do |message, plugin|
+            plugin.__send__(listener.method, message) if plugin.respond_to?(listener.method)
           end
         end
 
