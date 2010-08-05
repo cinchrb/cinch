@@ -91,11 +91,19 @@ module Cinch
                                                               :plugins => [],
                                                               :prefix  => "!",
                                                             }),
+                                 :channels => [],
                                })
 
       @semaphores = {}
       @plugins = []
       @callback = Callback.new(self)
+
+      on :connect do
+        bot.config.channels.each do |channel|
+          bot.join channel
+        end
+      end
+
       instance_eval(&b) if block_given?
     end
 

@@ -11,11 +11,9 @@ bot = Cinch::Bot.new do
     c.nick            = "cinch_autovoice"
     c.server          = "irc.freenode.org"
     c.verbose         = true
-    @autovoice        = true
-  end
+    c.channels        = ["#cinch"]
 
-  on :connect do
-    bot.join "#cinch"
+    @autovoice        = true
   end
 
   on :join do |m|

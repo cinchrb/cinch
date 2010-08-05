@@ -2,8 +2,9 @@ require 'cinch'
 
 bot = Cinch::Bot.new do
   configure do |c|
-    c.server = "irc.freenode.org"
-    c.nick   = "CinchBot"
+    c.server   = "irc.freenode.org"
+    c.nick     = "CinchBot"
+    c.channels = ["#cinch"]
 
     # Who should be able to access these plugins
     @admin = "injekt"

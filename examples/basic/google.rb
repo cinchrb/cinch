@@ -5,12 +5,9 @@ require 'cgi'
 
 bot = Cinch::Bot.new do
   configure do |c|
-    c.server = "irc.freenode.net"
-    c.nick   = "MrCinch"
-  end
-
-  on :connect do
-    bot.join "#cinch"
+    c.server   = "irc.freenode.net"
+    c.nick     = "MrCinch"
+    c.channels = ["#cinch"]
   end
 
   helpers do

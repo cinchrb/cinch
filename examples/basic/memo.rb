@@ -11,12 +11,9 @@ end
 bot = Cinch::Bot.new do
   configure do |c|
     c.server = "irc.freenode.org"
+    c.channels = ["#cinch"]
 
     @memos = {}
-  end
-
-  on :connect do
-    bot.join "#cinch"
   end
 
   on :message do |m|

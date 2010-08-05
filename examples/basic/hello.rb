@@ -3,10 +3,7 @@ require 'cinch'
 bot = Cinch::Bot.new do
   configure do |c|
     c.server = "irc.freenode.org"
-  end
-
-  on :connect do
-    bot.join "#cinch"
+    c.channels = ["#cinch"]
   end
 
   on :message, "hello" do |m|
