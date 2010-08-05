@@ -165,20 +165,20 @@ module Cinch
     end
 
     # This method will be executed whenever an event the plugin
-    # {Plugin.listen_to listens to} occurs.
+    # {Plugin::ClassMethods#listen_to listens to} occurs.
     #
     # @abstract
     # @return [void]
-    # @see Plugin.listen_to
+    # @see Plugin::ClassMethods#listen_to
     def listen(*args)
     end
 
     # This method will be executed whenever a message matches the
-    # {Plugin.match match pattern} of the plugin.
+    # {Plugin::ClassMethods#match match pattern} of the plugin.
     #
     # @abstract
     # @return [void]
-    # @see Plugin.match
+    # @see Plugin::ClassMethods#match
     def execute(*args)
     end
 
