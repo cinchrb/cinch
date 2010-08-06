@@ -113,7 +113,7 @@ module Cinch
     # @yieldparam [Struct] config the bot's config
     # @return [void]
     def configure(&block)
-      @callback.call(@config, block)
+      @callback.instance_exec(@config, &block)
     end
 
     # Since Cinch uses threads, all handlers can be run
@@ -449,7 +449,7 @@ module Cinch
       Thread.new do
         begin
           catch(:halt) do
-            @callback.call(msg, *args, *bargs, block)
+            @callback.instance_exec(msg, *args, *bargs, &block)
           end
         rescue => e
           FormattedLogger.debug "#{e.backtrace.first}: #{e.message} (#{e.class})"
