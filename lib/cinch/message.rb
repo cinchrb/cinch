@@ -159,7 +159,7 @@ module Cinch
     #
     # @param (see #reply)
     # @return (see #reply)
-    def safe_reply(text, prefix)
+    def safe_reply(text, prefix = false)
       text = text.to_s
       if channel && prefix
         text = "#{user.nick}: #{text}"
