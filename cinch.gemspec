@@ -1,8 +1,6 @@
-require File.expand_path("../lib/cinch", __FILE__)
-
 spec = Gem::Specification.new do |s|
   s.name = 'cinch'
-  s.version = Cinch::VERSION
+  s.version = "1.0.0"
   s.summary = 'An IRC Bot Building Framework'
   s.description = 'A simple, friendly DSL for creating IRC bots'
   s.authors = ['Lee Jarvis', 'Dominik Honnef']
