@@ -14,7 +14,7 @@ end
 bot = Cinch::Bot.new do
   configure do |c|
     c.server   = "irc.freenode.org"
-    c.channels = ["#cinch"]
+    c.channels = ["#cinch-bots"]
     c.plugins.plugins = [SomeCommand]
   end
 end
