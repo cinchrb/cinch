@@ -103,8 +103,11 @@ module Cinch
           @__cinch_patterns << Pattern.new(plugin_name, true, nil)
         end
 
+        prefix = @__cinch_prefix || bot.config.plugins.prefix
+        if prefix.is_a?(String)
+          prefix = Regexp.escape(prefix)
+        end
         @__cinch_patterns.each do |pattern|
-          prefix = @__cinch_prefix || bot.config.plugins.prefix
           if pattern.use_prefix && prefix
             case pattern.pattern
             when Regexp
@@ -141,7 +144,7 @@ module Cinch
 
         if @__cinch_help_message
           bot.debug "[plugin] #{plugin_name}: Registering help message"
-          bot.on(:message, "#{prefix}help #{plugin_name}", @__cinch_help_message) do |message, help_message|
+          bot.on(:message, /#{prefix}help #{Regexp.escape(plugin_name)}/, @__cinch_help_message) do |message, help_message|
             message.reply(help_message)
           end
         end
