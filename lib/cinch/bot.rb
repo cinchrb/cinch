@@ -237,22 +237,22 @@ module Cinch
         maxlength = 498 - self.mask.to_s.length - recipient.to_s.length
         maxlength_without_end = maxlength - split_end.length
 
-        if text.length > maxlength
+        if line.length > maxlength
           splitted = []
 
-          while text.length > maxlength_without_end
-            pos = text.rindex(/\s/, maxlength)
+          while line.length > maxlength_without_end
+            pos = line.rindex(/\s/, maxlength)
             r = pos || maxlength_without_end
-            splitted << text.slice!(0, r) + split_end
-            text = split_start + text
+            splitted << line.slice!(0, r) + split_end
+            line = split_start + line
           end
 
-          splitted << text
+          splitted << line
           splitted.each do |string|
             raw("PRIVMSG #{recipient} :#{string}")
           end
         else
-          raw("PRIVMSG #{recipient} :#{text}")
+          raw("PRIVMSG #{recipient} :#{line}")
         end
       end
     end
