@@ -24,7 +24,6 @@ require "cinch/mask"
 require "cinch/isupport"
 require "cinch/plugin"
 
-Thread.abort_on_exception = true
 module Cinch
 
   class Bot
