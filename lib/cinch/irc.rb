@@ -91,7 +91,6 @@ module Cinch
         message "PONG :#{msg.params.first}"
       else
         if msg.command == "005"
-          require 'pp'
           @isupport.parse(*msg.params[1..-2].map {|v| v.split(" ")}.flatten)
         elsif [RPL_TOPIC.to_s, RPL_NOTOPIC.to_s, "TOPIC"].include?(msg.command)
           topic = case msg.command
