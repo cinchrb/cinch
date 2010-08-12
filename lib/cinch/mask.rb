@@ -10,7 +10,7 @@ module Cinch
     attr_reader :mask
     def initialize(mask)
       @mask = mask
-      @nick, @user, @host = mask.match(/(.+)!(.+)@(.+)/)[1..1]
+      @nick, @user, @host = mask.match(/(.+)!(.+)@(.+)/)[1..-1]
       @regexp = Regexp.new(Regexp.escape(mask).gsub("\\*", ".*"))
     end
 
