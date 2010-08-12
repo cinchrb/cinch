@@ -240,7 +240,7 @@ module Cinch
           splitted = []
 
           while line.length > maxlength_without_end
-            pos = line.rindex(/\s/, maxlength)
+            pos = line.rindex(/\s/, maxlength_without_end)
             r = pos || maxlength_without_end
             splitted << line.slice!(0, r) + split_end
             line = split_start + line
