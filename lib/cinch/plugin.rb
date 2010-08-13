@@ -185,6 +185,10 @@ module Cinch
     def execute(*args)
     end
 
+    def config
+      @bot.config.plugins.options[self.class]
+    end
+
     def self.included(by)
       by.extend ClassMethods
     end

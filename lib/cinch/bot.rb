@@ -89,6 +89,7 @@ module Cinch
                                  :plugins => OpenStruct.new({
                                                               :plugins => [],
                                                               :prefix  => "!",
+                                                              :options => Hash.new {|h,k| h[k] = {}},
                                                             }),
                                  :channels => [],
                                })
