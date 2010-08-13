@@ -77,7 +77,13 @@ to comprehend.
 
 #### Threaded
 
+Unlike a lot of popular IRC frameworks, Cinch is threaded. But wait, don't let that 
+scare you. It's totally easy to grasp. 
 
+Each of Cinch's plugins and handlers are executed in their own personal thread. This
+means the main thread can stay focused on what it does best, providing non-blocking
+reading and writing to an IRC server. This will prevent your bot from locking up
+when one of your plugins starts doing some intense operations. Damn that's handy.
 
 #### Key/Value Store
 
@@ -106,7 +112,7 @@ as awesome as you had hoped!
 
 This system allows you to create feature packed plugins without interfering with
 any of the Cinch internals. Everything in your plugin is self contained, meaning
-you can share your favorite plugins among your friends and release a ton of 
+you can share your favorite plugins among your friends and release a ton of
 your own plugins for others to use
 
 Want to see the same Hello, World application in plugin form? Sure you do!
@@ -149,7 +155,8 @@ so you don't have to remember them. We're so nice.
 Ever get fed up of watching those boring, frankly unreadable lines flicker down your
 terminal screen whilst your bot is online? Help is at hand! By default, Cinch will
 colorize all text it sends to a terminal, meaning you get some pretty damn awesome
-readable coloured text.
+readable coloured text. Cinch also provides a {FormattedLogger} class so your plugins
+and tell you what's up!
 
 Authors
 -------
