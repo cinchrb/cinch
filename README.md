@@ -77,6 +77,8 @@ to comprehend.
 
 #### Threaded
 
+
+
 #### Key/Value Store
 
 We have listened to your requests and implemented a bot-wide key/value store. You can
@@ -97,6 +99,50 @@ now store data and use it across your handlers. Here's an example:
 Neat, right?
 
 #### Plugins
+
+That's right folks, Cinch provides a modular based plugin system. This is a feature
+many people have bugged us about for a long time. It's finally here, and it's
+as awesome as you had hoped!
+
+This system allows you to create feature packed plugins without interfering with
+any of the Cinch internals. Everything in your plugin is self contained, meaning
+you can share your favorite plugins among your friends and release a ton of 
+your own plugins for others to use
+
+Want to see the same Hello, World application in plugin form? Sure you do!
+
+    require 'cinch'
+
+    class Hello
+      include Cinch::Plugin
+
+      match "hello"
+
+      def execute(m)
+        m.reply "Hello, #{m.user.nick}"
+      end
+    end
+
+    bot = Cinch::Bot.new do
+      configure do |c|
+        c.server = "irc.freenode.org"
+        c.channels = ["#cinch-bots"]
+        c.plugins.plugins = [Hello]
+      end
+    end
+
+    bot.start
+
+More information can be found in the {Cinch::Plugin} documentation.
+
+#### Numeric Replies
+
+Do you know what IRC code 401 represents? How about 376? or perhaps 502?
+Sure you don't (and if you do, you're as geeky as us!). Cinch doesn't expect you
+to store the entire IRC RFC code set in your head, and rightfully so!
+
+That's exactly why Cinch has a ton of constants representing these numbers
+so you don't have to remember them. We're so nice.
 
 #### Pretty Output
 
