@@ -99,7 +99,7 @@ module Cinch
           end
         end
 
-        if @__cinch_patterns.empty?
+        if (@__cinch_patterns ||= []).empty?
           @__cinch_patterns << Pattern.new(plugin_name, true, nil)
         end
 
