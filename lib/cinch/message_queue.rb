@@ -17,7 +17,7 @@ module Cinch
     def queue(message)
       command = message.split(" ").first
 
-      if command == "PING"
+      if command == "PONG"
         @queue.unshift(message)
       else
         @queue << message
