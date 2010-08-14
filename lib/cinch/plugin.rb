@@ -87,10 +87,16 @@ module Cinch
         @__cinch_name = name
       end
 
+      # @return [String]
+      # @api private
+      def __plugin_name
+        @__cinch_name || self.name.split("::").last.downcase
+      end
+
       # @return [void]
       # @api private
       def __register_with_bot(bot, instance)
-        plugin_name = @__cinch_name || self.name.split("::").last.downcase
+        plugin_name = __plugin_name
 
         (@__cinch_listeners || []).each do |listener|
           bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
