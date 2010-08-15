@@ -67,18 +67,18 @@ Cinch provides a documented API, which is online for your viewing pleasure [here
 
 Many IRC bots (and there are, so **many**) are great, but we see so little of them take
 advantage of the awesome Object Oriented Interface which most Ruby programmers will have
-become accustomed to and grown to love. 
+become accustomed to and grown to love.
 
 Well, Cinch uses this functionality to it's advantage. Rather than having to pass around
-a reference to a channel or a user, to another method, which then passes it to 
+a reference to a channel or a user, to another method, which then passes it to
 another method (by which time you're confused about what's going on) -- Cinch provides
-an OOP interface for even the simpliest of tasks, making your code simple and easy 
+an OOP interface for even the simpliest of tasks, making your code simple and easy
 to comprehend.
 
 #### Threaded
 
-Unlike a lot of popular IRC frameworks, Cinch is threaded. But wait, don't let that 
-scare you. It's totally easy to grasp. 
+Unlike a lot of popular IRC frameworks, Cinch is threaded. But wait, don't let that
+scare you. It's totally easy to grasp.
 
 Each of Cinch's plugins and handlers are executed in their own personal thread. This
 means the main thread can stay focused on what it does best, providing non-blocking
@@ -169,7 +169,7 @@ Contribute
 
 Love Cinch? Love Ruby? Love helping? Of course you do! If you feel like Cinch
 is missing that awesome jaw-dropping feature and you want to be the one to
-make this magic happen, you can! 
+make this magic happen, you can!
 
 Fork the project, implement your awesome feature in it's own branch, and send
 a pull request to one of the Cinch collaborators. We'll be more than happy
