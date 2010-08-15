@@ -52,7 +52,7 @@ module Cinch
         message = @queue.pop.to_s.chomp
 
         @log << Time.now
-        FormattedLogger.log(message, :outgoing) if @bot.config.verbose
+        @bot.logger.log(message, :outgoing) if @bot.config.verbose
 
         @time_since_last_send = Time.now
         @socket.print message + "\r\n"

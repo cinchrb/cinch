@@ -10,7 +10,8 @@ require "cinch/rubyext/infinity"
 require "cinch/exceptions"
 
 require "cinch/helpers"
-require "cinch/formatted_logger"
+require "cinch/logger/null_logger"
+require "cinch/logger/formatted_logger"
 require "cinch/syncable"
 require "cinch/message"
 require "cinch/message_queue"
@@ -31,6 +32,8 @@ module Cinch
     attr_accessor :config
     # @return [IRC]
     attr_accessor :irc
+    # @return [Logger]
+    attr_accessor :logger
 
     # Helper method for turning a String into a {Channel} object.
     #
@@ -60,9 +63,9 @@ module Cinch
     end
 
     # @return [void]
-    # @see FormattedLogger#debug
+    # @see Logger#debug
     def debug(msg)
-      FormattedLogger.debug(msg)
+      @logger.debug(msg)
     end
 
     # @return [Boolean]
@@ -72,6 +75,7 @@ module Cinch
 
     # @yield
     def initialize(&b)
+      @logger = Logger::FormattedLogger.new($stderr)
       @events = {}
       @config = OpenStruct.new({
                                  :server => "localhost",
@@ -380,7 +384,7 @@ module Cinch
     # @return [void]
     def start(plugins = true)
       register_plugins if plugins
-      FormattedLogger.debug "Connecting to #{@config.server}:#{@config.port}"
+      @logger.debug "Connecting to #{@config.server}:#{@config.port}"
       @irc = IRC.new(self, @config)
       @irc.connect
     end
@@ -452,10 +456,7 @@ module Cinch
             @callback.instance_exec(msg, *args, *bargs, &block)
           end
         rescue => e
-          FormattedLogger.debug "#{e.backtrace.first}: #{e.message} (#{e.class})"
-          e.backtrace[1..-1].each do |line|
-            FormattedLogger.debug "\t" + line
-          end
+          @logger.log_exception(e)
         end
       end
     end

@@ -1,15 +1,19 @@
 module Cinch
-  class FormattedLogger
-    COLORS = {
-      :reset => "\e[0m",
-      :bold => "\e[1m",
-      :red => "\e[31m",
-      :green => "\e[32m",
-      :yellow => "\e[33m",
-      :blue => "\e[34m",
-    }
+  module Logger
+    class FormattedLogger
+      COLORS = {
+        :reset => "\e[0m",
+        :bold => "\e[1m",
+        :red => "\e[31m",
+        :green => "\e[32m",
+        :yellow => "\e[33m",
+        :blue => "\e[34m",
+      }
 
-    class << self
+      def initialize(output)
+        @output = output
+      end
+
       # @return [void]
       def debug(message)
         log(message, :debug)
@@ -19,8 +23,8 @@ module Cinch
       # @return [void]
       def log(message, kind = :generic)
         message = message.to_s.chomp # don't want to tinker with the original string
-        unless $stdout.tty?
-          $stderr.puts message
+        unless @output.tty?
+          @output.puts message
           return
         end
 
@@ -49,7 +53,7 @@ module Cinch
           message = prefix + pre_parts.join(" ")
           message << colorize(" :#{msg}", :yellow) if msg
         end
-        $stderr.puts message
+        @output.puts message
       end
 
       # @api private
@@ -58,6 +62,14 @@ module Cinch
       # @return [String] colorized string
       def colorize(text, *codes)
         COLORS.values_at(*codes).join + text + COLORS[:reset]
+      end
+
+      # @api private
+      def log_exception(e)
+        debug "#{e.backtrace.first}: #{e.message} (#{e.class})"
+        e.backtrace[1..-1].each do |line|
+          debug "\t" + line
+        end
       end
     end
   end

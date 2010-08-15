@@ -24,7 +24,7 @@ module Cinch
         ssl_context = OpenSSL::SSL::SSLContext.new
         ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-        FormattedLogger.debug "Using SSL with #{@config.server}:#{@config.port}"
+        @bot.logger.debug "Using SSL with #{@config.server}:#{@config.port}"
 
         @socket = OpenSSL::SSL::SSLSocket.new(tcp_socket, ssl_context)
         @socket.sync = true
@@ -52,7 +52,7 @@ module Cinch
     # @api private
     # @return [void]
     def parse(input)
-      FormattedLogger.log(input, :incoming) if @bot.config.verbose
+      @bot.logger.log(input, :incoming) if @bot.config.verbose
       msg          = Message.new(input, @bot)
       events       = []
       dispatch_msg = nil
