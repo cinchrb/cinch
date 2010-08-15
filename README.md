@@ -176,3 +176,6 @@ a pull request to one of the Cinch collaborators. We'll be more than happy
 to check it out.
 
 Just remember, no specs, no cookies!
+
+### Contributors
+- darix <darix@nordisch.org> (wrote the message splitting algorithm)
