@@ -12,48 +12,50 @@ module Cinch
 
       def initialize(output)
         @output = output
+        @mutex = Mutex.new
       end
 
       # @return [void]
-      def debug(message)
-        log(message, :debug)
+      def debug(messages)
+        log(messages, :debug)
       end
 
       # @api private
       # @return [void]
-      def log(message, kind = :generic)
-        message = message.to_s.chomp # don't want to tinker with the original string
-        unless @output.tty?
-          @output.puts message
-          return
-        end
+      def log(messages, kind = :generic)
+        @mutex.synchronize do
+          messages = [messages].flatten.map {|s| s.chomp}
+          # message = message.to_s.chomp # don't want to tinker with the original string
 
-        if kind == :debug
-          prefix = colorize("!! ", :yellow)
-          message = prefix + message
-        else
-          pre, msg = message.split(" :", 2)
-          pre_parts = pre.split(" ")
-
-          if kind == :incoming
-            prefix = colorize(">> ", :green)
-
-            if pre_parts.size == 1
-              pre_parts[0] = colorize(pre_parts[0], :bold)
+          messages.each do |message|
+            if kind == :debug
+              prefix = colorize("!! ", :yellow)
+              message = prefix + message
             else
-              pre_parts[0] = colorize(pre_parts[0], :blue)
-              pre_parts[1] = colorize(pre_parts[1], :bold)
+              pre, msg = message.split(" :", 2)
+              pre_parts = pre.split(" ")
+
+              if kind == :incoming
+                prefix = colorize(">> ", :green)
+
+                if pre_parts.size == 1
+                  pre_parts[0] = colorize(pre_parts[0], :bold)
+                else
+                  pre_parts[0] = colorize(pre_parts[0], :blue)
+                  pre_parts[1] = colorize(pre_parts[1], :bold)
+                end
+
+              elsif kind == :outgoing
+                prefix = colorize("<< ", :red)
+                pre_parts[0] = colorize(pre_parts[0], :bold)
+              end
+
+              message = prefix + pre_parts.join(" ")
+              message << colorize(" :#{msg}", :yellow) if msg
             end
-
-          elsif kind == :outgoing
-            prefix = colorize("<< ", :red)
-            pre_parts[0] = colorize(pre_parts[0], :bold)
+            @output.puts message
           end
-
-          message = prefix + pre_parts.join(" ")
-          message << colorize(" :#{msg}", :yellow) if msg
         end
-        @output.puts message
       end
 
       # @api private
@@ -66,10 +68,9 @@ module Cinch
 
       # @api private
       def log_exception(e)
-        debug "#{e.backtrace.first}: #{e.message} (#{e.class})"
-        e.backtrace[1..-1].each do |line|
-          debug "\t" + line
-        end
+        lines = ["#{e.backtrace.first}: #{e.message} (#{e.class})"]
+        lines.concat e.backtrace[1..-1].map {|s| "\t" + s}
+        debug(lines)
       end
     end
   end
