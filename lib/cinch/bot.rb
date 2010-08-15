@@ -90,6 +90,7 @@ module Cinch
                                  :strictness => :forgiving,
                                  :message_split_start => '... ',
                                  :message_split_end   => ' ...',
+                                 :max_messages => nil,
                                  :plugins => OpenStruct.new({
                                                               :plugins => [],
                                                               :prefix  => "!",
@@ -252,7 +253,7 @@ module Cinch
           end
 
           splitted << line
-          splitted.each do |string|
+          splitted[0, (@config.max_messages || splitted.size)].each do |string|
             raw("PRIVMSG #{recipient} :#{string}")
           end
         else
