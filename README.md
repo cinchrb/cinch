@@ -171,6 +171,10 @@ Love Cinch? Love Ruby? Love helping? Of course you do! If you feel like Cinch
 is missing that awesome jaw-dropping feature and you want to be the one to
 make this magic happen, you can!
 
+Please note that although we very much appreciate all of your efforts, Cinch
+will not accept patches in aid of Ruby 1.8 compatibility. We have no intention
+of supporting Ruby versions below 1.9.1.
+
 Fork the project, implement your awesome feature in it's own branch, and send
 a pull request to one of the Cinch collaborators. We'll be more than happy
 to check it out.
