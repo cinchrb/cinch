@@ -234,8 +234,8 @@ module Cinch
     # @see #safe_msg
     def msg(recipient, text)
       text = text.to_s
-      split_start = @config.message_split_start || ""
-      split_end   = @config.message_split_end   || ""
+      split_start = @config.message_split_start.tr(" ", "\u00A0") || ""
+      split_end   = @config.message_split_end.tr(" ", "\u00A0")   || ""
 
       text.split(/\r\n|\r|\n/).each do |line|
         # 498 = 510 - length(":" . " PRIVMSG " . " :");
@@ -249,11 +249,12 @@ module Cinch
             pos = line.rindex(/\s/, maxlength_without_end)
             r = pos || maxlength_without_end
             splitted << line.slice!(0, r) + split_end
-            line = split_start + line
+            line = split_start + line.lstrip
           end
 
           splitted << line
           splitted[0, (@config.max_messages || splitted.size)].each do |string|
+            string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
             raw("PRIVMSG #{recipient} :#{string}")
           end
         else
