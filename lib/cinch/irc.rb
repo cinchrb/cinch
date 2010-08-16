@@ -241,7 +241,7 @@ module Cinch
           msg.channel.mark_as_synced(:bans)
         elsif msg.command == "396"
           # note: designed for freenode
-          User(msg.params[0]).sync(:host, params[1], true)
+          User.find_ensured(msg.params[0], @bot).sync(:host, msg.params[1], true)
         end
 
         # TODO work with strings/constants, too
