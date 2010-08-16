@@ -40,7 +40,11 @@ module Cinch
 
       Thread.new do
         while line = @socket.gets
-          parse line
+          begin
+            parse line
+          rescue => e
+            @bot.logger.log_exception(e)
+          end
         end
 
         @bot.dispatch(:disconnect)
