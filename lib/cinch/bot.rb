@@ -234,22 +234,22 @@ module Cinch
     # @see #safe_msg
     def msg(recipient, text)
       text = text.to_s
-      split_start = @config.message_split_start.tr(" ", "\u00A0") || ""
-      split_end   = @config.message_split_end.tr(" ", "\u00A0")   || ""
+      split_start = @config.message_split_start || ""
+      split_end   = @config.message_split_end   || ""
 
       text.split(/\r\n|\r|\n/).each do |line|
         # 498 = 510 - length(":" . " PRIVMSG " . " :");
         maxlength = 498 - self.mask.to_s.length - recipient.to_s.length
-        maxlength_without_end = maxlength - split_end.length
+        maxlength_without_end = maxlength - split_end.bytesize
 
-        if line.length > maxlength
+        if line.bytesize > maxlength
           splitted = []
 
-          while line.length > maxlength_without_end
+          while line.bytesize > maxlength_without_end
             pos = line.rindex(/\s/, maxlength_without_end)
             r = pos || maxlength_without_end
-            splitted << line.slice!(0, r) + split_end
-            line = split_start + line.lstrip
+            splitted << line.slice!(0, r) + split_end.tr(" ", "\u00A0")
+            line = split_start.tr(" ", "\u00A0") + line.lstrip
           end
 
           splitted << line
