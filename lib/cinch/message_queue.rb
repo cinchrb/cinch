@@ -55,6 +55,7 @@ module Cinch
         @bot.logger.log(message, :outgoing) if @bot.config.verbose
 
         @time_since_last_send = Time.now
+        message.encode!(@bot.config.encoding || Encoding.default_external)
         @socket.print message + "\r\n"
       end
     end

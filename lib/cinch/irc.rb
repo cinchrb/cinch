@@ -41,6 +41,8 @@ module Cinch
       Thread.new do
         while line = @socket.gets
           begin
+            line.force_encoding(@bot.config.encoding || Encoding.default_external)
+            line.encode!(Encoding.default_internal) if Encoding.default_internal
             parse line
           rescue => e
             @bot.logger.log_exception(e)

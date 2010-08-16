@@ -97,6 +97,7 @@ module Cinch
                                                               :options => Hash.new {|h,k| h[k] = {}},
                                                             }),
                                  :channels => [],
+                                 :encoding => nil,
                                })
 
       @semaphores = {}
