@@ -32,6 +32,9 @@ module Cinch
       else
         @socket = tcp_socket
       end
+      @socket.set_encoding(@bot.config.encoding || Encoding.default_external,
+                           Encoding.default_internal,
+                           {:invalid => :replace, :undef => :replace})
 
       @queue = MessageQueue.new(@socket, @bot)
       message "PASS #{@config.password}" if @config.password
@@ -39,20 +42,25 @@ module Cinch
       message "USER #{@config.nick} 0 * :#{@config.realname}"
 
       Thread.new do
-        while line = @socket.gets
-          begin
-            line.force_encoding(@bot.config.encoding || Encoding.default_external)
-            line.encode!(Encoding.default_internal) if Encoding.default_internal
-            parse line
-          rescue => e
-            @bot.logger.log_exception(e)
+        begin
+          while line = @socket.gets
+            begin
+              parse line
+            rescue => e
+              @bot.logger.log_exception(e)
+            end
           end
+        rescue => e
+          @bot.logger.log_exception(e)
         end
 
         @bot.dispatch(:disconnect)
       end
-
-      @queue.process!
+      begin
+        @queue.process!
+      rescue => e
+        @bot.logger.log_exception(e)
+      end
     end
 
     # @api private

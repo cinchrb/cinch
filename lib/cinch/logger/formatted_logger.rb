@@ -53,7 +53,7 @@ module Cinch
               message = prefix + pre_parts.join(" ")
               message << colorize(" :#{msg}", :yellow) if msg
             end
-            @output.puts message
+            @output.puts message.encode
           end
         end
       end
