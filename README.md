@@ -182,4 +182,4 @@ to check it out.
 Just remember, no specs, no cookies!
 
 ### Contributors
-- darix <darix@nordisch.org> (wrote the message splitting algorithm)
+- darix &lt;darix [at] nordisch.org&gt; (wrote the message splitting algorithm)
