@@ -183,3 +183,5 @@ Just remember, no specs, no cookies!
 
 ### Contributors
 - darix &lt;darix [at] nordisch.org&gt; (wrote the message splitting algorithm)
+- robgleeson (thanks for testing, contributing a lot of ideas,
+  discussing design decisions etc)
