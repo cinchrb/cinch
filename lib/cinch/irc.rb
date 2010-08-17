@@ -130,6 +130,7 @@ module Cinch
           Channel.all.each do |channel|
             channel.remove_user(user)
           end
+          user.synced = false
         elsif msg.command == "QUIT"
           Channel.all.each do |channel|
             channel.remove_user(msg.user)
