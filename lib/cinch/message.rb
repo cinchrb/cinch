@@ -110,7 +110,7 @@ module Cinch
       if type == :ctcp
         @matches[:ctcp][regexp] ||= ctcp_message.match(regexp)
       else
-        @matches[:other][regexp] ||= message.match(regexp)
+        @matches[:other][regexp] ||= message.to_s.match(regexp)
       end
     end
 
