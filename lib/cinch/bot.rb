@@ -35,6 +35,8 @@ module Cinch
     attr_accessor :irc
     # @return [Logger]
     attr_accessor :logger
+    # @return [Array<Channel>] All channels the bot currently is in
+    attr_reader :channels
     # @return [String]
     attr_reader :host
     attr_reader :mask
@@ -110,6 +112,7 @@ module Cinch
       @semaphores = {}
       @plugins = []
       @callback = Callback.new(self)
+      @channels = []
 
       on :connect do
         bot.config.channels.each do |channel|

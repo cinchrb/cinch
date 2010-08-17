@@ -118,13 +118,21 @@ module Cinch
           msg.channel.sync(:topic, topic)
         elsif msg.command == "JOIN"
           if msg.user == @bot
+            @bot.channels << msg.channel
             msg.channel.sync_modes
           end
           msg.channel.add_user(msg.user)
         elsif msg.command == "PART"
           msg.channel.remove_user(msg.user)
+          if msg.user == @bot
+            @bot.channels.delete(msg.channel)
+          end
         elsif msg.command == "KICK"
-          msg.channel.remove_user(User.find_ensured(msg.params[1], @bot))
+          target = User.find_ensured(msg.params[1], @bot)
+          if target == @bot
+            @bot.channels.delete(msg.channel)
+          end
+          msg.channel.remove_user(target)
         elsif msg.command == "KILL"
           user = User.find_ensured(msg.params[1], @bot)
           Channel.all.each do |channel|
