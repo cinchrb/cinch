@@ -1,6 +1,9 @@
+require "cinch/logger/logger"
 module Cinch
   module Logger
-    class FormattedLogger
+    # A formatted logger that will colorize individual parts of IRC
+    # messages.
+    class FormattedLogger < Cinch::Logger::Logger
       COLORS = {
         :reset => "\e[0m",
         :bold => "\e[1m",
@@ -10,18 +13,18 @@ module Cinch
         :blue => "\e[34m",
       }
 
-      def initialize(output)
+      # @param [IO] output An IO to log to.
+      def initialize(output = STDERR)
         @output = output
         @mutex = Mutex.new
       end
 
-      # @return [void]
+      # (see Logger::Logger#debug)
       def debug(messages)
         log(messages, :debug)
       end
 
-      # @api private
-      # @return [void]
+      # (see Logger::Logger#log)
       def log(messages, kind = :generic)
         @mutex.synchronize do
           messages = [messages].flatten.map {|s| s.chomp}
@@ -66,7 +69,7 @@ module Cinch
         COLORS.values_at(*codes).join + text + COLORS[:reset]
       end
 
-      # @api private
+      # (see Logger::Logger#log_exception)
       def log_exception(e)
         lines = ["#{e.backtrace.first}: #{e.message} (#{e.class})"]
         lines.concat e.backtrace[1..-1].map {|s| "\t" + s}

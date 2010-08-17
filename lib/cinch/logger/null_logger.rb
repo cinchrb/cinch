@@ -1,6 +1,7 @@
+require "cinch/logger/logger"
 module Cinch
   module Logger
-    class NullLogger
+    class NullLogger < Cinch::Logger::Logger
       def initialize(output = nil)
       end
 

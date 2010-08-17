@@ -10,6 +10,7 @@ require "cinch/rubyext/infinity"
 require "cinch/exceptions"
 
 require "cinch/helpers"
+require "cinch/logger/logger"
 require "cinch/logger/null_logger"
 require "cinch/logger/formatted_logger"
 require "cinch/syncable"
