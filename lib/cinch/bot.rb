@@ -349,6 +349,7 @@ module Cinch
     attr_reader :realname
     attr_reader :signed_on_at
     def secure?
+      @config[:ssl]
     end
 
     def unknown?
