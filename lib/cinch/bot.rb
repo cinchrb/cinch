@@ -35,6 +35,12 @@ module Cinch
     attr_accessor :irc
     # @return [Logger]
     attr_accessor :logger
+    # @return [String]
+    attr_reader :host
+    attr_reader :mask
+    attr_reader :user
+    attr_reader :realname
+    attr_reader :signed_on_at
 
     # Helper method for turning a String into a {Channel} object.
     #
@@ -342,12 +348,6 @@ module Cinch
       @config.nick
     end
 
-    # @return [String]
-    attr_reader :host
-    attr_reader :mask
-    attr_reader :user
-    attr_reader :realname
-    attr_reader :signed_on_at
     def secure?
       @config[:ssl]
     end
