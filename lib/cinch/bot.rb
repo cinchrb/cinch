@@ -39,9 +39,13 @@ module Cinch
     attr_reader :channels
     # @return [String]
     attr_reader :host
+    # @return [Mask]
     attr_reader :mask
+    # @return [String]
     attr_reader :user
+    # @return [String]
     attr_reader :realname
+    # @return [Time]
     attr_reader :signed_on_at
 
     # Helper method for turning a String into a {Channel} object.
