@@ -3,6 +3,7 @@ require 'cinch/bot'
 module Cinch
   VERSION = '1.0.0'
 
+  # @return [String]
   # @todo Handle mIRC color codes more gracefully.
   # @api private
   def self.filter_string(string)
