@@ -150,7 +150,7 @@ module Cinch
         @bot.config.nick = msg.params.last
       end
 
-      msg.user.nick = msg.params.last
+      msg.user.instance_variable_set(:@nick, msg.params.last)
     end
 
     def on_part(msg)
@@ -202,7 +202,7 @@ module Cinch
     def on_318(msg)
       # RPL_ENDOFWHOIS
       user = User.find_ensured(msg.params[1], @bot)
-      user.in_whois = false
+      user.instance_variable_set(:@in_whois, false)
       if @whois_updates[user].empty? && !user.attr(:unknown?, true, true)
         # for some reason, we did not receive user information. one
         # reason is freenode throttling WHOIS
@@ -220,7 +220,7 @@ module Cinch
         end
 
         user.sync(:unknown?, false, true)
-        user.synced = true
+        user.instance_variable_set(:@synced, true)
         @whois_updates.delete user
       end
     end

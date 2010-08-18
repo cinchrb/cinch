@@ -56,13 +56,13 @@ module Cinch
 
 
     # @return [String]
-    attr_accessor :nick
+    attr_reader :nick
     # @return [Bot]
-    attr_accessor :bot
+    attr_reader :bot
     # @return [Boolean]
-    attr_accessor :synced
+    attr_reader :synced
     # @return [Boolean]
-    attr_accessor :in_whois
+    attr_reader :in_whois
 
     # By default, you can use methods like User#user, User#host and
     # alike – If you however fear that another thread might change
@@ -77,7 +77,7 @@ module Cinch
     #     do_something_with(data.host)
     #   end
     # @return [Hash]
-    attr_accessor :data
+    attr_reader :data
     def initialize(*args)
       @data = {
         :user         => nil,
