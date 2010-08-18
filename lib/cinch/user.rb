@@ -64,6 +64,54 @@ module Cinch
     # @return [Boolean]
     attr_reader :in_whois
 
+    # @return [String]
+    attr_reader :user
+    undef_method "user"
+
+    # @return [String]
+    attr_reader :host
+    undef_method "host"
+
+    # @return [String]
+    attr_reader :realname
+    undef_method "realname"
+
+    # @return [String]
+    attr_reader :authname
+    undef_method "authname"
+
+    # @return [Number] How long this user has been idle, in seconds.
+    #   This is a snapshot of the last WHOIS.
+    attr_reader :idle
+    undef_method "idle"
+
+    # @return [Time]
+    attr_reader :signed_on_at
+    undef_method "signed_on_at"
+
+    # @return [Boolean] True if the instance references an user who
+    #   cannot be found on the server.
+    attr_reader :unknown
+    alias_method :unknown?, :unknown
+    undef_method "unknown?"
+    undef_method "unknown"
+    def unknown
+      self.unknown?
+    end
+
+    # @return [Array<Channel>] All channels the user is in.
+    attr_reader :channels
+    undef_method "channels"
+
+    # @return [Boolean] True if the user is using a secure connection, i.e. SSL.
+    attr_reader :secure
+    alias_method :secure?, :secure
+    undef_method "secure?"
+    undef_method "secure"
+    def secure
+      self.secure?
+    end
+
     # By default, you can use methods like User#user, User#host and
     # alike – If you however fear that another thread might change
     # data while you're using it and if this means a critical issue to
