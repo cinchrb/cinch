@@ -191,6 +191,9 @@ module Cinch
     def execute(*args)
     end
 
+    # Provides access to plugin-specific options.
+    #
+    # @return [Hash] A hash of options
     def config
       @bot.config.plugins.options[self.class]
     end
