@@ -113,7 +113,8 @@ module Cinch
                                  :encoding => nil,
                                })
 
-      @semaphores = {}
+      @semaphores_mutex = Mutex.new
+      @semaphores = Hash.new { |h,k| h[k] = Mutex.new }
       @plugins = []
       @callback = Callback.new(self)
       @channels = []
@@ -168,7 +169,9 @@ module Cinch
     #      end
     #    end
     def synchronize(name, &block)
-      semaphore = (@semaphores[name] ||= Mutex.new)
+      # Must run the default block +/ fetch in a thread safe way in order to
+      # ensure we always get the same mutex for a given name.
+      semaphore = @semaphores_mutex.synchronize { @semaphores[name] }
       semaphore.synchronize(&block)
     end
 
