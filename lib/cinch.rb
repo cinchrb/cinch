@@ -1,25 +1,12 @@
-dir = File.dirname(__FILE__)
-$LOAD_PATH.unshift(dir) unless $LOAD_PATH.include? dir
-
-require 'ostruct'
-require 'optparse'
-
-require 'cinch/irc'
-require 'cinch/rules'
-require 'cinch/base'
-require 'cinch/names'
+require 'cinch/bot'
 
 module Cinch
-  VERSION = '0.3.5'
+  VERSION = '1.0.0'
 
-  class << self
-
-    # Setup bot options and return a new Cinch::Base instance
-    def setup(ops={}, &blk)
-      Cinch::Base.new(ops, &blk)
-    end
-    alias_method :configure, :setup
+  # @return [String]
+  # @todo Handle mIRC color codes more gracefully.
+  # @api private
+  def self.filter_string(string)
+    string.gsub(/[\x00-\x1f]/, '')
   end
-
 end
-

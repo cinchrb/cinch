@@ -1,4 +1,5 @@
-*.swp
 *~
-rdoc
-*.gem
+coverage
+doc
+pkg
+.yardoc/

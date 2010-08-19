@@ -1,50 +1,66 @@
-require "rake"
-require "rake/clean"
-require "rake/gempackagetask"
-require "spec/rake/spectask"
+require 'rubygems'
+require 'rake'
+require 'rake/clean'
 
-require 'lib/cinch'
+$LOAD_PATH.unshift('lib') unless $LOAD_PATH.include?('lib')
+require 'cinch'
 
-NAME = 'cinch'
-VERSION = Cinch::VERSION
-TITLE = "Cinch: The IRC Bot Building Framework"
-CLEAN.include ["*.gem", "rdoc"]
+CLEAN.include ["doc"]
 
-require 'hanna'
-require 'rdoc/task'
-RDoc::Task.new do |rdoc|
-  rdoc.options.push '-f', 'hanna'
-  rdoc.main = 'README.rdoc'
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = TITLE
-  rdoc.rdoc_files.include('README.rdoc')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+require 'spec/rake/spectask'
+Spec::Rake::SpecTask.new(:spec) do |spec|
+  spec.libs << 'lib' << 'spec'
+  spec.spec_files = FileList['spec/**/*_spec.rb']
 end
 
-desc "Package"
-task :package => [:clean] do |p|
-  sh "gem build #{NAME}.gemspec"
+require 'yard'
+YARD::Rake::YardocTask.new do |t|
+  t.files   = ['lib/**/*.rb', 'README.md']
+  t.options = [
+    '-m', 'markdown', 
+    '--hide-void-return',
+    '--quiet',
+    '--title', "Cinch #{Cinch::VERSION} Documentation",
+    '--main', 'README.md',
+  ] 
 end
 
-desc "Install gem"
-task :install => [:package] do
-  sh "sudo gem install ./#{NAME}-#{VERSION} --local"
+namespace :gem do
+  desc "Build gem"
+  task :build => ["rake:clean"] do
+    sh("gem build cinch.gemspec")
+  end
+
+  desc "Uninstall gem (not root)"
+  task :uninstall do
+    sh("gem uninstall cinch -v #{Cinch::VERSION}")
+  end
+
+  desc "Release to rubygems"
+  task :release => [:build] do
+    sh("gem push ./cinch-#{Cinch::VERSION}.gem")
+  end
+
+  desc "Install gem (not root)"
+  task :install => :build do
+    sh("gem install ./cinch-#{Cinch::VERSION} --local")
+  end
 end
 
-desc "Uninstall gem"
-task :uninstall => [:clean] do
-  sh "sudo gem uninstall #{NAME}"
+namespace :doc do
+  desc "Upload documentation"
+  task :push => [:yard] do
+    # XXX rename once merge is complete
+    sh("scp -r doc injekt:injekt.net/doc/cinch-merge")
+  end
 end
 
-desc "Upload gem to gemcutter"
-task :release => [:package] do
-  sh "gem push ./#{NAME}-#{VERSION}.gem"
+task :version do
+  puts "Cinch version #{Cinch::VERSION}"
 end
 
-desc "Run all specs"
-Spec::Rake::SpecTask.new(:spec) do |t|
-  t.spec_files = Dir['spec/**/*_spec.rb']
-end
+desc "Install gem (not root)"
+task :install => "gem:install"
 
-task :default => [:clean, :spec]
+task :default => :spec
 
