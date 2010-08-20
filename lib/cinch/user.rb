@@ -151,6 +151,9 @@ module Cinch
 
       @when_requesting_synced_attribute = lambda {|attr|
         unless @synced
+          @data[:unknown?] = false
+          unsync :unknown?
+
           unsync attr
           whois
         end
@@ -186,6 +189,57 @@ module Cinch
       @bot.raw "WHOIS #@nick #@nick"
     end
     alias_method :refresh, :whois
+
+    # @param [Hash, nil] values A hash of values gathered from WHOIS,
+    #   or `nil` if no data was returned
+    # @param [Boolean] not_found Has to be true if WHOIS resulted in
+    #   an unknown user
+    # @return [void]
+    # @api private
+    def end_of_whois(values, not_found = false)
+      @in_whois = false
+      if not_found
+        sync(:unknown?, true, true)
+        sync(:idle, 0, true)
+        sync(:channels, [], true)
+
+        fields = @data.keys
+        fields.delete(:unknown?)
+        fields.delete(:idle)
+        fields.delete(:channels)
+        fields.each do |field|
+          sync(field, nil, true)
+        end
+
+        return
+      end
+
+      if values.nil?
+        # for some reason, we did not receive user information. one
+        # reason is freenode throttling WHOIS
+        Thread.new do
+          sleep 2
+          whois
+        end
+        return
+      end
+
+      {
+        :authname => nil,
+        :idle => 0,
+        :secure? => false,
+      }.merge(values).each do |attr, value|
+        sync(attr, value, true)
+      end
+      p [self, values, not_found]
+      sync(:unknown?, false, true)
+      @synced = true
+    end
+
+    def unsync_all
+      @synced = false
+      super
+    end
 
     # Send a message to the user.
     #

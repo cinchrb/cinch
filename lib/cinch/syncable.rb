@@ -30,6 +30,10 @@ module Cinch
       @synced_attributes.delete(attribute)
     end
 
+    def unsync_all
+      @synced_attributes.clear
+    end
+
     # @api private
     def attr(attribute, data = false, unsync = false)
       unless unsync

@@ -138,7 +138,7 @@ module Cinch
       Channel.all.each do |channel|
         channel.remove_user(user)
       end
-      user.synced = false
+      msg.user.unsync_all
     end
 
     def on_mode(msg)
@@ -172,7 +172,7 @@ module Cinch
       Channel.all.each do |channel|
         channel.remove_user(msg.user)
       end
-      msg.user.synced = false
+      msg.user.unsync_all
     end
 
     def on_005(msg)
@@ -202,25 +202,11 @@ module Cinch
     def on_318(msg)
       # RPL_ENDOFWHOIS
       user = User.find_ensured(msg.params[1], @bot)
-      user.instance_variable_set(:@in_whois, false)
-      if @whois_updates[user].empty? && !user.attr(:unknown?, true, true)
-        # for some reason, we did not receive user information. one
-        # reason is freenode throttling WHOIS
-        Thread.new do
-          sleep 2
-          user.whois
-        end
-      else
-        {
-          :authname => nil,
-          :idle => 0,
-          :secure? => false,
-        }.merge(@whois_updates[user]).each do |attr, value|
-          user.sync(attr, value, true)
-        end
 
-        user.sync(:unknown?, false, true)
-        user.instance_variable_set(:@synced, true)
+      if @whois_updates[user].empty? && !user.attr(:unknown?, true, true)
+        user.end_of_whois(nil)
+      else
+        user.end_of_whois(@whois_updates[user])
         @whois_updates.delete user
       end
     end
@@ -327,12 +313,17 @@ module Cinch
       # ERR_NOSUCHNICK
       user = User.find_ensured(msg.params[1], @bot)
       user.sync(:unknown?, true, true)
+      if @whois_updates.key?(user)
+        user.end_of_whois(nil, true)
+        @whois_updates.delete user
+      end
     end
 
     def on_402(msg)
       # ERR_NOSUCHSERVER
+
       if user = User.find(msg.params[1]) # not _ensured, we only want a user that already exists
-        user.sync(:unknown?, true, true)
+        user.end_of_whois(nil, true)
         @whois_updates.delete user
         # TODO freenode specific, test on other IRCd
       end
