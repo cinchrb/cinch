@@ -196,6 +196,7 @@ module Cinch
     #   an unknown user
     # @return [void]
     # @api private
+    # @since 1.0.1
     def end_of_whois(values, not_found = false)
       @in_whois = false
       if not_found
@@ -236,7 +237,10 @@ module Cinch
       @synced = true
     end
 
+    # @return [void]
+    # @since 1.0.1
     # @api private
+    # @see Syncable#unsync_all
     def unsync_all
       @synced = false
       super
