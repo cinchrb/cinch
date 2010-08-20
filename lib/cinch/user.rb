@@ -236,6 +236,7 @@ module Cinch
       @synced = true
     end
 
+    # @api private
     def unsync_all
       @synced = false
       super
