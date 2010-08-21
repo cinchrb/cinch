@@ -30,9 +30,9 @@ module Cinch
 
   class Bot
     # @return [Config]
-    attr_accessor :config
+    attr_reader :config
     # @return [IRC]
-    attr_accessor :irc
+    attr_reader :irc
     # @return [Logger]
     attr_accessor :logger
     # @return [Array<Channel>] All channels the bot currently is in
@@ -400,7 +400,7 @@ module Cinch
     def start(plugins = true)
       register_plugins if plugins
       @logger.debug "Connecting to #{@config.server}:#{@config.port}"
-      @irc = IRC.new(self, @config)
+      @irc = IRC.new(self)
       @irc.connect
     end
 
