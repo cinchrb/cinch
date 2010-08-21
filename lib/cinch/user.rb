@@ -231,7 +231,7 @@ module Cinch
       }.merge(values).each do |attr, value|
         sync(attr, value, true)
       end
-      p [self, values, not_found]
+
       sync(:unknown?, false, true)
       @synced = true
     end
