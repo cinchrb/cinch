@@ -184,8 +184,6 @@ Fork the project, implement your awesome feature in it's own branch, and send
 a pull request to one of the Cinch collaborators. We'll be more than happy
 to check it out.
 
-Just remember, no specs, no cookies!
-
 ### Contributors
 - darix &lt;darix [at] nordisch.org&gt; (wrote the message splitting algorithm)
 - robgleeson (thanks for testing, contributing a lot of ideas,

@@ -14,10 +14,9 @@ class Google
     title = res.text
     link = res.at('a')[:href]
     desc = res.at("./following::div").children.first.text
+    CGI.unescape_html "#{title} - #{desc} (#{link})"
   rescue
     "No results found"
-  else
-    CGI.unescape_html "#{title} - #{desc} (#{link})"
   end
 
   def execute(m, query)
