@@ -2,8 +2,8 @@ module Cinch
   class IRC
     # @return [ISupport]
     attr_reader :isupport
-    def initialize(bot, config)
-      @bot, @config = bot, config
+    def initialize(bot)
+      @bot      = bot
       @isupport = ISupport.new
     end
 
@@ -16,15 +16,15 @@ module Cinch
       @whois_updates = Hash.new {|h, k| h[k] = {}}
       @in_lists      = Set.new
 
-      tcp_socket = TCPSocket.open(@config.server, @config.port)
+      tcp_socket = TCPSocket.open(@bot.config.server, @bot.config.port)
 
-      if @config.ssl
+      if @bot.config.ssl
         require 'openssl'
 
         ssl_context = OpenSSL::SSL::SSLContext.new
         ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-        @bot.logger.debug "Using SSL with #{@config.server}:#{@config.port}"
+        @bot.logger.debug "Using SSL with #{@bot.config.server}:#{@bot.config.port}"
 
         @socket = OpenSSL::SSL::SSLSocket.new(tcp_socket, ssl_context)
         @socket.sync = true
@@ -37,9 +37,9 @@ module Cinch
                            {:invalid => :replace, :undef => :replace})
 
       @queue = MessageQueue.new(@socket, @bot)
-      message "PASS #{@config.password}" if @config.password
-      message "NICK #{@config.nick}"
-      message "USER #{@config.nick} 0 * :#{@config.realname}"
+      message "PASS #{@bot.config.password}" if @bot.config.password
+      message "NICK #{@bot.config.nick}"
+      message "USER #{@bot.config.nick} 0 * :#{@bot.config.realname}"
 
       Thread.new do
         begin

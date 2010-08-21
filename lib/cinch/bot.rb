@@ -400,7 +400,7 @@ module Cinch
     def start(plugins = true)
       register_plugins if plugins
       @logger.debug "Connecting to #{@config.server}:#{@config.port}"
-      @irc = IRC.new(self, @config)
+      @irc = IRC.new(self)
       @irc.connect
     end
 
