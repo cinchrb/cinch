@@ -114,20 +114,24 @@ module Cinch
           prefix = Regexp.escape(prefix)
         end
         @__cinch_patterns.each do |pattern|
+          pattern_to_register = nil
+
           if pattern.use_prefix && prefix
             case pattern.pattern
             when Regexp
-              pattern.pattern = /^#{prefix}#{pattern.pattern}/
+              pattern_to_register = /^#{prefix}#{pattern.pattern}/
             when String
-              pattern.pattern = prefix + pattern.pattern
+              pattern_to_register = prefix + pattern.pattern
             end
+          else
+            pattern_to_register = pattern.pattern
           end
 
           react_on = @__cinch_react_on || :message
 
-          bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern.pattern}`, reacting on `#{react_on}`"
+          bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register}`, reacting on `#{react_on}`"
 
-          bot.on(react_on, pattern.pattern, instance, pattern) do |message, plugin, pattern, *args|
+          bot.on(react_on, pattern_to_register, instance, pattern) do |message, plugin, pattern, *args|
             if plugin.respond_to?(pattern.method)
               method = plugin.method(pattern.method)
               arity = method.arity - 1
