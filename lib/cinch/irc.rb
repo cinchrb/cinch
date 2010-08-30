@@ -32,8 +32,14 @@ module Cinch
       else
         @socket = tcp_socket
       end
-      @socket.set_encoding(@bot.config.encoding || Encoding.default_external,
-                           Encoding.default_internal,
+
+      external_encoding = @bot.config.encoding || Encoding.default_external
+      internal_encoding = Encoding.default_internal
+      # ruby can't handle encoding from one encoding to the same encoding
+      internal_encoding = nil if external_encoding == internal_encoding
+
+      @socket.set_encoding(external_encoding,
+                           internal_encoding,
                            {:invalid => :replace, :undef => :replace})
 
       @queue = MessageQueue.new(@socket, @bot)
