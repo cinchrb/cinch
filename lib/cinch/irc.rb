@@ -33,15 +33,6 @@ module Cinch
         @socket = tcp_socket
       end
 
-      external_encoding = @bot.config.encoding || Encoding.default_external
-      internal_encoding = Encoding.default_internal
-      # ruby can't handle encoding from one encoding to the same encoding
-      internal_encoding = nil if external_encoding == internal_encoding
-
-      @socket.set_encoding(external_encoding,
-                           internal_encoding,
-                           {:invalid => :replace, :undef => :replace})
-
       @queue = MessageQueue.new(@socket, @bot)
       message "PASS #{@bot.config.password}" if @bot.config.password
       message "NICK #{@bot.config.nick}"
@@ -51,6 +42,7 @@ module Cinch
         begin
           while line = @socket.gets
             begin
+              line.force_encoding(@bot.config.encoding).encode!({:invalid => :replace, :undef => :replace})
               parse line
             rescue => e
               @bot.logger.log_exception(e)

@@ -110,7 +110,7 @@ module Cinch
                                                               :options => Hash.new {|h,k| h[k] = {}},
                                                             }),
                                  :channels => [],
-                                 :encoding => nil,
+                                 :encoding => Encoding.default_external,
                                })
 
       @semaphores_mutex = Mutex.new
