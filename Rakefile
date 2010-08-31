@@ -50,7 +50,7 @@ end
 namespace :doc do
   desc "Upload documentation"
   task :push => [:yard] do
-    sh("scp -r doc injekt:injekt.net/doc/cinch")
+    sh("scp -r doc/* injekt:injekt.net/doc/cinch")
   end
 end
 
