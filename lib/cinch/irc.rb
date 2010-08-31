@@ -32,9 +32,6 @@ module Cinch
       else
         @socket = tcp_socket
       end
-      @socket.set_encoding(@bot.config.encoding || Encoding.default_external,
-                           Encoding.default_internal,
-                           {:invalid => :replace, :undef => :replace})
 
       @queue = MessageQueue.new(@socket, @bot)
       message "PASS #{@bot.config.password}" if @bot.config.password
@@ -45,6 +42,7 @@ module Cinch
         begin
           while line = @socket.gets
             begin
+              line.force_encoding(@bot.config.encoding).encode!({:invalid => :replace, :undef => :replace})
               parse line
             rescue => e
               @bot.logger.log_exception(e)
