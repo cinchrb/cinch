@@ -7,5 +7,9 @@ module Cinch
     def initialize(bot)
       @bot = bot
     end
+
+    def synchronize(*args)
+      @bot.synchronize(*args)
+    end
   end
 end
