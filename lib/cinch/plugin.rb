@@ -169,10 +169,7 @@ module Cinch
       self.class.__register_with_bot(bot, self)
     end
 
-    # @param (see Bot#synchronize)
-    # @yield
-    # @return (see Bot#synchronize)
-    # @see Bot#synchronize
+    # (see Bot#synchronize)
     def synchronize(*args, &block)
       @bot.synchronize(*args, &block)
     end

@@ -8,10 +8,7 @@ module Cinch
       @bot = bot
     end
 
-    # @param (see Bot#synchronize)
-    # @yield
-    # @return (see Bot#synchronize)
-    # @see Bot#synchronize
+    # (see Bot#synchronize)
     def synchronize(*args, &block)
       @bot.synchronize(*args, &block)
     end
