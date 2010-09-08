@@ -47,6 +47,8 @@ module Cinch
     attr_reader :realname
     # @return [Time]
     attr_reader :signed_on_at
+    # @return [Array<Plugin>] All registered plugins
+    attr_reader :plugins
 
     # Helper method for turning a String into a {Channel} object.
     #

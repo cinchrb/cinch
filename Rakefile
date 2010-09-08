@@ -50,8 +50,7 @@ end
 namespace :doc do
   desc "Upload documentation"
   task :push => [:yard] do
-    # XXX rename once merge is complete
-    sh("scp -r doc injekt:injekt.net/doc/cinch-merge")
+    sh("scp -r doc/* injekt:injekt.net/doc/cinch")
   end
 end
 
