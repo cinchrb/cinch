@@ -101,7 +101,9 @@ module Cinch
         (@__cinch_listeners || []).each do |listener|
           bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
           bot.on(listener.event, [], instance) do |message, plugin|
-            plugin.__send__(listener.method, message) if plugin.respond_to?(listener.method)
+            if plugin.responds_in?(message.channel) && plugin.respond_to?(listener.method)
+              plugin.__send__(listener.method, message)
+            end
           end
         end
 
@@ -128,11 +130,10 @@ module Cinch
           end
 
           react_on = @__cinch_react_on || :message
-
           bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register}`, reacting on `#{react_on}`"
 
           bot.on(react_on, pattern_to_register, instance, pattern) do |message, plugin, pattern, *args|
-            if plugin.respond_to?(pattern.method)
+            if plugin.responds_in?(message.channel) && plugin.respond_to?(pattern.method)
               method = plugin.method(pattern.method)
               arity = method.arity - 1
               if arity > 0
@@ -163,9 +164,11 @@ module Cinch
 
     # @return [Bot]
     attr_reader :bot
+
     # @api private
     def initialize(bot)
       @bot = bot
+      @__cinch_channels = []
       self.class.__register_with_bot(bot, self)
     end
 
@@ -201,6 +204,23 @@ module Cinch
 
     def self.included(by)
       by.extend ClassMethods
+    end
+
+    # Sets the channels this plugin will listen to
+    #
+    # @param [Array<String>] channels Will only react to events in these channels
+    # @return [void]
+    def responds_in(chans)
+      @__cinch_channels = [chans].flatten
+    end
+
+    # Checks if this plugin is set to respond to a given channel
+    #
+    # @param [Channel] channel
+    # @return [Boolean]
+    # @api private
+    def responds_in?(channel)
+      @__cinch_channels.empty? || @__cinch_channels.include?(channel.name)
     end
   end
 end
