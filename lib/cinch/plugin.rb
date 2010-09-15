@@ -3,7 +3,7 @@ module Cinch
     include Helpers
 
     module ClassMethods
-      Pattern = Struct.new(:pattern, :use_prefix, :method)
+      Pattern = Struct.new(:pattern, :use_prefix, :to_me, :method)
       Listener = Struct.new(:event, :method)
 
       # Set a match pattern.
@@ -13,11 +13,14 @@ module Cinch
       # @option options [Boolean] :use_prefix (true) If true, the
       #   plugin prefix will automatically be prepended to the
       #   pattern.
+      # @option options [Boolean] :to_me (false) If true, the
+      #   method will only be triggered if the message is addressed
+      #   to the bot.
       # @return [void]
       def match(pattern, options = {})
-        options = {:use_prefix => true, :method => :execute}.merge(options)
+        options = {:use_prefix => true, :to_me => false, :method => :execute}.merge(options)
         @__cinch_patterns ||= []
-        @__cinch_patterns << Pattern.new(pattern, options[:use_prefix], options[:method])
+        @__cinch_patterns << Pattern.new(pattern, options[:use_prefix], options[:to_me], options[:method])
       end
 
       # Events to listen to.
@@ -108,7 +111,7 @@ module Cinch
         end
 
         if (@__cinch_patterns ||= []).empty?
-          @__cinch_patterns << Pattern.new(plugin_name, true, nil)
+          @__cinch_patterns << Pattern.new(plugin_name, true, false, nil)
         end
 
         prefix = @__cinch_prefix || bot.config.plugins.prefix
@@ -141,7 +144,13 @@ module Cinch
               elsif arity == 0
                 args = []
               end
-              method.call(message, *args)
+              # if the message is not to a channel, then it has to be directed to us.
+              # otherwise, the message have to include our name in it somewhere
+              if pattern.to_me && (!message.channel? || message.message.match(plugin.bot.nick))
+                method.call(message, *args)
+              elsif !pattern.to_me
+                method.call(message, *args)
+              end
             end
           end
         end
