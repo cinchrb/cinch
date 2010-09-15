@@ -6,7 +6,7 @@ class RespondsInMessenger
   match /msg (.+?) (.+)/
   def initialize(*args)
     super
-    responds_in "#cinch-bots"
+    responds_in "#cinch-bots" # or ["#cinch-bots", "#other-channel"]
   end
   def execute(m, receiver, message)
     User(receiver).send(message)
