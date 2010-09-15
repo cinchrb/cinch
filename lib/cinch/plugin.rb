@@ -146,7 +146,7 @@ module Cinch
               end
               # if the message is not to a channel, then it has to be directed to us.
               # otherwise, the message have to include our name in it somewhere
-              if pattern.to_me && (!message.channel? || message.message.match(plugin.bot.nick))
+              if pattern.to_me && (!message.channel? || message.message.downcase.match(plugin.bot.nick.downcase))
                 method.call(message, *args)
               elsif !pattern.to_me
                 method.call(message, *args)
