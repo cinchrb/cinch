@@ -178,6 +178,14 @@ module Cinch
       @isupport.parse(*msg.params[1..-2].map {|v| v.split(" ")}.flatten)
     end
 
+    def on_307(msg)
+      # RPL_WHOISREGNICK
+      user = User.find_ensured(msg.params[1], @bot)
+      @whois_updates[user].merge!({
+                                    :registered => true
+                                  })
+    end
+
     def on_311(msg)
       # RPL_WHOISUSER
       user = User.find_ensured(msg.params[1], @bot)

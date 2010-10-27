@@ -80,6 +80,9 @@ module Cinch
     attr_reader :authname
     undef_method "authname"
 
+    attr_reader :registered
+    undef_method "registered"
+
     # @return [Number] How long this user has been idle, in seconds.
     #   This is a snapshot of the last WHOIS.
     attr_reader :idle
@@ -137,6 +140,7 @@ module Cinch
         :unknown?     => false,
         :channels     => [],
         :secure?      => false,
+        :registered   => false,
       }
       case args.size
       when 2
@@ -166,6 +170,14 @@ module Cinch
     # @return [Boolean] true if the user is identified
     def authed?
       @data[:authname]
+    end
+
+    # Checks if the user is an identified and registerd user.
+    # Used by Unreal-IRCd
+    #
+    # @return [Boolean] true if the user is registered
+    def registered?
+      @data[:registered]
     end
 
     # @see Syncable#attr
@@ -228,6 +240,7 @@ module Cinch
         :authname => nil,
         :idle => 0,
         :secure? => false,
+        :registered => false,
       }.merge(values).each do |attr, value|
         sync(attr, value, true)
       end
