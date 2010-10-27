@@ -15,6 +15,7 @@ class JoinPart
   def check_user(user)
     user.refresh # be sure to refresh the data, or someone could steal
                  # the nick
+    return @admins.include?(user.nick) if user.registered?
     @admins.include?(user.authname)
   end
 
