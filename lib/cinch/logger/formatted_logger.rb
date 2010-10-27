@@ -27,8 +27,7 @@ module Cinch
       # (see Logger::Logger#log)
       def log(messages, kind = :generic)
         @mutex.synchronize do
-          messages = [messages].flatten.map {|s| s.chomp}
-          # message = message.to_s.chomp # don't want to tinker with the original string
+          messages = [messages].flatten.map {|s| s.to_s.chomp}
 
           messages.each do |message|
             if kind == :debug
