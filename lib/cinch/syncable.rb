@@ -3,6 +3,7 @@ module Cinch
     # Blocks until the object is synced.
     #
     # @return [void]
+    # @api private
     def wait_until_synced(attr)
       attr = attr.to_sym
       while true
@@ -22,14 +23,21 @@ module Cinch
       @synced_attributes << attribute
     end
 
+    # @return [Boolean]
+    # @api private
     def synced?(attribute)
       @synced_attributes.include?(attribute)
     end
 
+    # @return [void]
+    # @api private
     def unsync(attribute)
       @synced_attributes.delete(attribute)
     end
 
+    # @return [void]
+    # @api private
+    # @since 1.0.1
     def unsync_all
       @synced_attributes.clear
     end

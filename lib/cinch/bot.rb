@@ -77,13 +77,14 @@ module Cinch
       User.find_ensured(user, self)
     end
 
-    # @return [void]
-    # @see Logger#debug
+    # (see Logger::Logger#debug)
+    # @see Logger::Logger#debug
     def debug(msg)
       @logger.debug(msg)
     end
 
-    # @return [Boolean]
+    # @return [Boolean] True if the bot reports ISUPPORT violations as
+    #   exceptions.
     def strict?
       @config.strictness == :strict
     end
@@ -354,16 +355,42 @@ module Cinch
       Channel(channel).part(reason)
     end
 
+
+    # The bot's nickname.
+    # @overload nick=(new_nick)
+    #   @raise [Exceptions::NickTooLong] Raised if the bot is
+    #     operating in {#strict? strict mode} and the new nickname is
+    #     too long
+    #   @return [String]
+    # @overload nick
+    #   @return [String]
     # @return [String]
     attr_accessor :nick
+    undef_method "nick"
+    undef_method "nick="
     def nick
       @config.nick
     end
 
+    def nick=(new_nick)
+      if new_nick.size > @irc.isupport["NICKLEN"] && strict?
+        raise Exceptions::NickTooLong, new_nick
+      end
+      @config.nick = new_nick
+      raw "NICK #{new_nick}"
+    end
+
+    # @return [Boolean] True if the bot is using SSL to connect to the
+    #   server.
     def secure?
       @config[:ssl]
     end
 
+    # This method is only provided in order to give Bot and User a
+    # common interface.
+    #
+    # @return [false] Always returns `false`.
+    # @see See User#unknown? for the method's real use.
     def unknown?
       false
     end
@@ -372,18 +399,6 @@ module Cinch
       define_method(attr) do
         User(nick).__send__(attr)
       end
-    end
-
-    # Sets the bot's nick.
-    #
-    # @param [String] new_nick
-    # @raise [Exceptions::NickTooLong]
-    def nick=(new_nick)
-      if new_nick.size > @irc.isupport["NICKLEN"] && strict?
-        raise Exceptions::NickTooLong, new_nick
-      end
-      @config.nick = new_nick
-      raw "NICK #{new_nick}"
     end
 
     # Disconnects from the server.
