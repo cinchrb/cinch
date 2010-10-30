@@ -165,7 +165,7 @@ module Cinch
     #
     # @return [Boolean] true if the user is identified
     def authed?
-      @data[:authname]
+      !attr(:authname).nil?
     end
 
     # @see Syncable#attr
