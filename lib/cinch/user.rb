@@ -256,6 +256,24 @@ module Cinch
     alias_method :privmsg, :send
     alias_method :msg, :send
 
+    # Send a notice to the user.
+    #
+    # @param [String] message the message
+    # @return [void]
+    def notice(message)
+      @bot.notice(@nick, message)
+    end
+
+    # Like {#safe_send} but for notices.
+    #
+    # @param (see #safe_send)
+    # @return (see #safe_send)
+    # @see #safe_send
+    # @todo (see #safe_send)
+    def safe_notice(message)
+      @bot.safe_notice(@nick, message)
+    end
+
     # Send a message to the user, but remove any non-printable
     # characters. The purpose of this method is to send text from
     # untrusted sources, like other users or feeds.
