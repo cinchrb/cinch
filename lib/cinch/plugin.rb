@@ -106,7 +106,7 @@ module Cinch
         end
 
         if (@__cinch_patterns ||= []).empty?
-          @__cinch_patterns << Pattern.new(plugin_name, true, nil)
+          @__cinch_patterns << Pattern.new(plugin_name, true, :execute)
         end
 
         prefix = @__cinch_prefix || bot.config.plugins.prefix
