@@ -196,6 +196,7 @@ module Cinch
     #   an unknown user
     # @return [void]
     # @api private
+    # @since 1.0.1
     def end_of_whois(values, not_found = false)
       @in_whois = false
       if not_found
@@ -236,7 +237,10 @@ module Cinch
       @synced = true
     end
 
+    # @return [void]
+    # @since 1.0.1
     # @api private
+    # @see Syncable#unsync_all
     def unsync_all
       @synced = false
       super
@@ -251,6 +255,24 @@ module Cinch
     end
     alias_method :privmsg, :send
     alias_method :msg, :send
+
+    # Send a notice to the user.
+    #
+    # @param [String] message the message
+    # @return [void]
+    def notice(message)
+      @bot.notice(@nick, message)
+    end
+
+    # Like {#safe_send} but for notices.
+    #
+    # @param (see #safe_send)
+    # @return (see #safe_send)
+    # @see #safe_send
+    # @todo (see #safe_send)
+    def safe_notice(message)
+      @bot.safe_notice(@nick, message)
+    end
 
     # Send a message to the user, but remove any non-printable
     # characters. The purpose of this method is to send text from

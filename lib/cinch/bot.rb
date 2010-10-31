@@ -77,13 +77,14 @@ module Cinch
       User.find_ensured(user, self)
     end
 
-    # @return [void]
-    # @see Logger#debug
+    # (see Logger::Logger#debug)
+    # @see Logger::Logger#debug
     def debug(msg)
       @logger.debug(msg)
     end
 
-    # @return [Boolean]
+    # @return [Boolean] True if the bot reports ISUPPORT violations as
+    #   exceptions.
     def strict?
       @config.strictness == :strict
     end
@@ -248,18 +249,20 @@ module Cinch
     #
     # @param [String] recipient the recipient
     # @param [String] text the message to send
+    # @param [Boolean] notice Use NOTICE instead of PRIVMSG?
     # @return [void]
     # @see Channel#send
     # @see User#send
     # @see #safe_msg
-    def msg(recipient, text)
+    def msg(recipient, text, notice = false)
       text = text.to_s
       split_start = @config.message_split_start || ""
       split_end   = @config.message_split_end   || ""
+      command = notice ? "NOTICE" : "PRIVMSG"
 
       text.split(/\r\n|\r|\n/).each do |line|
-        # 498 = 510 - length(":" . " PRIVMSG " . " :");
-        maxlength = 498 - self.mask.to_s.length - recipient.to_s.length
+        maxlength = 510 - (":" + " #{command} " + " :").size
+        maxlength = maxlength - self.mask.to_s.length - recipient.to_s.length
         maxlength_without_end = maxlength - split_end.bytesize
 
         if line.bytesize > maxlength
@@ -275,15 +278,28 @@ module Cinch
           splitted << line
           splitted[0, (@config.max_messages || splitted.size)].each do |string|
             string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
-            raw("PRIVMSG #{recipient} :#{string}")
+            raw("#{command}s #{recipient} :#{string}")
           end
         else
-          raw("PRIVMSG #{recipient} :#{line}")
+          raw("#{command} #{recipient} :#{line}")
         end
       end
     end
     alias_method :privmsg, :msg
     alias_method :send, :msg
+
+    # Sends a NOTICE to a recipient (a channel or user).
+    # You should be using {Channel#notice} and {User#notice} instead.
+    #
+    # @param [String] recipient the recipient
+    # @param [String] text the message to send
+    # @return [void]
+    # @see Channel#notice
+    # @see User#notice
+    # @see #safe_notice
+    def notice(recipient, text)
+      msg(recipient, text, true)
+    end
 
     # Like {#msg}, but remove any non-printable characters from
     # `text`. The purpose of this method is to send text of untrusted
@@ -303,6 +319,19 @@ module Cinch
     end
     alias_method :safe_privmsg, :safe_msg
     alias_method :safe_send, :safe_msg
+
+    # Like {#safe_msg} but for notices.
+    #
+    # @return (see #safe_msg)
+    # @param (see #safe_msg)
+    # @see #safe_notice
+    # @see #notice
+    # @see User#safe_notice
+    # @see Channel#safe_notice
+    # @todo (see #safe_msg)
+    def safe_notice(recipient, text)
+      msg(recipient, Cinch.filter_string(text), true)
+    end
 
     # Invoke an action (/me) in/to a recipient (a channel or user).
     # You should be using {Channel#action} and {User#action} instead.
@@ -354,16 +383,42 @@ module Cinch
       Channel(channel).part(reason)
     end
 
+
+    # The bot's nickname.
+    # @overload nick=(new_nick)
+    #   @raise [Exceptions::NickTooLong] Raised if the bot is
+    #     operating in {#strict? strict mode} and the new nickname is
+    #     too long
+    #   @return [String]
+    # @overload nick
+    #   @return [String]
     # @return [String]
     attr_accessor :nick
+    undef_method "nick"
+    undef_method "nick="
     def nick
       @config.nick
     end
 
+    def nick=(new_nick)
+      if new_nick.size > @irc.isupport["NICKLEN"] && strict?
+        raise Exceptions::NickTooLong, new_nick
+      end
+      @config.nick = new_nick
+      raw "NICK #{new_nick}"
+    end
+
+    # @return [Boolean] True if the bot is using SSL to connect to the
+    #   server.
     def secure?
       @config[:ssl]
     end
 
+    # This method is only provided in order to give Bot and User a
+    # common interface.
+    #
+    # @return [false] Always returns `false`.
+    # @see See User#unknown? for the method's real use.
     def unknown?
       false
     end
@@ -372,18 +427,6 @@ module Cinch
       define_method(attr) do
         User(nick).__send__(attr)
       end
-    end
-
-    # Sets the bot's nick.
-    #
-    # @param [String] new_nick
-    # @raise [Exceptions::NickTooLong]
-    def nick=(new_nick)
-      if new_nick.size > @irc.isupport["NICKLEN"] && strict?
-        raise Exceptions::NickTooLong, new_nick
-      end
-      @config.nick = new_nick
-      raw "NICK #{new_nick}"
     end
 
     # Disconnects from the server.
