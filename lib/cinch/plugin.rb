@@ -154,7 +154,7 @@ module Cinch
 
         if @__cinch_help_message
           bot.debug "[plugin] #{plugin_name}: Registering help message"
-          bot.on(:message, /#{prefix}help #{Regexp.escape(plugin_name)}/, @__cinch_help_message) do |message, help_message|
+          bot.on(:message, "#{prefix}help #{plugin_name}", @__cinch_help_message) do |message, help_message|
             message.reply(help_message)
           end
         end
