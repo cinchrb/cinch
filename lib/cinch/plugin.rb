@@ -3,7 +3,7 @@ module Cinch
     include Helpers
 
     module ClassMethods
-      Pattern = Struct.new(:pattern, :use_prefix, :method)
+      Match = Struct.new(:pattern, :use_prefix, :method)
       Listener = Struct.new(:event, :method)
 
       # Set a match pattern.
@@ -17,7 +17,7 @@ module Cinch
       def match(pattern, options = {})
         options = {:use_prefix => true, :method => :execute}.merge(options)
         @__cinch_patterns ||= []
-        @__cinch_patterns << Pattern.new(pattern, options[:use_prefix], options[:method])
+        @__cinch_patterns << Match.new(pattern, options[:use_prefix], options[:method])
       end
 
       # Events to listen to.
@@ -106,7 +106,7 @@ module Cinch
         end
 
         if (@__cinch_patterns ||= []).empty?
-          @__cinch_patterns << Pattern.new(plugin_name, true, nil)
+          @__cinch_patterns << Match.new(plugin_name, true, nil)
         end
 
         prefix = @__cinch_prefix || bot.config.plugins.prefix
