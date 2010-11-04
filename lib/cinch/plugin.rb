@@ -110,26 +110,15 @@ module Cinch
         end
 
         prefix = @__cinch_prefix || bot.config.plugins.prefix
+
         if prefix.is_a?(String)
           prefix = Regexp.escape(prefix)
         end
         @__cinch_patterns.each do |pattern|
-          pattern_to_register = nil
-
-          if pattern.use_prefix && prefix
-            case pattern.pattern
-            when Regexp
-              pattern_to_register = /^#{prefix}#{pattern.pattern}/
-            when String
-              pattern_to_register = prefix + pattern.pattern
-            end
-          else
-            pattern_to_register = pattern.pattern
-          end
-
+          pattern_to_register = Pattern.new(prefix, pattern.pattern)
           react_on = @__cinch_react_on || :message
 
-          bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register}`, reacting on `#{react_on}`"
+          bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
           bot.on(react_on, pattern_to_register, instance, pattern) do |message, plugin, pattern, *args|
             if plugin.respond_to?(pattern.method)

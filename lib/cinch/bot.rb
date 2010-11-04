@@ -25,6 +25,7 @@ require "cinch/ban"
 require "cinch/mask"
 require "cinch/isupport"
 require "cinch/plugin"
+require "cinch/pattern"
 
 module Cinch
 
@@ -206,13 +207,10 @@ module Cinch
       event = event.to_sym
 
       regexps.map! do |regexp|
-        case regexp
-        when String, Integer
-          if event == :ctcp
-            /^#{Regexp.escape(regexp.to_s)}(?:$| .+)/
-          else
-            /^#{Regexp.escape(regexp.to_s)}$/
-          end
+        if (regexp.is_a?(String) || regexp.is_a?(Integer)) && event == :ctcp
+          Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/)
+        elsif !regexp.is_a?(Pattern)
+          Pattern.new(nil, regexp)
         else
           regexp
         end
@@ -447,8 +445,10 @@ module Cinch
           # calling Message#match multiple times is not a problem
           # because we cache the result
           if msg
-            regexp = regexps.find { |rx| msg.match(rx, event) }
-            captures = msg.match(regexp, event).captures
+            regexp = regexps.find { |rx|
+              msg.match(rx.to_r, event)
+            }
+            captures = msg.match(regexp.to_r, event).captures
           else
             captures = []
           end
@@ -467,7 +467,7 @@ module Cinch
 
         events.select { |regexps|
           regexps.first.any? { |regexp|
-            msg.match(regexp, type)
+            msg.match(regexp.to_r, type)
           }
         }
       end
