@@ -446,9 +446,9 @@ module Cinch
           # because we cache the result
           if msg
             regexp = regexps.find { |rx|
-              msg.match(rx.to_r, event)
+              msg.match(rx.to_r(msg), event)
             }
-            captures = msg.match(regexp.to_r, event).captures
+            captures = msg.match(regexp.to_r(msg), event).captures
           else
             captures = []
           end
@@ -467,7 +467,7 @@ module Cinch
 
         events.select { |regexps|
           regexps.first.any? { |regexp|
-            msg.match(regexp.to_r, type)
+            msg.match(regexp.to_r(msg), type)
           }
         }
       end
