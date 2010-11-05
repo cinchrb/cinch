@@ -16,8 +16,8 @@ module Cinch
       # @return [void]
       def match(pattern, options = {})
         options = {:use_prefix => true, :method => :execute}.merge(options)
-        @__cinch_patterns ||= []
-        @__cinch_patterns << Match.new(pattern, options[:use_prefix], options[:method])
+        @__cinch_matches ||= []
+        @__cinch_matches << Match.new(pattern, options[:use_prefix], options[:method])
       end
 
       # Events to listen to.
@@ -106,13 +106,13 @@ module Cinch
           end
         end
 
-        if (@__cinch_patterns ||= []).empty?
-          @__cinch_patterns << Match.new(plugin_name, true, nil)
+        if (@__cinch_matches ||= []).empty?
+          @__cinch_matches << Match.new(plugin_name, true, nil)
         end
 
         prefix = @__cinch_prefix || bot.config.plugins.prefix
 
-        @__cinch_patterns.each do |pattern|
+        @__cinch_matches.each do |pattern|
           _prefix = pattern.use_prefix ? prefix : nil
           pattern_to_register = Pattern.new(_prefix, pattern.pattern)
           react_on = @__cinch_react_on || :message
