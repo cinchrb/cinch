@@ -10,7 +10,8 @@ module Cinch
     # @return [Array<String>]
     attr_accessor :params
     attr_reader :events
-
+    # @return [Bot]
+    attr_reader :bot
     def initialize(msg, bot)
       @raw = msg
       @bot = bot
