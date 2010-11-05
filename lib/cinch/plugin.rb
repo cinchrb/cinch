@@ -66,8 +66,9 @@ module Cinch
       #
       # @param [String] prefix
       # @return [void]
-      def prefix(prefix)
-        @__cinch_prefix = prefix
+      def prefix(prefix = nil, &block)
+        raise ArgumentError if prefix.nil? && block.nil?
+        @__cinch_prefix = prefix || block
       end
 
       # Set which kind of messages to react on (i.e. call {#execute})
