@@ -85,25 +85,6 @@ means the main thread can stay focused on what it does best, providing non-block
 reading and writing to an IRC server. This will prevent your bot from locking up
 when one of your plugins starts doing some intense operations. Damn that's handy.
 
-### Key/Value Store
-
-We have listened to your requests and implemented a bot-wide key/value store. You can
-now store data and use it across your handlers. Here's an example:
-
-    configure do |c|
-      store[:friends] = []
-    end
-
-    on :message, /^add friend (.+)$/ do |m, friend|
-      store[:friends] << friend
-    end
-
-    on :message /^get friends$/ do |m|
-      m.reply "Your friends are: #{store[:friends].join(', ')}"
-    end
-
-Neat, right?
-
 ### Plugins
 
 That's right folks, Cinch provides a modular based plugin system. This is a feature

@@ -3,7 +3,7 @@ module Cinch
     include Helpers
 
     module ClassMethods
-      Pattern = Struct.new(:pattern, :use_prefix, :method)
+      Match = Struct.new(:pattern, :use_prefix, :method)
       Listener = Struct.new(:event, :method)
 
       # Set a match pattern.
@@ -17,7 +17,7 @@ module Cinch
       def match(pattern, options = {})
         options = {:use_prefix => true, :method => :execute}.merge(options)
         @__cinch_patterns ||= []
-        @__cinch_patterns << Pattern.new(pattern, options[:use_prefix], options[:method])
+        @__cinch_patterns << Match.new(pattern, options[:use_prefix], options[:method])
       end
 
       # Events to listen to.
@@ -66,8 +66,9 @@ module Cinch
       #
       # @param [String] prefix
       # @return [void]
-      def prefix(prefix)
-        @__cinch_prefix = prefix
+      def prefix(prefix = nil, &block)
+        raise ArgumentError if prefix.nil? && block.nil?
+        @__cinch_prefix = prefix || block
       end
 
       # Set which kind of messages to react on (i.e. call {#execute})
@@ -106,30 +107,19 @@ module Cinch
         end
 
         if (@__cinch_patterns ||= []).empty?
-          @__cinch_patterns << Pattern.new(plugin_name, true, :execute)
+          @__cinch_patterns << Match.new(plugin_name, true, :execute)
         end
 
         prefix = @__cinch_prefix || bot.config.plugins.prefix
+
         if prefix.is_a?(String)
           prefix = Regexp.escape(prefix)
         end
         @__cinch_patterns.each do |pattern|
-          pattern_to_register = nil
-
-          if pattern.use_prefix && prefix
-            case pattern.pattern
-            when Regexp
-              pattern_to_register = /^#{prefix}#{pattern.pattern}/
-            when String
-              pattern_to_register = prefix + pattern.pattern
-            end
-          else
-            pattern_to_register = pattern.pattern
-          end
-
+          pattern_to_register = Pattern.new(prefix, pattern.pattern)
           react_on = @__cinch_react_on || :message
 
-          bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register}`, reacting on `#{react_on}`"
+          bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
           bot.on(react_on, pattern_to_register, instance, pattern) do |message, plugin, pattern, *args|
             if plugin.respond_to?(pattern.method)
