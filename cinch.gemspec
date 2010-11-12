@@ -7,7 +7,7 @@ spec = Gem::Specification.new do |s|
   s.email = ['lee@jarvis.co', 'dominikh@fork-bomb.org']
   s.homepage = 'http://doc.injekt.net/cinch'
   s.required_ruby_version = '>= 1.9.1'
-  s.files = Dir['LICENSE', 'Rakefile', 'README.md', '{spec,lib,examples}/**/*']
+  s.files = Dir['LICENSE', 'Rakefile', 'README.md', '{test,lib,examples}/**/*']
 
-  s.add_development_dependency('rspec', '= 1.3.0')
+  s.add_development_dependency('riot', '= 0.12.0')
 end
