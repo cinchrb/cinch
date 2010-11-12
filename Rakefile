@@ -7,22 +7,16 @@ require 'cinch'
 
 CLEAN.include ["doc"]
 
-require 'spec/rake/spectask'
-Spec::Rake::SpecTask.new(:spec) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.spec_files = FileList['spec/**/*_spec.rb']
-end
-
 require 'yard'
 YARD::Rake::YardocTask.new do |t|
   t.files   = ['lib/**/*.rb', 'README.md']
   t.options = [
-    '-m', 'markdown', 
+    '-m', 'markdown',
     '--hide-void-return',
     '--quiet',
     '--title', "Cinch #{Cinch::VERSION} Documentation",
     '--main', 'README.md',
-  ] 
+  ]
 end
 
 namespace :gem do
@@ -44,13 +38,6 @@ namespace :gem do
   desc "Install gem (not root)"
   task :install => :build do
     sh("gem install ./cinch-#{Cinch::VERSION} --local")
-  end
-end
-
-namespace :doc do
-  desc "Upload documentation"
-  task :push => [:yard] do
-    sh("scp -r doc/* injekt:injekt.net/doc/cinch")
   end
 end
 
