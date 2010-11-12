@@ -57,6 +57,8 @@ module Cinch
 
     # @return [String]
     attr_reader :nick
+    # @return [String]
+    attr_reader :last_nick
     # @return [Bot]
     attr_reader :bot
     # @return [Boolean]
