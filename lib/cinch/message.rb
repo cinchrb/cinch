@@ -176,6 +176,10 @@ module Cinch
       user.notice "\001#{ctcp_command} #{answer}\001"
     end
 
+    def to_s
+      "#<Cinch::Message @raw=#{raw.chomp.inspect} @params=#{@params.inspect} channel=#{channel.inspect} user=#{user.inspect}>"
+    end
+
     private
     def regular_command?
       !numeric_reply? # a command can only be numeric or "regular"…
