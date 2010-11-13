@@ -1,11 +1,5 @@
-require 'rubygems'
-require 'rake'
-require 'rake/clean'
-
 $LOAD_PATH.unshift('lib') unless $LOAD_PATH.include?('lib')
 require 'cinch'
-
-CLEAN.include ["doc"]
 
 require 'yard'
 YARD::Rake::YardocTask.new do |t|
