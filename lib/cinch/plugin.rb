@@ -107,7 +107,7 @@ module Cinch
         end
 
         if (@__cinch_matches ||= []).empty?
-          @__cinch_matches << Match.new(plugin_name, true, nil)
+          @__cinch_matches << Match.new(plugin_name, true, :execute)
         end
 
         prefix = @__cinch_prefix || bot.config.plugins.prefix
@@ -142,7 +142,7 @@ module Cinch
 
         if @__cinch_help_message
           bot.debug "[plugin] #{plugin_name}: Registering help message"
-          bot.on(:message, /#{prefix}help #{Regexp.escape(plugin_name)}/, @__cinch_help_message) do |message, help_message|
+          bot.on(:message, "#{prefix}help #{plugin_name}", @__cinch_help_message) do |message, help_message|
             message.reply(help_message)
           end
         end
