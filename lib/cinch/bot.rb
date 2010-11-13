@@ -247,18 +247,20 @@ module Cinch
     #
     # @param [String] recipient the recipient
     # @param [String] text the message to send
+    # @param [Boolean] notice Use NOTICE instead of PRIVMSG?
     # @return [void]
     # @see Channel#send
     # @see User#send
     # @see #safe_msg
-    def msg(recipient, text)
+    def msg(recipient, text, notice = false)
       text = text.to_s
       split_start = @config.message_split_start || ""
       split_end   = @config.message_split_end   || ""
+      command = notice ? "NOTICE" : "PRIVMSG"
 
       text.split(/\r\n|\r|\n/).each do |line|
-        # 498 = 510 - length(":" . " PRIVMSG " . " :");
-        maxlength = 498 - self.mask.to_s.length - recipient.to_s.length
+        maxlength = 510 - (":" + " #{command} " + " :").size
+        maxlength = maxlength - self.mask.to_s.length - recipient.to_s.length
         maxlength_without_end = maxlength - split_end.bytesize
 
         if line.bytesize > maxlength
@@ -274,15 +276,28 @@ module Cinch
           splitted << line
           splitted[0, (@config.max_messages || splitted.size)].each do |string|
             string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
-            raw("PRIVMSG #{recipient} :#{string}")
+            raw("#{command}s #{recipient} :#{string}")
           end
         else
-          raw("PRIVMSG #{recipient} :#{line}")
+          raw("#{command} #{recipient} :#{line}")
         end
       end
     end
     alias_method :privmsg, :msg
     alias_method :send, :msg
+
+    # Sends a NOTICE to a recipient (a channel or user).
+    # You should be using {Channel#notice} and {User#notice} instead.
+    #
+    # @param [String] recipient the recipient
+    # @param [String] text the message to send
+    # @return [void]
+    # @see Channel#notice
+    # @see User#notice
+    # @see #safe_notice
+    def notice(recipient, text)
+      msg(recipient, text, true)
+    end
 
     # Like {#msg}, but remove any non-printable characters from
     # `text`. The purpose of this method is to send text of untrusted
@@ -302,6 +317,19 @@ module Cinch
     end
     alias_method :safe_privmsg, :safe_msg
     alias_method :safe_send, :safe_msg
+
+    # Like {#safe_msg} but for notices.
+    #
+    # @return (see #safe_msg)
+    # @param (see #safe_msg)
+    # @see #safe_notice
+    # @see #notice
+    # @see User#safe_notice
+    # @see Channel#safe_notice
+    # @todo (see #safe_msg)
+    def safe_notice(recipient, text)
+      msg(recipient, Cinch.filter_string(text), true)
+    end
 
     # Invoke an action (/me) in/to a recipient (a channel or user).
     # You should be using {Channel#action} and {User#action} instead.

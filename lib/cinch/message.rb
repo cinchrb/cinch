@@ -173,7 +173,7 @@ module Cinch
     # @return [void]
     def ctcp_reply(answer)
       return unless ctcp?
-      @bot.raw "NOTICE #{user.nick} :\001#{ctcp_command} #{answer}\001"
+      user.notice "\001#{ctcp_command} #{answer}\001"
     end
 
     def to_s
