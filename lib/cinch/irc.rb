@@ -148,6 +148,7 @@ module Cinch
         @bot.config.nick = msg.params.last
       end
 
+      msg.user.instance_variable_set(:@last_nick, msg.user.nick)
       msg.user.instance_variable_set(:@nick, msg.params.last)
     end
 
