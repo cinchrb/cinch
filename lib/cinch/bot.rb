@@ -503,14 +503,6 @@ module Cinch
     end
 
     def invoke(block, args, msg, match)
-      # -1  splat arg, send everything
-      #  0  no args, send nothing
-      #  1  defined number of args, send only those
-      bargs = case block.arity <=> 0
-              when -1; match
-              when 0; []
-              when 1; match[0..block.arity-1 - args.size]
-              end
       Thread.new do
         begin
           catch(:halt) do
