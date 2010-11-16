@@ -140,7 +140,33 @@ module Cinch
     end
 
     def on_mode(msg)
-      msg.channel.sync_modes if msg.channel?
+      if msg.channel?
+        add_and_remove = @bot.irc.isupport["CHANMODES"]["A"] + @bot.irc.isupport["CHANMODES"]["B"] + @bot.irc.isupport["PREFIX"].keys
+
+        param_modes = {:add => @bot.irc.isupport["CHANMODES"]["C"] + add_and_remove,
+          :remove => add_and_remove}
+
+        modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1], param_modes)
+        modes.each do |direction, mode, param|
+          if @bot.irc.isupport["PREFIX"].keys.include?(mode)
+            # (un)set a user-mode
+            if direction == :add
+              msg.channel.users[@bot.User(param)] << mode unless msg.channel.users[@bot.User(param)].include?(mode)
+            else
+              msg.channel.users[@bot.User(param)].delete mode
+            end
+          elsif @bot.irc.isupport["CHANMODES"]["A"].include?(mode)
+            # TODO: lists
+          else
+            # channel options
+            if direction == :add
+              msg.channel.modes[mode] = param
+            else
+              msg.channel.modes.delete(mode)
+            end
+          end
+        end
+      end
     end
 
     def on_nick(msg)

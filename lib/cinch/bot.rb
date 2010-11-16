@@ -26,6 +26,7 @@ require "cinch/mask"
 require "cinch/isupport"
 require "cinch/plugin"
 require "cinch/pattern"
+require "cinch/mode_parser"
 
 module Cinch
 
