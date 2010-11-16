@@ -192,13 +192,13 @@ module Cinch
     # @return [Boolean] true if `user` is opped in the channel
     def opped?(user)
       user = User.find_ensured(user, @bot) unless user.is_a?(User)
-      @users[user].include? "@"
+      @users[user].include? "o"
     end
 
     # @return [Boolean] true if `user` is voiced in the channel
     def voiced?(user)
       user = User.find_ensured(user, @bot) unless user.is_a?(User)
-      @users[user].include? "+"
+      @users[user].include? "v"
     end
 
     # Bans someone from the channel.
