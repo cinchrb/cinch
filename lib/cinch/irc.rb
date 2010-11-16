@@ -264,15 +264,16 @@ module Cinch
       @in_lists << :names
 
       msg.params[3].split(" ").each do |user|
-        if @isupport["PREFIX"].values.include?(user[0..0])
-          prefix = user[0..0]
-          nick   = user[1..-1]
+        m = user.match(/^([#{@isupport["PREFIX"].values.join}]+)/)
+        if m
+          prefixes = m[1].split # FIXME now we actually have to support multiple modes
+          nick   = user[prefixes.size..-1]
         else
           nick   = user
-          prefix = nil
+          prefixes = []
         end
         user = User.find_ensured(nick, @bot)
-        msg.channel.add_user(user, prefix)
+        msg.channel.add_user(user, prefixes)
       end
     end
 
