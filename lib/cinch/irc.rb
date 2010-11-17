@@ -66,7 +66,7 @@ module Cinch
     def parse(input)
       @bot.logger.log(input, :incoming) if @bot.config.verbose
       msg          = Message.new(input, @bot)
-      events       = []
+      events       = [[:catchall]]
 
       if ("001".."004").include? msg.command
         @registration << msg.command
