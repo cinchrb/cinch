@@ -1,5 +1,7 @@
+$: << File.expand_path('../../lib/', __FILE__)
+
 require 'riot'
-require File.expand_path('../../lib/cinch', __FILE__)
+require "cinch"
 
 Riot.verbose
 
