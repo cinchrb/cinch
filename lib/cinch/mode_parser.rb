@@ -2,14 +2,13 @@ module Cinch
   module ModeParser
     def self.parse_modes(modes, params, param_modes = {})
       if modes.size == 0
-        raise RuntimeError, 'Empty mode string'
+        raise InvalidModeString, 'Empty mode string'
       end
 
       if modes[0] !~ /[+-]/
-        raise RuntimeError, "Malformed modes string: %s" % modes
+        raise InvalidModeString, "Malformed modes string: %s" % modes
       end
 
-      # changes = {:add => [], :remove => []}
       changes = []
 
       direction = nil
@@ -18,7 +17,7 @@ module Cinch
       modes.each_char do |ch|
         if ch =~ /[+-]/
           if count == 0
-            raise RuntimeError, 'Empty mode sequence: %s' % modes
+            raise InvalidModeString, 'Empty mode sequence: %s' % modes
           end
 
           direction = case ch
@@ -31,10 +30,10 @@ module Cinch
         else
           param = nil
           if param_modes[direction].include?(ch)
-            begin
+            if params.size > 0
               param = params.shift
-            rescue IndexError
-              raise RuntimeError, 'Not enough parameters: %r' % ch
+            else
+              raise InvalidModeString, 'Not enough parameters: %s' % ch.inspect
             end
           end
           changes << [direction, ch, param]
@@ -43,11 +42,11 @@ module Cinch
       end
 
       if params.size > 0
-        raise RuntimeError, 'Too many parameters: %s %s' % [modes, params]
+        raise InvalidModeString, 'Too many parameters: %s %s' % [modes, params].inspect
       end
 
       if count == 0
-        raise RuntimeError, 'Empty mode sequence: %r' % modes
+        raise InvalidModeString, 'Empty mode sequence: %r' % modes
       end
 
       return changes

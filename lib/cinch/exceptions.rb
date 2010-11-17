@@ -21,5 +21,7 @@ module Cinch
 
     class UnsupportedFeature < Generic
     end
+    class InvalidModeString < Generic
+    end
   end
 end
