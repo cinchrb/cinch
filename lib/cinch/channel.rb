@@ -85,6 +85,12 @@ module Cinch
       }
     end
 
+    # @param [User, String] user An User-object or a nickname
+    # @return [Boolean] Check if a user is in the channel
+    def has_user?(user)
+      @users.has_key?(User(user))
+    end
+
     attr_accessor :limit
     # @return [Number]
     def limit
