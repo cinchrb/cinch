@@ -467,7 +467,7 @@ module Cinch
 
     # @api private
     # @return [void]
-    def dispatch(event, msg = nil)
+    def dispatch(event, msg = nil, *arguments)
       if handlers = find(event, msg)
         handlers.each do |handler|
           regexps, args, block = *handler
@@ -482,7 +482,7 @@ module Cinch
             captures = []
           end
 
-          invoke(block, args, msg, captures)
+          invoke(block, args, msg, captures, arguments)
         end
       end
     end
@@ -502,7 +502,8 @@ module Cinch
       end
     end
 
-    def invoke(block, args, msg, match)
+    def invoke(block, args, msg, match, arguments)
+      bargs = match + arguments
       Thread.new do
         begin
           catch(:halt) do

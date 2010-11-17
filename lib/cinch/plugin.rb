@@ -101,8 +101,8 @@ module Cinch
 
         (@__cinch_listeners || []).each do |listener|
           bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
-          bot.on(listener.event, [], instance) do |message, plugin|
-            plugin.__send__(listener.method, message) if plugin.respond_to?(listener.method)
+          bot.on(listener.event, [], instance) do |message, plugin, *args|
+            plugin.__send__(listener.method, message, *args) if plugin.respond_to?(listener.method)
           end
         end
 
