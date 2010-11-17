@@ -465,7 +465,11 @@ module Cinch
       @plugins << plugin.new(self)
     end
 
-    # @api private
+    # @param [Symbol] event The event type
+    # @param [Message, nil] msg The message which is responsible for
+    #   and attached to the event, or nil.
+    # @param [Array] *arguments A list of additional arguments to pass
+    #   to event handlers
     # @return [void]
     def dispatch(event, msg = nil, *arguments)
       if handlers = find(event, msg)
