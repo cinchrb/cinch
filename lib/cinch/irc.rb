@@ -149,14 +149,39 @@ module Cinch
         modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1], param_modes)
         modes.each do |direction, mode, param|
           if @bot.irc.isupport["PREFIX"].keys.include?(mode)
+            target = @bot.User(param)
             # (un)set a user-mode
             if direction == :add
-              msg.channel.users[@bot.User(param)] << mode unless msg.channel.users[@bot.User(param)].include?(mode)
+              msg.channel.users[target] << mode unless msg.channel.users[@bot.User(param)].include?(mode)
             else
-              msg.channel.users[@bot.User(param)].delete mode
+              msg.channel.users[target].delete mode
+            end
+
+            user_events = {
+              "o" => "op",
+              "v" => "voice",
+              "h" => "halfop"
+            }
+            if user_events.has_key?(mode)
+              event = (direction == :add ? "" : "de") + user_events[mode]
+              events << [event.to_sym, target]
             end
           elsif @bot.irc.isupport["CHANMODES"]["A"].include?(mode)
-            # TODO: lists
+            case mode
+            when "b"
+              mask = param
+              ban = Ban.new(mask, msg.user, Time.now)
+
+              if direction == :add
+                msg.channel.bans_unsynced << ban
+                events << [:ban, ban]
+              else
+                msg.channel.bans_unsynced.delete_if {|b| b.mask == ban.mask}.first
+                events << [:unban, ban]
+              end
+            else
+              raise UnsupportedFeature, mode
+            end
           else
             # channel options
             if direction == :add
@@ -166,6 +191,8 @@ module Cinch
             end
           end
         end
+
+        events << [:mode_change, modes]
       end
     end
 
