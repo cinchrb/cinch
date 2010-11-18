@@ -1,3 +1,11 @@
+begin
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter "/test/"
+  end
+rescue LoadError
+end
+
 $: << File.expand_path('../../lib/', __FILE__)
 
 require 'riot'
