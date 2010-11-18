@@ -54,6 +54,21 @@ module Cinch
       def all
         @users.values
       end
+
+      # @api private
+      def users
+        @users
+      end
+
+      # @api private
+      def mutex
+        @mutex
+      end
+
+      # @api private
+      def delete(user)
+        @users.delete_if {|u| u == user }
+      end
     end
 
 
@@ -343,6 +358,18 @@ module Cinch
       }
 
       Mask.new(s)
+    end
+
+    # @api private
+    def update_nick(new_nick)
+      # TODO last nick
+      self.class.mutex.synchronize do
+        users = self.class.users
+        users[new_nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])] = self
+        users.delete @nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
+
+        @nick = new_nick
+      end
     end
 
     # Provides synced access to user attributes.
