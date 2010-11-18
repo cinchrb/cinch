@@ -45,5 +45,7 @@ class Cinch::Message
   attr_reader :bot
 end
 
+Bot = TestBot.new
+
 path = File.expand_path(File.dirname __FILE__)
 Dir["#{path}/cinch/**/*_test.rb"].each { |tf| require tf }

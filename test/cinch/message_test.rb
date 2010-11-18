@@ -1,12 +1,12 @@
 context "A message" do
   context "coming from a server" do
-    setup { Cinch::Message.new(":localhost message", TestBot.new) }
+    setup { Cinch::Message.new(":localhost message", Bot) }
     asserts(:server)
     asserts(:prefix).equals("localhost")
   end
 
   context "coming from a user" do
-    setup { Cinch::Message.new(":nick!user@host message", TestBot.new) }
+    setup { Cinch::Message.new(":nick!user@host message", Bot) }
     asserts(:server).nil
     asserts(:prefix).equals("nick!user@host")
     asserts("User#nick") { topic.user.nick }.equals("nick")
@@ -14,7 +14,7 @@ context "A message" do
   end
 
   context "with a command" do
-    setup { Cinch::Message.new(":nick!user@host COMMAND", TestBot.new) }
+    setup { Cinch::Message.new(":nick!user@host COMMAND", Bot) }
     asserts(:command).equals("COMMAND")
     asserts(:error?).equals(false)
     asserts(:error).nil
@@ -22,13 +22,13 @@ context "A message" do
     asserts(:ctcp?).equals(false)
 
     context "and arguments" do
-      setup { Cinch::Message.new(":nick!user@host COMMAND arg1 arg2", TestBot.new) }
+      setup { Cinch::Message.new(":nick!user@host COMMAND arg1 arg2", Bot) }
       asserts(:params).equals(["arg1", "arg2"])
       asserts(:message).nil
       asserts(:ctcp?).equals(false)
 
       context "and a message" do
-        setup { Cinch::Message.new(":nick!user@host COMMAND arg1 arg2 :message with a : colon", TestBot.new) }
+        setup { Cinch::Message.new(":nick!user@host COMMAND arg1 arg2 :message with a : colon", Bot) }
         asserts(:params).equals(["arg1", "arg2", "message with a : colon"])
         asserts(:message).equals("message with a : colon")
         asserts(:ctcp?).equals(false)
@@ -36,7 +36,7 @@ context "A message" do
     end
 
     context "and a message" do
-      setup { Cinch::Message.new(":nick!user@host COMMAND :message with a : colon", TestBot.new) }
+      setup { Cinch::Message.new(":nick!user@host COMMAND :message with a : colon", Bot) }
       asserts(:params).equals(["message with a : colon"])
       asserts(:message).equals("message with a : colon")
       asserts(:ctcp?).equals(false)
@@ -44,7 +44,7 @@ context "A message" do
   end
 
   context "describing an error" do
-    setup { Cinch::Message.new(":localhost 433 * nick :Nickname is already in use.", TestBot.new) }
+    setup { Cinch::Message.new(":localhost 433 * nick :Nickname is already in use.", Bot) }
     asserts(:numeric_reply?)
     asserts(:error?)
     asserts(:error).equals(433)
@@ -53,7 +53,7 @@ context "A message" do
   end
 
   context "describing a numeric reply" do
-    setup { Cinch::Message.new(":localhost 001 cinch :Welcome to the Internet Relay Chat Network cinch", TestBot.new) }
+    setup { Cinch::Message.new(":localhost 001 cinch :Welcome to the Internet Relay Chat Network cinch", Bot) }
     asserts(:numeric_reply?)
     asserts(:command).equals("001")
     asserts(:params).equals(["cinch", "Welcome to the Internet Relay Chat Network cinch"])
@@ -61,21 +61,77 @@ context "A message" do
   end
 
   context "in a channel" do
-    setup { Cinch::Message.new(":nick!user@host PRIVMSG #channel :a message", TestBot.new) }
+    setup { Cinch::Message.new(":nick!user@host PRIVMSG #channel :a message", Bot) }
     asserts(:channel?)
     asserts("Channel") { topic.channel.class }.equals(Cinch::Channel)
     asserts("Channel#name") { topic.channel.name }.equals("#channel")
     asserts(:ctcp?).equals(false)
+    asserts("can be replied to, without a prefix") {
+      user = Cinch::User.find_ensured("cinch", topic.bot)
+      mock(user).user.returns "cinch"
+      mock(user).host.returns "cinchrb.org"
+      topic.reply "reply message"
+      topic.bot.raw_log.last == "PRIVMSG #channel :reply message"
+    }
+    asserts("can be replied to, with a prefix") {
+      user = Cinch::User.find_ensured("cinch", topic.bot)
+      mock(user).user.returns "cinch"
+      mock(user).host.returns "cinchrb.org"
+      topic.reply "reply message", true
+      topic.bot.raw_log.last == "PRIVMSG #channel :nick: reply message"
+    }
+    asserts("can be safe-replied to, without a prefix") {
+      user = Cinch::User.find_ensured("cinch", topic.bot)
+      mock(user).user.returns "cinch"
+      mock(user).host.returns "cinchrb.org"
+      topic.safe_reply "reply message\000"
+      topic.bot.raw_log.last == "PRIVMSG #channel :reply message"
+    }
+    asserts("can be safe-replied to, with a prefix") {
+      user = Cinch::User.find_ensured("cinch", topic.bot)
+      mock(user).user.returns "cinch"
+      mock(user).host.returns "cinchrb.org"
+      topic.safe_reply "reply message\000", true
+      topic.bot.raw_log.last == "PRIVMSG #channel :nick: reply message"
+    }
   end
 
   context "in private" do
-    setup { Cinch::Message.new(":nick!user@host PRIVMSG user :a message", TestBot.new) }
+    setup { Cinch::Message.new(":nick!user@host PRIVMSG user :a message", Bot) }
     asserts(:channel?).equals(false)
     asserts(:ctcp?).equals(false)
+    asserts("can be replied to, without a prefix") {
+      user = Cinch::User.find_ensured("cinch", topic.bot)
+      mock(user).user.returns "cinch"
+      mock(user).host.returns "cinchrb.org"
+      topic.reply "reply message"
+      topic.bot.raw_log.last == "PRIVMSG nick :reply message"
+    }
+    asserts("can be replied to, but a prefix will be ignored") {
+      user = Cinch::User.find_ensured("cinch", topic.bot)
+      mock(user).user.returns "cinch"
+      mock(user).host.returns "cinchrb.org"
+      topic.reply "reply message", true
+      topic.bot.raw_log.last == "PRIVMSG nick :reply message"
+    }
+    asserts("can be safe-replied to, without a prefix") {
+      user = Cinch::User.find_ensured("cinch", topic.bot)
+      mock(user).user.returns "cinch"
+      mock(user).host.returns "cinchrb.org"
+      topic.safe_reply "reply message\000"
+      topic.bot.raw_log.last == "PRIVMSG nick :reply message"
+    }
+    asserts("can be safe-replied to, but a prefix will be ignored") {
+      user = Cinch::User.find_ensured("cinch", topic.bot)
+      mock(user).user.returns "cinch"
+      mock(user).host.returns "cinchrb.org"
+      topic.safe_reply "reply message\000", true
+      topic.bot.raw_log.last == "PRIVMSG nick :reply message"
+    }
   end
 
   context "describing a CTCP message" do
-    setup { Cinch::Message.new(":nick!user@host PRIVMSG cinch :\001PING\001", TestBot.new) }
+    setup { Cinch::Message.new(":nick!user@host PRIVMSG cinch :\001PING\001", Bot) }
     asserts(:ctcp?)
     asserts(:ctcp_command).equals("PING")
     asserts(:ctcp_message).equals("PING")
@@ -86,7 +142,7 @@ context "A message" do
     }
 
     context "with parameters" do
-      setup { Cinch::Message.new(":nick!user@host NOTICE cinch :\001PING 123 456\001", TestBot.new) }
+      setup { Cinch::Message.new(":nick!user@host NOTICE cinch :\001PING 123 456\001", Bot) }
       asserts(:ctcp?)
       asserts(:ctcp_command).equals("PING")
       asserts(:ctcp_message).equals("PING 123 456")
