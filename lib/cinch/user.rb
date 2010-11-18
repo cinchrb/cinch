@@ -4,6 +4,7 @@ module Cinch
     include Syncable
 
     @users = {}
+    @mutex = Mutex.new
     class << self
 
       # @overload find_ensured(nick, bot)
@@ -36,8 +37,9 @@ module Cinch
           raise ArgumentError
         end
         downcased_nick = nick.irc_downcase(bot.irc.isupport["CASEMAPPING"])
-        @users[downcased_nick] ||= new(*bargs, bot)
-        @users[downcased_nick]
+        @mutex.synchronize do
+          @users[downcased_nick] ||= new(*bargs, bot)
+        end
       end
 
       # Finds a user.
