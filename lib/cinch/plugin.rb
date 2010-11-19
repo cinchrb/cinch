@@ -5,6 +5,7 @@ module Cinch
     module ClassMethods
       Match = Struct.new(:pattern, :use_prefix, :method)
       Listener = Struct.new(:event, :method)
+      Hook = Struct.new(:type, :for, :method)
 
       # Set a match pattern.
       #
@@ -88,10 +89,46 @@ module Cinch
         @__cinch_name = name
       end
 
+      # Defines a hook which will be run before or after a handler is
+      # executed, depending on the value of `type`.
+      #
+      # @param [Symbol<:pre, :post>] type Run the hook before or after
+      #   a handler?
+      # @option options [Array<:match, :listen_to, :ctcp>] :for ([:match, :listen_to, :ctcp])
+      #   Which kinds of events to run the hook for.
+      # @option options [Symbol] :method (true) The method to execute.
+      # @return [void]
+      def hook(type, options = {})
+        options = {:for => [:match, :listen_to, :ctcp], :method => :hook}.merge(options)
+        __hooks(type) << Hook.new(type, options[:for], options[:method])
+      end
+
       # @return [String]
       # @api private
       def __plugin_name
         @__cinch_name || self.name.split("::").last.downcase
+      end
+
+      # @return [Hash]
+      # @api private
+      def __hooks(type = nil, events = nil)
+        @__cinch_hooks ||= Hash.new{|h,k| h[k] = []}
+
+        if type.nil?
+          hooks = @__cinch_hooks
+        else
+          hooks = @__cinch_hooks[type]
+        end
+
+        if events.nil?
+          return hooks
+        else
+          events = [*events]
+          if hooks.is_a?(Hash)
+            hooks = hooks.map { |k, v| v }
+          end
+          return hooks.select { |hook| (events & hook.for).size > 0 }
+        end
       end
 
       # @return [void]
@@ -102,7 +139,11 @@ module Cinch
         (@__cinch_listeners || []).each do |listener|
           bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
           bot.on(listener.event, [], instance) do |message, plugin|
-            plugin.__send__(listener.method, message) if plugin.respond_to?(listener.method)
+            if plugin.respond_to?(listener.method)
+              plugin.class.__hooks(:pre, :listen_to).each {|hook| plugin.__send__(hook.method, message)}
+              plugin.__send__(listener.method, message)
+              plugin.class.__hooks(:post, :listen_to).each {|hook| plugin.__send__(hook.method, message)}
+            end
           end
         end
 
@@ -128,7 +169,9 @@ module Cinch
               elsif arity == 0
                 args = []
               end
+              plugin.class.__hooks(:pre, :match).each {|hook| plugin.__send__(hook.method, message)}
               method.call(message, *args)
+              plugin.class.__hooks(:post, :match).each {|hook| plugin.__send__(hook.method, message)}
             end
           end
         end
@@ -136,7 +179,9 @@ module Cinch
         (@__cinch_ctcps || []).each do |ctcp|
           bot.debug "[plugin] #{plugin_name}: Registering CTCP `#{ctcp}`"
           bot.on(:ctcp, ctcp, instance, ctcp) do |message, plugin, ctcp, *args|
+            plugin.class.__hooks(:pre, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
             plugin.__send__("ctcp_#{ctcp.downcase}", message, *args)
+            plugin.class.__hooks(:post, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
           end
         end
 
