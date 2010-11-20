@@ -4,6 +4,7 @@ module Cinch
     include Syncable
 
     @users = {}
+    @mutex = Mutex.new
     class << self
 
       # @overload find_ensured(nick, bot)
@@ -36,8 +37,9 @@ module Cinch
           raise ArgumentError
         end
         downcased_nick = nick.irc_downcase(bot.irc.isupport["CASEMAPPING"])
-        @users[downcased_nick] ||= new(*bargs, bot)
-        @users[downcased_nick]
+        @mutex.synchronize do
+          @users[downcased_nick] ||= new(*bargs, bot)
+        end
       end
 
       # Finds a user.
@@ -51,6 +53,21 @@ module Cinch
       # @return [Array<User>] Returns all users
       def all
         @users.values
+      end
+
+      # @api private
+      def users
+        @users
+      end
+
+      # @api private
+      def mutex
+        @mutex
+      end
+
+      # @api private
+      def delete(user)
+        @users.delete_if {|u| u == user }
       end
     end
 
@@ -341,6 +358,18 @@ module Cinch
       }
 
       Mask.new(s)
+    end
+
+    # @api private
+    def update_nick(new_nick)
+      # TODO last nick
+      self.class.mutex.synchronize do
+        users = self.class.users
+        users[new_nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])] = self
+        users.delete @nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
+
+        @nick = new_nick
+      end
     end
 
     # Provides synced access to user attributes.
