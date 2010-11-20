@@ -399,6 +399,15 @@ module Cinch
     # @return [void]
     def start(plugins = true)
       register_plugins if plugins
+      User.all.each do |user|
+        user.in_whois = false
+        user.unsync_all
+      end # reset state of all users
+
+      Channel.all.each do |channel|
+        channel.unsync_all
+      end # reset state of all channels
+
       @logger.debug "Connecting to #{@config.server}:#{@config.port}"
       @irc = IRC.new(self, @config)
       @irc.connect
