@@ -137,6 +137,7 @@ module Cinch
         channel.remove_user(user)
       end
       msg.user.unsync_all
+      User.delete(user)
     end
 
     def on_mode(msg)
@@ -148,8 +149,7 @@ module Cinch
         @bot.config.nick = msg.params.last
       end
 
-      msg.user.instance_variable_set(:@last_nick, msg.user.nick)
-      msg.user.instance_variable_set(:@nick, msg.params.last)
+      msg.user.update_nick(msg.params.last)
     end
 
     def on_part(msg)
@@ -172,6 +172,7 @@ module Cinch
         channel.remove_user(msg.user)
       end
       msg.user.unsync_all
+      User.delete(msg.user)
     end
 
     def on_005(msg)
