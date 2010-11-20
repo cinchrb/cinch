@@ -51,6 +51,10 @@ module Cinch
     attr_reader :signed_on_at
     # @return [Array<Plugin>] All registered plugins
     attr_reader :plugins
+    # @return [Array<Thread>]
+    attr_reader :handler_threads
+    # @return [Boolean]
+    attr_reader :quitting
 
     # Helper method for turning a String into a {Channel} object.
     #
@@ -116,6 +120,7 @@ module Cinch
                                                             }),
                                  :channels => [],
                                  :encoding => Encoding.default_external,
+                                 :reconnect => true,
                                })
 
       @semaphores_mutex = Mutex.new
@@ -123,6 +128,8 @@ module Cinch
       @plugins = []
       @callback = Callback.new(self)
       @channels = []
+      @handler_threads = []
+      @quitting = false
 
       on :connect do
         bot.config.channels.each do |channel|
@@ -432,6 +439,7 @@ module Cinch
     #
     # @return [void]
     def quit(message = nil)
+      @quitting = true
       command = message ? "QUIT :#{message}" : "QUIT"
       raw command
     end
@@ -443,6 +451,15 @@ module Cinch
     # @return [void]
     def start(plugins = true)
       register_plugins if plugins
+      User.all.each do |user|
+        user.in_whois = false
+        user.unsync_all
+      end # reset state of all users
+
+      Channel.all.each do |channel|
+        channel.unsync_all
+      end # reset state of all channels
+
       @logger.debug "Connecting to #{@config.server}:#{@config.port}"
       @irc = IRC.new(self)
       @irc.connect
@@ -508,13 +525,15 @@ module Cinch
 
     def invoke(block, args, msg, match, arguments)
       bargs = match + arguments
-      Thread.new do
+      @handler_threads << Thread.new do
         begin
           catch(:halt) do
             @callback.instance_exec(msg, *args, *bargs, &block)
           end
         rescue => e
           @logger.log_exception(e)
+        ensure
+          @handler_threads.delete Thread.current
         end
       end
     end

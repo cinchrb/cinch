@@ -82,6 +82,8 @@ module Cinch
     attr_reader :synced
     # @return [Boolean]
     attr_reader :in_whois
+    # @api private
+    attr_writer :in_whois
 
     # @return [String]
     attr_reader :user

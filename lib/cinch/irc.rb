@@ -38,7 +38,7 @@ module Cinch
       message "NICK #{@bot.config.nick}"
       message "USER #{@bot.config.nick} 0 * :#{@bot.config.realname}"
 
-      Thread.new do
+      reading_thread = Thread.new do
         begin
           while line = @socket.gets
             begin
@@ -52,13 +52,22 @@ module Cinch
           @bot.logger.log_exception(e)
         end
 
+        @socket.close
         @bot.dispatch(:disconnect)
+        @bot.handler_threads.each { |t| t.join(10); t.kill }
       end
-      begin
-        @queue.process!
-      rescue => e
-        @bot.logger.log_exception(e)
+
+      @sending_thread = Thread.new do
+        begin
+          @queue.process!
+        rescue => e
+          @bot.logger.log_exception(e)
+        end
       end
+
+      reading_thread.join
+      @sending_thread.kill
+      @bot.start(false) if @bot.config.reconnect && !@bot.quitting
     end
 
     # @api private
