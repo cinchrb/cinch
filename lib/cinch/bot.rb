@@ -47,6 +47,10 @@ module Cinch
     attr_reader :realname
     # @return [Time]
     attr_reader :signed_on_at
+    # @return [Array<Thread>]
+    attr_reader :handler_threads
+    # @return [Boolean]
+    attr_reader :quitting
 
     # Helper method for turning a String into a {Channel} object.
     #
@@ -111,6 +115,7 @@ module Cinch
                                                             }),
                                  :channels => [],
                                  :encoding => Encoding.default_external,
+                                 :reconnect => true,
                                })
 
       @semaphores_mutex = Mutex.new
@@ -118,6 +123,8 @@ module Cinch
       @plugins = []
       @callback = Callback.new(self)
       @channels = []
+      @handler_threads = []
+      @quitting = false
 
       on :connect do
         bot.config.channels.each do |channel|
@@ -388,6 +395,7 @@ module Cinch
     #
     # @return [void]
     def quit(message = nil)
+      @quitting = true
       command = message ? "QUIT :#{message}" : "QUIT"
       raw command
     end
@@ -474,13 +482,15 @@ module Cinch
               when 0; []
               when 1; match[0..block.arity-1 - args.size]
               end
-      Thread.new do
+      @handler_threads << Thread.new do
         begin
           catch(:halt) do
             @callback.instance_exec(msg, *args, *bargs, &block)
           end
         rescue => e
           @logger.log_exception(e)
+        ensure
+          @handler_threads.delete Thread.current
         end
       end
     end
