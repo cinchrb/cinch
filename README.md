@@ -17,8 +17,6 @@ If you'd like to test your own Cinch experiments you can do so in the
 [irc.freenode.org](irc://irc.freenode.org/cinch-bots). For general
 support, join [#cinch](irc://irc.freenode.org/cinch).
 
-This original document can be found [here](http://doc.injekt.net/cinch).
-
 Installation
 ------------
 
