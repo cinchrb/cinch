@@ -278,7 +278,7 @@ module Cinch
           splitted << line
           splitted[0, (@config.max_messages || splitted.size)].each do |string|
             string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
-            raw("#{command}s #{recipient} :#{string}")
+            raw("#{command} #{recipient} :#{string}")
           end
         else
           raw("#{command} #{recipient} :#{line}")
