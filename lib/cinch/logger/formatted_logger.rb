@@ -28,13 +28,13 @@ module Cinch
       def log(messages, kind = :generic)
         @mutex.synchronize do
           messages = [messages].flatten.map {|s| s.to_s.chomp}
-
-          messages.each do |message|
+          message = Time.now.strftime("[%Y/%m/%d %H:%M:%S.%L] ")
+          messages.each do |msg|
             if kind == :debug
               prefix = colorize("!! ", :yellow)
-              message = prefix + message
+              message << prefix + msg
             else
-              pre, msg = message.split(" :", 2)
+              pre, msg = msg.split(" :", 2)
               pre_parts = pre.split(" ")
 
               if kind == :incoming
@@ -52,7 +52,7 @@ module Cinch
                 pre_parts[0] = colorize(pre_parts[0], :bold)
               end
 
-              message = prefix + pre_parts.join(" ")
+              message << prefix + pre_parts.join(" ")
               message << colorize(" :#{msg}", :yellow) if msg
             end
             @output.puts message.encode
