@@ -65,6 +65,7 @@ module Cinch
       # @param [Array<Symbol>] codes array of colors to apply
       # @return [String] colorized string
       def colorize(text, *codes)
+        return text unless @output.tty?
         COLORS.values_at(*codes).join + text + COLORS[:reset]
       end
 
