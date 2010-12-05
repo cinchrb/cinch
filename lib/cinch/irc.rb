@@ -35,7 +35,7 @@ module Cinch
 
       @queue = MessageQueue.new(@socket, @bot)
       message "PASS #{@bot.config.password}" if @bot.config.password
-      message "NICK #{@bot.config.nick}"
+      message "NICK #{@bot.generate_next_nick}"
       message "USER #{@bot.config.nick} 0 * :#{@bot.config.realname}"
 
       Thread.new do
@@ -337,7 +337,7 @@ module Cinch
 
     def on_433(msg)
       # ERR_NICKNAMEINUSE
-      @bot.nick = msg.params[1] + "_"
+      @bot.nick = @bot.generate_next_nick(msg.params[1])
     end
 
     def on_671(msg)
