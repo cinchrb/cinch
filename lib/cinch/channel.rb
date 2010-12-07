@@ -59,7 +59,7 @@ module Cinch
     def initialize(name, bot)
       @bot   = bot
       @name  = name
-      @users = {}
+      @users = Hash.new {|h,k| h[k] = []}
       @bans  = []
 
       @modes = {}
@@ -200,13 +200,13 @@ module Cinch
     # @return [Boolean] true if `user` is opped in the channel
     def opped?(user)
       user = User.find_ensured(user, @bot) unless user.is_a?(User)
-      @users[user] == "@"
+      @users[user].include? "o"
     end
 
     # @return [Boolean] true if `user` is voiced in the channel
     def voiced?(user)
       user = User.find_ensured(user, @bot) unless user.is_a?(User)
-      @users[user] == "+"
+      @users[user].include? "v"
     end
 
     # Bans someone from the channel.
@@ -257,9 +257,9 @@ module Cinch
 
     # @api private
     # @return [void]
-    def add_user(user, mode = nil)
+    def add_user(user, modes = [])
       @in_channel = true if user == @bot
-      @users[user] = mode # TODO can a user have more than one mode?
+      @users[user] = modes
     end
 
     # @api private

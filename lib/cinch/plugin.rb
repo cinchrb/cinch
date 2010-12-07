@@ -155,10 +155,10 @@ module Cinch
 
         (@__cinch_listeners || []).each do |listener|
           bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
-          bot.on(listener.event, [], instance) do |message, plugin|
+          bot.on(listener.event, [], instance) do |message, plugin, *args|
             if plugin.respond_to?(listener.method)
               plugin.class.__hooks(:pre, :listen_to).each {|hook| plugin.__send__(hook.method, message)}
-              plugin.__send__(listener.method, message)
+              plugin.__send__(listener.method, message, *args)
               plugin.class.__hooks(:post, :listen_to).each {|hook| plugin.__send__(hook.method, message)}
             end
           end

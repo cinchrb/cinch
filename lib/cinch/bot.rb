@@ -26,6 +26,7 @@ require "cinch/mask"
 require "cinch/isupport"
 require "cinch/plugin"
 require "cinch/pattern"
+require "cinch/mode_parser"
 
 module Cinch
 
@@ -464,9 +465,13 @@ module Cinch
       @plugins << plugin.new(self)
     end
 
-    # @api private
+    # @param [Symbol] event The event type
+    # @param [Message, nil] msg The message which is responsible for
+    #   and attached to the event, or nil.
+    # @param [Array] *arguments A list of additional arguments to pass
+    #   to event handlers
     # @return [void]
-    def dispatch(event, msg = nil)
+    def dispatch(event, msg = nil, *arguments)
       if handlers = find(event, msg)
         handlers.each do |handler|
           regexps, args, block = *handler
@@ -481,7 +486,7 @@ module Cinch
             captures = []
           end
 
-          invoke(block, args, msg, captures)
+          invoke(block, args, msg, captures, arguments)
         end
       end
     end
@@ -501,15 +506,8 @@ module Cinch
       end
     end
 
-    def invoke(block, args, msg, match)
-      # -1  splat arg, send everything
-      #  0  no args, send nothing
-      #  1  defined number of args, send only those
-      bargs = case block.arity <=> 0
-              when -1; match
-              when 0; []
-              when 1; match[0..block.arity-1 - args.size]
-              end
+    def invoke(block, args, msg, match, arguments)
+      bargs = match + arguments
       Thread.new do
         begin
           catch(:halt) do
