@@ -105,6 +105,7 @@ module Cinch
                                  :ssl    => false,
                                  :password => nil,
                                  :nick   => "cinch",
+                                 :nicks  => nil,
                                  :realname => "cinch",
                                  :verbose => true,
                                  :messages_per_second => 0.5,
@@ -412,6 +413,31 @@ module Cinch
       end
       @config.nick = new_nick
       raw "NICK #{new_nick}"
+    end
+
+    # @api private
+    def generate_next_nick(base = nil)
+      nicks = @config.nicks || []
+
+      if base
+        # if `base` is not in our list of nicks to try, assume that it's
+        # custom and just append an underscore
+        if !nicks.include?(base)
+          return base + "_"
+        else
+          # if we have a base, try the next nick or append an
+          # underscore if no more nicks are left
+          new_index = nicks.index(base) + 1
+          if nicks[new_index]
+            return nicks[new_index]
+          else
+            return base + "_"
+          end
+        end
+      else
+        # if we have no base, try the first possible nick
+        new_nick = @config.nicks ? @config.nicks.first : @config.nick
+      end
     end
 
     # @return [Boolean] True if the bot is using SSL to connect to the
