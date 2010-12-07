@@ -28,8 +28,8 @@ module Cinch
       def log(messages, kind = :generic)
         @mutex.synchronize do
           messages = [messages].flatten.map {|s| s.to_s.chomp}
-          message = Time.now.strftime("[%Y/%m/%d %H:%M:%S.%L] ")
           messages.each do |msg|
+            message = Time.now.strftime("[%Y/%m/%d %H:%M:%S.%L] ")
             if kind == :debug
               prefix = colorize("!! ", :yellow)
               message << prefix + msg
