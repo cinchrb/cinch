@@ -16,7 +16,7 @@ module Cinch
       @whois_updates = Hash.new {|h, k| h[k] = {}}
       @in_lists      = Set.new
 
-      tcp_socket = TCPSocket.open(@bot.config.server, @bot.config.port, @bot.config.vhost)
+      tcp_socket = TCPSocket.open(@bot.config.server, @bot.config.port, @bot.config.local_host, @bot.config.local_port)
 
       if @bot.config.ssl
         require 'openssl'
