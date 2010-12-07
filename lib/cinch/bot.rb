@@ -115,6 +115,7 @@ module Cinch
                                                             }),
                                  :channels => [],
                                  :encoding => Encoding.default_external,
+                                 :vhost => nil,
                                })
 
       @semaphores_mutex = Mutex.new
