@@ -23,9 +23,7 @@ module Cinch
       end_anchor   = @pattern.is_a?(String) # important
 
       pattern = Pattern.obj_to_r(@pattern, msg, false, end_anchor)
-      r = /#{prefix}#{pattern}/
-      p r
-      r
+      /#{prefix}#{pattern}/
     end
   end
 end
