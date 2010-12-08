@@ -1,9 +1,15 @@
+# -*- coding: utf-8 -*-
 module Cinch
   class Pattern
-    def self.obj_to_r(obj, msg = nil, str_start_anchor = true, str_end_anchor = true)
-      return obj if obj.is_a?(Regexp)
-      return obj_to_r(obj.call(msg), msg, str_start_anchor, str_end_anchor) if obj.is_a?(Proc)
-      return /#{str_start_anchor ? "^" : ""}#{Regexp.escape(obj.to_s)}#{str_end_anchor ? "$" : ""}/
+    def self.obj_to_r(obj, msg = nil, str_end_anchor = true)
+      case obj
+      when Regexp, NilClass
+        return obj
+      when Proc
+        return obj_to_r(obj.call(msg), msg, str_end_anchor)
+      else
+        return /#{Regexp.escape(obj.to_s)}#{str_end_anchor ? "$" : ""}/
+      end
     end
 
     attr_reader :prefix
@@ -14,8 +20,19 @@ module Cinch
 
     def to_r(msg = nil)
       prefix = Pattern.obj_to_r(@prefix, msg, true, false)
-      pattern = Pattern.obj_to_r(@pattern, msg)
-      /#{prefix}#{pattern}/
+      end_anchor   = @pattern.is_a?(String) # important
+
+      pattern = Pattern.obj_to_r(@pattern, msg, end_anchor)
+      r = /#{prefix}#{pattern}/
+      p r
+      r
     end
   end
 end
+
+# [x] on·regexp = regexp [prefix=nil, pattern=regexp]
+# [x] plugin·regexp·no_prefix = regexp [prefix=nil, pattern=regexp]
+# [x] on·string = ^string$ [prefix=/^/, pattern=string]
+# [x] plugin·string·no_prefix = ^string$
+# [x] plugin·regexp·prefix = prefix + regexp [prefix=prefix, pattern=regexp] ← really?
+# [x] plugin·string·prefix = prefix + string + $ [prefix=prefix, pattern=string]

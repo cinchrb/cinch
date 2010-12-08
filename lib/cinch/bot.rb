@@ -207,12 +207,17 @@ module Cinch
       event = event.to_sym
 
       regexps.map! do |regexp|
-        if (regexp.is_a?(String) || regexp.is_a?(Integer)) && event == :ctcp
-          Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/)
-        elsif !regexp.is_a?(Pattern)
+        case regexp
+        when Pattern
+          regexp
+        when Regexp
           Pattern.new(nil, regexp)
         else
-          regexp
+          if event == :ctcp
+            Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/)
+          else
+            Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}$/)
+          end
         end
       end
       (@events[event] ||= []) << [regexps, args, block]
