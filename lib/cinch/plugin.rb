@@ -171,7 +171,14 @@ module Cinch
         prefix = @__cinch_prefix || bot.config.plugins.prefix
 
         @__cinch_matches.each do |pattern|
-          _prefix = pattern.use_prefix ? prefix : nil
+          if pattern.use_prefix
+            _prefix = prefix
+          elsif pattern.pattern.is_a?(String)
+            _prefix = /^/
+          else
+            _prefix = nil
+          end
+
           pattern_to_register = Pattern.new(_prefix, pattern.pattern)
           react_on = @__cinch_react_on || :message
 
