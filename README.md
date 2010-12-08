@@ -59,7 +59,7 @@ Features
 
 ### Documentation
 
-Cinch provides a documented API, which is online for your viewing pleasure [here](http://doc.injekt.net/cinch).
+Cinch provides a documented API, which is online for your viewing pleasure [here](http://rubydoc.info/github/injekt/cinch/master/).
 
 ### Object Oriented
 
