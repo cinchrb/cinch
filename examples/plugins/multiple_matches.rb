@@ -29,12 +29,9 @@ bot = Cinch::Bot.new do
   configure do |c|
     c.nick            = "cinch_multi"
     c.server          = "irc.freenode.org"
+    c.channels        = ["#cinch-bots"]
     c.verbose         = true
     c.plugins.plugins = [MultiCommands]
-  end
-
-  on :connect do
-    bot.join "#dominikh"
   end
 end
 
