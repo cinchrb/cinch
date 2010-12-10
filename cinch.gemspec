@@ -8,6 +8,4 @@ spec = Gem::Specification.new do |s|
   s.homepage = 'http://rubydoc.info/github/injekt/cinch'
   s.required_ruby_version = '>= 1.9.1'
   s.files = Dir['LICENSE', 'Rakefile', 'README.md', '{spec,lib,examples}/**/*']
-
-  s.add_development_dependency('rspec', '= 1.3.0')
 end
