@@ -7,5 +7,5 @@ spec = Gem::Specification.new do |s|
   s.email = ['lee@jarvis.co', 'dominikh@fork-bomb.org']
   s.homepage = 'http://rubydoc.info/github/injekt/cinch'
   s.required_ruby_version = '>= 1.9.1'
-  s.files = Dir['LICENSE', 'Rakefile', 'README.md', '{spec,lib,examples}/**/*']
+  s.files = Dir['LICENSE', 'README.md', '{lib,examples}/**/*']
 end
