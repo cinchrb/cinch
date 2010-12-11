@@ -30,7 +30,7 @@ You can install the latest Cinch gem using RubyGems
 
 Alternatively you can check out the latest code directly from Github
 
-    git clone http://github.com/injekt/cinch.git
+    git clone http://github.com/cinchrb/cinch.git
 
 Example
 -------
@@ -59,35 +59,37 @@ Features
 
 ### Documentation
 
-Cinch provides a documented API, which is online for your viewing pleasure [here](http://rubydoc.info/github/injekt/cinch/master/).
+Cinch provides a documented API, which is online for your viewing pleasure
+[here](http://rubydoc.info/github/cinchrb/cinch/master/).
 
 ### Object Oriented
 
-Many IRC bots (and there are, so **many**) are great, but we see so little of them take
-advantage of the awesome Object Oriented Interface which most Ruby programmers will have
-become accustomed to and grown to love.
+Many IRC bots (and there are, so **many**) are great, but we see so little of
+them take advantage of the awesome Object Oriented Interface which most Ruby
+programmers will have become accustomed to and grown to love.
 
-Well, Cinch uses this functionality to it's advantage. Rather than having to pass around
-a reference to a channel or a user, to another method, which then passes it to
-another method (by which time you're confused about what's going on) -- Cinch provides
-an OOP interface for even the simpliest of tasks, making your code simple and easy
-to comprehend.
+Well, Cinch uses this functionality to its advantage. Rather than having to
+pass around a reference to a channel or a user, to another method, which then
+passes it to another method (by which time you're confused about what's
+going on) -- Cinch provides an OOP interface for even the simpliest of tasks,
+making your code simple and easy to comprehend.
 
 ### Threaded
 
-Unlike a lot of popular IRC frameworks, Cinch is threaded. But wait, don't let that
-scare you. It's totally easy to grasp.
+Unlike a lot of popular IRC frameworks, Cinch is threaded. But wait, don't let
+that scare you. It's totally easy to grasp.
 
-Each of Cinch's plugins and handlers are executed in their own personal thread. This
-means the main thread can stay focused on what it does best, providing non-blocking
-reading and writing to an IRC server. This will prevent your bot from locking up
-when one of your plugins starts doing some intense operations. Damn that's handy.
+Each of Cinch's plugins and handlers are executed in their own personal thread.
+This means the main thread can stay focused on what it does best, providing
+non-blocking reading and writing to an IRC server. This will prevent your bot
+from locking up when one of your plugins starts doing some intense operations.
+Damn that's handy.
 
 ### Plugins
 
-That's right folks, Cinch provides a modular based plugin system. This is a feature
-many people have bugged us about for a long time. It's finally here, and it's
-as awesome as you had hoped!
+That's right folks, Cinch provides a modular based plugin system. This is a
+feature many people have bugged us about for a long time. It's finally here,
+and it's as awesome as you had hoped!
 
 This system allows you to create feature packed plugins without interfering with
 any of the Cinch internals. Everything in your plugin is self contained, meaning
@@ -159,7 +161,7 @@ Please note that although we very much appreciate all of your efforts, Cinch
 will not accept patches in aid of Ruby 1.8 compatibility. We have no intention
 of supporting Ruby versions below 1.9.1.
 
-Fork the project, implement your awesome feature in it's own branch, and send
+Fork the project, implement your awesome feature in its own branch, and send
 a pull request to one of the Cinch collaborators. We'll be more than happy
 to check it out.
 

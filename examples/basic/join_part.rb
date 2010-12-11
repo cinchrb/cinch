@@ -10,10 +10,6 @@ bot = Cinch::Bot.new do
     @admin = "injekt"
   end
 
-  on :connect do
-    bot.join "#cinch"
-  end
-
   helpers do
     def is_admin?(user)
       true if user.nick == @admin
