@@ -30,7 +30,7 @@ You can install the latest Cinch gem using RubyGems
 
 Alternatively you can check out the latest code directly from Github
 
-    git clone http://github.com/injekt/cinch.git
+    git clone http://github.com/cinchrb/cinch.git
 
 Example
 -------
@@ -60,7 +60,7 @@ Features
 ### Documentation
 
 Cinch provides a documented API, which is online for your viewing pleasure
-[here](http://rubydoc.info/github/injekt/cinch/master/).
+[here](http://rubydoc.info/github/cinchrb/cinch/master/).
 
 ### Object Oriented
 
