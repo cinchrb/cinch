@@ -18,12 +18,25 @@ module Cinch
 
       tcp_socket = TCPSocket.open(@bot.config.server, @bot.config.port, @bot.config.local_host)
 
-      if @bot.config.ssl
+      if @bot.config.ssl == true || @bot.config.ssl == false
+        @bot.logger.debug "Deprecation warning: Beginning from version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
+      end
+
+      if @bot.config.ssl == true || (@bot.config.ssl.is_a?(OpenStruct) && @bot.config.ssl.use)
         require 'openssl'
 
         ssl_context = OpenSSL::SSL::SSLContext.new
-        ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
+        if @bot.config.ssl.is_a?(OpenStruct)
+          if @bot.config.ssl.client_cert
+            ssl_context.cert = OpenSSL::X509::Certificate.new(File.read(@bot.config.ssl.client_cert))
+            ssl_context.key = OpenSSL::PKey::RSA.new(File.read(@bot.config.ssl.client_cert))
+          end
+          ssl_context.ca_path = @bot.config.ssl.ca_path
+          ssl_context.verify_mode = @bot.config.ssl.verify ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
+        else
+          ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
         @bot.logger.debug "Using SSL with #{@bot.config.server}:#{@bot.config.port}"
 
         @socket = OpenSSL::SSL::SSLSocket.new(tcp_socket, ssl_context)
