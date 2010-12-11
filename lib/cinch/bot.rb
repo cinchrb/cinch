@@ -102,7 +102,12 @@ module Cinch
       @config = OpenStruct.new({
                                  :server => "localhost",
                                  :port   => 6667,
-                                 :ssl    => false,
+                                 :ssl    => OpenStruct.new({
+                                                             :use => false,
+                                                             :verify => false,
+                                                             :client_cert => nil,
+                                                             :ca_path => "/etc/ssl/certs",
+                                                           }),
                                  :password => nil,
                                  :nick   => "cinch",
                                  :nicks  => nil,
