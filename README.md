@@ -1,4 +1,4 @@
-Cinch - An IRC Bot Building Framework
+Cinch - The IRC Bot Building Framework
 =====================================
 
 Description
@@ -64,7 +64,7 @@ Cinch provides a documented API, which is online for your viewing pleasure
 
 ### Object Oriented
 
-Many IRC bots (and there are, so **many**) are great, but we see so little of
+Many IRC bots (and there are, **so** many) are great, but we see so little of
 them take advantage of the awesome Object Oriented Interface which most Ruby
 programmers will have become accustomed to and grown to love.
 
