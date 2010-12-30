@@ -1,11 +1,5 @@
 require 'cinch'
 
-# Give this bot ops in a channel and it'll auto voice
-# visitors
-#
-# Enable with !autovoice on
-# Disable with !autovoice off
-
 class MultiCommands
   include Cinch::Plugin
   match /command1 (.+)/, method: :command1
