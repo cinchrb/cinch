@@ -65,6 +65,8 @@ module Cinch
               @bot.logger.log_exception(e)
             end
           end
+        rescue Timeout::Error
+          @bot.logger.debug "Connection timed out."
         rescue => e
           @bot.logger.log_exception(e)
         end
