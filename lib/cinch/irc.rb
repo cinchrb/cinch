@@ -1,3 +1,6 @@
+require "timeout"
+require "net/protocol"
+
 module Cinch
   class IRC
     # @return [ISupport]
@@ -16,7 +19,18 @@ module Cinch
       @whois_updates = Hash.new {|h, k| h[k] = {}}
       @in_lists      = Set.new
 
-      tcp_socket = TCPSocket.open(@bot.config.server, @bot.config.port, @bot.config.local_host)
+      tcp_socket = nil
+      begin
+        Timeout::timeout(240) do
+          tcp_socket = TCPSocket.new(@bot.config.server, @bot.config.port, @bot.config.local_host)
+        end
+      rescue Timeout::Error
+        @bot.logger.debug("Timed out while connecting")
+        return
+      rescue => e
+        @bot.logger.log_exception(e)
+        return
+      end
 
       if @bot.config.ssl == true || @bot.config.ssl == false
         @bot.logger.debug "Deprecation warning: Beginning from version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
@@ -46,6 +60,9 @@ module Cinch
         @socket = tcp_socket
       end
 
+      @socket = Net::BufferedIO.new(@socket)
+      @socket.read_timeout = 240
+
       @queue = MessageQueue.new(@socket, @bot)
       message "PASS #{@bot.config.password}" if @bot.config.password
       message "NICK #{@bot.generate_next_nick}"
@@ -53,7 +70,7 @@ module Cinch
 
       reading_thread = Thread.new do
         begin
-          while line = @socket.gets
+          while line = @socket.readline
             begin
               line.force_encoding(@bot.config.encoding).encode!({:invalid => :replace, :undef => :replace})
               parse line
