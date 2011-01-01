@@ -5,7 +5,6 @@ module Cinch
   class Channel
     include Syncable
     @channels = {}
-    @mutex    = Mutex.new
 
     class << self
       # Finds or creates a channel.
@@ -22,9 +21,7 @@ module Cinch
         puts caller
 
         downcased_name = name.irc_downcase(bot.irc.isupport["CASEMAPPING"])
-        @mutex.synchronize do
-          @channels[downcased_name] ||= bot.channel_manager.find_ensured(name)
-        end
+        @channels[downcased_name] ||= bot.channel_manager.find_ensured(name)
       end
 
       # Finds a channel.

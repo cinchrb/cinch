@@ -4,7 +4,6 @@ module Cinch
     include Syncable
 
     @users = {} # this will be removed with version 2.0.0
-    @mutex = Mutex.new
     class << self
 
       # @overload find_ensured(nick, bot)
