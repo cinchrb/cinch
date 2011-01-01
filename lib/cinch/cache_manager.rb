@@ -9,7 +9,7 @@ module Cinch
     end
 
     def each(&block)
-      @cache.each(&block)
+      @cache.each_value(&block)
     end
   end
 end
