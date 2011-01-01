@@ -488,18 +488,28 @@ module Cinch
     # @return [void]
     def start(plugins = true)
       register_plugins if plugins
-      User.all.each do |user|
-        user.in_whois = false
-        user.unsync_all
-      end # reset state of all users
 
-      Channel.all.each do |channel|
-        channel.unsync_all
-      end # reset state of all channels
+      begin
+        User.all.each do |user|
+          user.in_whois = false
+          user.unsync_all
+        end # reset state of all users
 
-      @logger.debug "Connecting to #{@config.server}:#{@config.port}"
-      @irc = IRC.new(self)
-      @irc.connect
+        Channel.all.each do |channel|
+          channel.unsync_all
+        end # reset state of all channels
+
+        @logger.debug "Connecting to #{@config.server}:#{@config.port}"
+        @irc = IRC.new(self)
+        @irc.connect
+
+        # Sleep for a few seconds before reconnecting to prevent being
+        # throttled by the IRC server
+        unless not @config.reconnect or @quitting
+          @logger.debug "Waiting 30 seconds before reconnecting"
+          sleep 30
+        end
+      end while @config.reconnect and not @quitting
     end
 
     # Register all plugins from `@config.plugins.plugins`.
