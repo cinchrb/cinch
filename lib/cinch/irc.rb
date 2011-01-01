@@ -42,7 +42,7 @@ module Cinch
         begin
           while line = @socket.gets
             begin
-              line.force_encoding(@bot.config.encoding).encode!({:invalid => :replace, :undef => :replace})
+              line = Cinch.encode_incoming(line, @bot.config.encoding)
               parse line
             rescue => e
               @bot.logger.log_exception(e)
