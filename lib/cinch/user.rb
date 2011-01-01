@@ -71,16 +71,6 @@ module Cinch
 
         @users.values
       end
-
-      # @api private
-      def users
-        @users
-      end
-
-      # @api private
-      def mutex
-        @mutex
-      end
     end
 
 
