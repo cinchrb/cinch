@@ -67,7 +67,6 @@ module Cinch
 
       reading_thread.join
       @sending_thread.kill
-      @bot.start(false) if @bot.config.reconnect && !@bot.quitting
     end
 
     # @api private
