@@ -402,7 +402,7 @@ module Cinch
     # @api private
     def update_nick(new_nick)
       @last_nick, @nick = @nick, new_nick
-      @bot.user_manager.update_nick(self, new_nick)
+      @bot.user_manager.update_nick(self)
     end
 
     # Provides synced access to user attributes.
