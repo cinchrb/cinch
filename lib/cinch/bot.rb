@@ -55,6 +55,9 @@ module Cinch
     attr_reader :handler_threads
     # @return [Boolean]
     attr_reader :quitting
+    # @return [Boolean]
+    # @api private
+    attr_accessor :last_connection_was_successful
 
     # Helper method for turning a String into a {Channel} object.
     #
@@ -486,6 +489,7 @@ module Cinch
     #   `@config.plugins.plugins`?
     # @return [void]
     def start(plugins = true)
+      @reconnects = 0
       register_plugins if plugins
 
       while @config.reconnect && !@quitting
@@ -505,8 +509,17 @@ module Cinch
         # Sleep for a few seconds before reconnecting to prevent being
         # throttled by the IRC server
         if @config.reconnect && !@quitting
-          @logger.debug "Waiting 30 seconds before reconnecting"
-          sleep 30
+          # double the delay for each unsuccesful reconnection attempt
+          if @last_connection_was_successful
+            @reconnects = 0
+            @last_connection_was_successful = false
+          else
+            @reconnects += 1
+          end
+
+          wait = 2**@reconnects
+          @logger.debug "Waiting #{wait} seconds before reconnecting"
+          sleep wait
         end
       end
     end

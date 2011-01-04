@@ -101,6 +101,7 @@ module Cinch
         @registration << msg.command
         if registered?
           events << [:connect]
+          @bot.last_connection_was_successful = true
         end
       elsif ["PRIVMSG", "NOTICE"].include?(msg.command)
         events << [:ctcp] if msg.ctcp?
