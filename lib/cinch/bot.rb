@@ -130,6 +130,7 @@ module Cinch
                                                                :read => 240,
                                                                :connect => 10,
                                                              }),
+                                 :ping_interval => 120,
                                })
 
       @semaphores_mutex = Mutex.new

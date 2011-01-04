@@ -86,8 +86,17 @@ module Cinch
         end
       end
 
+      ping_thread = Thread.new do
+        while true
+          sleep @bot.config.ping_interval
+          message("PING 0") # PING requires a single argument. In our
+                            # case the value doesn't matter though.
+        end
+      end
+
       reading_thread.join
       @sending_thread.kill
+      ping_thread.kill
     end
 
     # @api private
