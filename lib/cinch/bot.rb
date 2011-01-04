@@ -493,7 +493,7 @@ module Cinch
       @reconnects = 0
       register_plugins if plugins
 
-      while @config.reconnect && !@quitting
+      begin
         User.all.each do |user|
           user.in_whois = false
           user.unsync_all
@@ -507,8 +507,6 @@ module Cinch
         @irc = IRC.new(self)
         @irc.connect
 
-        # Sleep for a few seconds before reconnecting to prevent being
-        # throttled by the IRC server
         if @config.reconnect && !@quitting
           # double the delay for each unsuccesful reconnection attempt
           if @last_connection_was_successful
@@ -518,11 +516,13 @@ module Cinch
             @reconnects += 1
           end
 
+          # Sleep for a few seconds before reconnecting to prevent being
+          # throttled by the IRC server
           wait = 2**@reconnects
           @logger.debug "Waiting #{wait} seconds before reconnecting"
           sleep wait
         end
-      end
+      end while @config.reconnect and not @quitting
     end
 
     # Register all plugins from `@config.plugins.plugins`.
