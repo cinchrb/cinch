@@ -123,6 +123,10 @@ module Cinch
                                  :encoding => Encoding.default_external,
                                  :reconnect => true,
                                  :local_host => nil,
+                                 :timeouts => OpenStruct.new({
+                                                               :read => 240,
+                                                               :connect => 10,
+                                                             }),
                                })
 
       @semaphores_mutex = Mutex.new

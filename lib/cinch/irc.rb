@@ -21,7 +21,7 @@ module Cinch
 
       tcp_socket = nil
       begin
-        Timeout::timeout(240) do
+        Timeout::timeout(@bot.config.timeouts.connect) do
           tcp_socket = TCPSocket.new(@bot.config.server, @bot.config.port, @bot.config.local_host)
         end
       rescue Timeout::Error
@@ -48,7 +48,7 @@ module Cinch
       end
 
       @socket = Net::BufferedIO.new(@socket)
-      @socket.read_timeout = 240
+      @socket.read_timeout = @bot.config.timeouts.read
 
       @queue = MessageQueue.new(@socket, @bot)
       message "PASS #{@bot.config.password}" if @bot.config.password
