@@ -120,7 +120,7 @@ module Cinch
                                                               :options => Hash.new {|h,k| h[k] = {}},
                                                             }),
                                  :channels => [],
-                                 :encoding => Encoding.default_external,
+                                 :encoding => :irc,
                                  :reconnect => true,
                                  :local_host => nil,
                                })
