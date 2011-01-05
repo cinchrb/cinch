@@ -102,7 +102,12 @@ module Cinch
       @config = OpenStruct.new({
                                  :server => "localhost",
                                  :port   => 6667,
-                                 :ssl    => false,
+                                 :ssl    => OpenStruct.new({
+                                                             :use => false,
+                                                             :verify => false,
+                                                             :client_cert => nil,
+                                                             :ca_path => "/etc/ssl/certs",
+                                                           }),
                                  :password => nil,
                                  :nick   => "cinch",
                                  :nicks  => nil,
@@ -449,7 +454,7 @@ module Cinch
     # @return [Boolean] True if the bot is using SSL to connect to the
     #   server.
     def secure?
-      @config[:ssl]
+      @config[:ssl] == true || (@config[:ssl].is_a?(Hash) && @config[:ssl][:use])
     end
 
     # This method is only provided in order to give Bot and User a
