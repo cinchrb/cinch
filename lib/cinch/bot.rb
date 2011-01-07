@@ -27,6 +27,9 @@ require "cinch/isupport"
 require "cinch/plugin"
 require "cinch/pattern"
 require "cinch/mode_parser"
+require "cinch/cache_manager"
+require "cinch/channel_manager"
+require "cinch/user_manager"
 
 module Cinch
 
@@ -55,6 +58,10 @@ module Cinch
     attr_reader :handler_threads
     # @return [Boolean]
     attr_reader :quitting
+    # @return [UserManager]
+    attr_reader :user_manager
+    # @return [ChannelManager]
+    attr_reader :channel_manager
 
     # Helper method for turning a String into a {Channel} object.
     #
@@ -66,7 +73,7 @@ module Cinch
     #   end
     def Channel(channel)
       return channel if channel.is_a?(Channel)
-      Channel.find_ensured(channel, self)
+      @channel_manager.find_ensured(channel)
     end
 
     # Helper method for turning a String into an {User} object.
@@ -80,7 +87,7 @@ module Cinch
     #   end
     def User(user)
       return user if user.is_a?(User)
-      User.find_ensured(user, self)
+      @user_manager.find_ensured(user)
     end
 
     # (see Logger::Logger#debug)
@@ -137,6 +144,9 @@ module Cinch
       @channels = []
       @handler_threads = []
       @quitting = false
+
+      @user_manager = UserManager.new(self)
+      @channel_manager = ChannelManager.new(self)
 
       on :connect do
         bot.config.channels.each do |channel|
@@ -488,12 +498,12 @@ module Cinch
     # @return [void]
     def start(plugins = true)
       register_plugins if plugins
-      User.all.each do |user|
+      @user_manager.each do |user|
         user.in_whois = false
         user.unsync_all
       end # reset state of all users
 
-      Channel.all.each do |channel|
+      @channel_manager.each do |channel|
         channel.unsync_all
       end # reset state of all channels
 

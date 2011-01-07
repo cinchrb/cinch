@@ -51,7 +51,7 @@ module Cinch
       host = @prefix[/@(\S+)$/, 1]
 
       return nil if nick.nil?
-      @user ||= User.find_ensured(user, nick, host, @bot)
+      @user ||= @bot.user_manager.find_ensured(user, nick, host)
     end
 
     # @return [String, nil]
@@ -92,14 +92,14 @@ module Cinch
       @channel ||= begin
                      case command
                      when "INVITE", RPL_CHANNELMODEIS.to_s, RPL_BANLIST.to_s
-                       Channel.find_ensured(params[1], @bot)
+                       @bot.channel_manager.find_ensured(params[1])
                      when RPL_NAMEREPLY.to_s
-                       Channel.find_ensured(params[2], @bot)
+                       @bot.channel_manager.find_ensured(params[2])
                      else
                        if params.first.start_with?("#")
-                         Channel.find_ensured(params.first, @bot)
+                         @bot.channel_manager.find_ensured(params.first)
                        elsif numeric_reply? and params[1].start_with?("#")
-                         Channel.find_ensured(params[1], @bot)
+                         @bot.channel_manager.find_ensured(params[1])
                        end
                      end
                    end

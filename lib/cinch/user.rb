@@ -3,8 +3,7 @@ module Cinch
   class User
     include Syncable
 
-    @users = {}
-    @mutex = Mutex.new
+    @users = {} # this will be removed with version 2.0.0
     class << self
 
       # @overload find_ensured(nick, bot)
@@ -22,52 +21,55 @@ module Cinch
       #   @param [Bot]    bot  An instance of bot
       #
       # @return [User]
+      # @deprecated See {Bot#user_manager} and {UserManager#find_ensured} instead
+      # @note This method does not work properly if running more than one bot
+      # @note This method will be removed in Cinch 2.0.0
       def find_ensured(*args)
-        # FIXME CASEMAPPING
+        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.find_ensured should not be used anymore."
+        puts caller
+
         case args.size
         when 2
           nick = args.first
-          bargs = [args.first]
           bot  = args.last
+          bargs = [nick]
         when 4
           nick = args[1]
-          bot = args.pop
+          bot  = args.pop
           bargs = args
         else
           raise ArgumentError
         end
-        downcased_nick = nick.irc_downcase(bot.irc.isupport["CASEMAPPING"])
-        @mutex.synchronize do
-          @users[downcased_nick] ||= new(*bargs, bot)
-        end
+        downcased_nick = nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
+        @users[downcased_nick] = args.last.user_manager.find_ensured(*args[0..-2])
+        # note: the complete case statement and the assignment to
+        #   @users is only for keeping compatibility with older
+        #   versions, which still use User.find and User.all.
       end
 
       # Finds a user.
       #
       # @param [String] nick nick of a user
       # @return [User, nil]
+      # @deprecated See {Bot#user_manager} and {UserManager#find} instead
+      # @note This method does not work properly if running more than one bot
+      # @note This method will be removed in Cinch 2.0.0
       def find(nick)
-        @users[nick]
+        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.find should not be used anymore."
+        puts caller
+
+        @users[downcased_nick]
       end
 
       # @return [Array<User>] Returns all users
+      # @deprecated See {Bot#user_manager} and {CacheManager#each} instead
+      # @note This method does not work properly if running more than one bot
+      # @note This method will be removed in Cinch 2.0.0
       def all
+        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.all should not be used anymore."
+        puts caller
+
         @users.values
-      end
-
-      # @api private
-      def users
-        @users
-      end
-
-      # @api private
-      def mutex
-        @mutex
-      end
-
-      # @api private
-      def delete(user)
-        @users.delete_if {|u| u == user }
       end
     end
 
@@ -388,14 +390,8 @@ module Cinch
 
     # @api private
     def update_nick(new_nick)
-      self.class.mutex.synchronize do
-        users = self.class.users
-        users[new_nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])] = self
-        users.delete @nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
-
-        @last_nick = @nick
-        @nick = new_nick
-      end
+      @last_nick, @nick = @nick, new_nick
+      @bot.user_manager.update_nick(self)
     end
 
     # Provides synced access to user attributes.

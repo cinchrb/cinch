@@ -5,7 +5,6 @@ module Cinch
   class Channel
     include Syncable
     @channels = {}
-    @mutex    = Mutex.new
 
     class << self
       # Finds or creates a channel.
@@ -14,23 +13,39 @@ module Cinch
       # @param [Bot] bot a bot
       # @return [Channel]
       # @see Bot#Channel
+      # @deprecated See {Bot#channel_manager} and {ChannelManager#find_ensured} instead
+      # @note This method does not work properly if running more than one bot
+      # @note This method will be removed in Cinch 2.0.0
       def find_ensured(name, bot)
+        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, Channel.find_ensured should not be used anymore."
+        puts caller
+
         downcased_name = name.irc_downcase(bot.irc.isupport["CASEMAPPING"])
-        @mutex.synchronize do
-          @channels[downcased_name] ||= new(name, bot)
-        end
+        @channels[downcased_name] ||= bot.channel_manager.find_ensured(name)
       end
 
       # Finds a channel.
       #
       # @param [String] name name of a channel
       # @return [Channel, nil]
+      # @deprecated See {Bot#channel_manager} and {ChannelManager#find} instead
+      # @note This method does not work properly if running more than one bot
+      # @note This method will be removed in Cinch 2.0.0
       def find(name)
+        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, Channel.find should not be used anymore."
+        puts caller
+
         @channels[name]
       end
 
       # @return [Array<Channel>] Returns all channels
+      # @deprecated See {Bot#channel_manager} and {CacheManager#each} instead
+      # @note This method does not work properly if running more than one bot
+      # @note This method will be removed in Cinch 2.0.0
       def all
+        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.all should not be used anymore."
+        puts caller
+
         @channels.values
       end
     end
@@ -199,13 +214,13 @@ module Cinch
 
     # @return [Boolean] true if `user` is opped in the channel
     def opped?(user)
-      user = User.find_ensured(user, @bot) unless user.is_a?(User)
+      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
       @users[user].include? "o"
     end
 
     # @return [Boolean] true if `user` is voiced in the channel
     def voiced?(user)
-      user = User.find_ensured(user, @bot) unless user.is_a?(User)
+      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
       @users[user].include? "v"
     end
 
