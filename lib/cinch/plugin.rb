@@ -3,10 +3,13 @@ module Cinch
     include Helpers
 
     module ClassMethods
+      # @api private
       Match = Struct.new(:pattern, :use_prefix, :method)
+      # @api private
       Listener = Struct.new(:event, :method)
       # @api private
       Timer = Struct.new(:interval, :method, :threaded)
+      # @api private
       Hook = Struct.new(:type, :for, :method)
 
       # Set a match pattern.
