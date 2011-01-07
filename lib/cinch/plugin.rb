@@ -56,8 +56,8 @@ module Cinch
         (@__cinch_ctcps ||= []) << command.to_s.upcase
       end
 
-      # Define a help message which will be returned on "<prefix>help
-      # <pluginname>".
+      # Define a help message which will be returned on "&lt;prefix&gt;help
+      # &lt;pluginname&gt;".
       #
       # @param [String] message
       # @return [void]
