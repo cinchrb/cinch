@@ -63,6 +63,9 @@ module Cinch
     attr_reader :user_manager
     # @return [ChannelManager]
     attr_reader :channel_manager
+    attr_reader :secure?
+    attr_reader :strict?
+    attr_reader :unknown?
 
     # Helper method for turning a String into a {Channel} object.
     #
