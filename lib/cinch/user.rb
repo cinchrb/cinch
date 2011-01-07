@@ -138,12 +138,12 @@ module Cinch
     # By default, you can use methods like User#user, User#host and
     # alike – If you however fear that another thread might change
     # data while you're using it and if this means a critical issue to
-    # your code, you can store the result of this method and work with
-    # that instead.
+    # your code, you can store a clone of the result of this method
+    # and work with that instead.
     #
     # @example
-    #   on :channel do
-    #     data = user.data
+    #   on :channel do |m|
+    #     data = m.user.data.dup
     #     do_something_with(data.user)
     #     do_something_with(data.host)
     #   end
@@ -269,6 +269,8 @@ module Cinch
       super
     end
 
+    # @group Sending messages
+
     # Send a message to the user.
     #
     # @param [String] message the message
@@ -347,6 +349,8 @@ module Cinch
     def safe_action(message)
       @bot.safe_action(@name, message)
     end
+
+    # @endgroup
 
     # @return [String]
     def to_s
