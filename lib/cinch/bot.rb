@@ -42,7 +42,7 @@ module Cinch
     attr_accessor :logger
     # @return [Array<Channel>] All channels the bot currently is in
     attr_reader :channels
-    # @return [String]
+    # @return [String] the bot's hostname
     attr_reader :host
     # @return [Mask]
     attr_reader :mask
@@ -55,8 +55,9 @@ module Cinch
     # @return [Array<Plugin>] All registered plugins
     attr_reader :plugins
     # @return [Array<Thread>]
+    # @api private
     attr_reader :handler_threads
-    # @return [Boolean]
+    # @return [Boolean] whether the bot is in the process of disconnecting
     attr_reader :quitting
     # @return [UserManager]
     attr_reader :user_manager
@@ -68,7 +69,7 @@ module Cinch
     # @param [String] channel a channel name
     # @return [Channel] a {Channel} object
     # @example
-    #   on :message, /^please join (#.+)$/ do |target|
+    #   on :message, /^please join (#.+)$/ do |m, target|
     #     Channel(target).join
     #   end
     def Channel(channel)
@@ -81,9 +82,9 @@ module Cinch
     # @param [String] user a user's nickname
     # @return [User] an {User} object
     # @example
-    #   on :message, /^tell me everything about (.+)$/ do |target|
+    #   on :message, /^tell me everything about (.+)$/ do |m, target|
     #     user = User(target)
-    #     reply "%s is named %s and connects from %s" % [user.nick, user.name, user.host]
+    #     m.reply "%s is named %s and connects from %s" % [user.nick, user.name, user.host]
     #   end
     def User(user)
       return user if user.is_a?(User)
@@ -436,7 +437,12 @@ module Cinch
       raw "NICK #{new_nick}"
     end
 
+    # Try to create a free nick, first by cycling through all
+    # available alternatives and then by appending underscores.
+    #
+    # @param [String] base The base nick to start trying from
     # @api private
+    # @return String
     def generate_next_nick(base = nil)
       nicks = @config.nicks || []
 
@@ -471,7 +477,7 @@ module Cinch
     # common interface.
     #
     # @return [false] Always returns `false`.
-    # @see See User#unknown? for the method's real use.
+    # @see User#unknown? See User#unknown? for the method's real use.
     def unknown?
       false
     end
@@ -484,6 +490,7 @@ module Cinch
 
     # Disconnects from the server.
     #
+    # @param [String] message The quit message to send while quitting
     # @return [void]
     def quit(message = nil)
       @quitting = true
