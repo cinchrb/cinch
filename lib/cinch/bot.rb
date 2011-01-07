@@ -67,6 +67,8 @@ module Cinch
     attr_reader :strict?
     attr_reader :unknown?
 
+    # @group Helper methods
+
     # Helper method for turning a String into a {Channel} object.
     #
     # @param [String] channel a channel name
@@ -94,80 +96,12 @@ module Cinch
       @user_manager.find_ensured(user)
     end
 
-    # (see Logger::Logger#debug)
-    # @see Logger::Logger#debug
-    def debug(msg)
-      @logger.debug(msg)
-    end
-
-    # @return [Boolean] True if the bot reports ISUPPORT violations as
-    #   exceptions.
-    def strict?
-      @config.strictness == :strict
-    end
-
-    # @yield
-    def initialize(&b)
-      @logger = Logger::FormattedLogger.new($stderr)
-      @events = {}
-      @config = OpenStruct.new({
-                                 :server => "localhost",
-                                 :port   => 6667,
-                                 :ssl    => OpenStruct.new({
-                                                             :use => false,
-                                                             :verify => false,
-                                                             :client_cert => nil,
-                                                             :ca_path => "/etc/ssl/certs",
-                                                           }),
-                                 :password => nil,
-                                 :nick   => "cinch",
-                                 :nicks  => nil,
-                                 :realname => "cinch",
-                                 :verbose => true,
-                                 :messages_per_second => 0.5,
-                                 :server_queue_size => 10,
-                                 :strictness => :forgiving,
-                                 :message_split_start => '... ',
-                                 :message_split_end   => ' ...',
-                                 :max_messages => nil,
-                                 :plugins => OpenStruct.new({
-                                                              :plugins => [],
-                                                              :prefix  => "!",
-                                                              :options => Hash.new {|h,k| h[k] = {}},
-                                                            }),
-                                 :channels => [],
-                                 :encoding => :irc,
-                                 :reconnect => true,
-                                 :local_host => nil,
-                               })
-
-      @semaphores_mutex = Mutex.new
-      @semaphores = Hash.new { |h,k| h[k] = Mutex.new }
-      @plugins = []
-      @callback = Callback.new(self)
-      @channels = []
-      @handler_threads = []
-      @quitting = false
-
-      @user_manager = UserManager.new(self)
-      @channel_manager = ChannelManager.new(self)
-
-      on :connect do
-        bot.config.channels.each do |channel|
-          bot.join channel
-        end
-      end
-
-      instance_eval(&b) if block_given?
-    end
-
-    # This method is used to set a bot's options. It indeed does
-    # nothing else but yielding {Bot#config}, but it makes for a nice DSL.
+    # Define helper methods in the context of the bot.
     #
-    # @yieldparam [Struct] config the bot's config
+    # @yield Expects a block containing method definitions
     # @return [void]
-    def configure(&block)
-      @callback.instance_exec(@config, &block)
+    def helpers(&b)
+      Callback.class_eval(&b)
     end
 
     # Since Cinch uses threads, all handlers can be run
@@ -208,64 +142,15 @@ module Cinch
       semaphore.synchronize(&block)
     end
 
-    # Registers a handler.
-    #
-    # @param [String, Symbol, Integer] event the event to match. Available
-    #   events are all IRC commands in lowercase as symbols, all numeric
-    #   replies, and the following:
-    #
-    #     - :channel (a channel message)
-    #     - :private (a private message)
-    #     - :message (both channel and private messages)
-    #     - :error   (handling errors, use a numeric error code as `match`)
-    #     - :ctcp    (ctcp requests, use a ctcp command as `match`)
-    #
-    # @param [Regexp, String, Integer] match every message of the
-    #   right event will be checked against this argument and the event
-    #   will only be called if it matches
-    #
-    # @yieldparam [String] *args each capture group of the regex will
-    #   be one argument to the block. It is optional to accept them,
-    #   though
-    #
-    # @return [void]
-    def on(event, regexps = [], *args, &block)
-      regexps = [*regexps]
-      regexps = [//] if regexps.empty?
-
-      event = event.to_sym
-
-      regexps.map! do |regexp|
-        case regexp
-        when Pattern
-          regexp
-        when Regexp
-          Pattern.new(nil, regexp)
-        else
-          if event == :ctcp
-            Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/)
-          else
-            Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}$/)
-          end
-        end
-      end
-      (@events[event] ||= []) << [regexps, args, block]
-    end
-
-    # Define helper methods in the context of the bot.
-    #
-    # @yield Expects a block containing method definitions
-    # @return [void]
-    def helpers(&b)
-      Callback.class_eval(&b)
-    end
-
     # Stop execution of the current {#on} handler.
     #
     # @return [void]
     def halt
       throw :halt
     end
+
+    # @endgroup
+    # @group Sending messages
 
     # Sends a raw message to the server.
     #
@@ -395,6 +280,142 @@ module Cinch
       action(recipient, Cinch.filter_string(text))
     end
 
+    # @endgroup
+    # @group Events &amp; Plugins
+
+    # Registers a handler.
+    #
+    # @param [String, Symbol, Integer] event the event to match. Available
+    #   events are all IRC commands in lowercase as symbols, all numeric
+    #   replies, and the following:
+    #
+    #     - :channel (a channel message)
+    #     - :private (a private message)
+    #     - :message (both channel and private messages)
+    #     - :error   (handling errors, use a numeric error code as `match`)
+    #     - :ctcp    (ctcp requests, use a ctcp command as `match`)
+    #
+    # @param [Regexp, String, Integer] match every message of the
+    #   right event will be checked against this argument and the event
+    #   will only be called if it matches
+    #
+    # @yieldparam [String] *args each capture group of the regex will
+    #   be one argument to the block. It is optional to accept them,
+    #   though
+    #
+    # @return [void]
+    def on(event, regexps = [], *args, &block)
+      regexps = [*regexps]
+      regexps = [//] if regexps.empty?
+
+      event = event.to_sym
+
+      regexps.map! do |regexp|
+        case regexp
+        when Pattern
+          regexp
+        when Regexp
+          Pattern.new(nil, regexp)
+        else
+          if event == :ctcp
+            Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/)
+          else
+            Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}$/)
+          end
+        end
+      end
+      (@events[event] ||= []) << [regexps, args, block]
+    end
+
+    # @param [Symbol] event The event type
+    # @param [Message, nil] msg The message which is responsible for
+    #   and attached to the event, or nil.
+    # @param [Array] *arguments A list of additional arguments to pass
+    #   to event handlers
+    # @return [void]
+    def dispatch(event, msg = nil, *arguments)
+      if handlers = find(event, msg)
+        handlers.each do |handler|
+          regexps, args, block = *handler
+          # calling Message#match multiple times is not a problem
+          # because we cache the result
+          if msg
+            regexp = regexps.find { |rx|
+              msg.match(rx.to_r(msg), event)
+            }
+            captures = msg.match(regexp.to_r(msg), event).captures
+          else
+            captures = []
+          end
+
+          invoke(block, args, msg, captures, arguments)
+        end
+      end
+    end
+
+    # Register all plugins from `@config.plugins.plugins`.
+    #
+    # @return [void]
+    def register_plugins
+      @config.plugins.plugins.each do |plugin|
+        register_plugin(plugin)
+      end
+    end
+
+    # Registers a plugin.
+    #
+    # @param [Class<Plugin>] plugin The plugin class to register
+    # @return [void]
+    def register_plugin(plugin)
+      @plugins << plugin.new(self)
+    end
+
+    # @endgroup
+    # @group Bot Control
+
+    # This method is used to set a bot's options. It indeed does
+    # nothing else but yielding {Bot#config}, but it makes for a nice DSL.
+    #
+    # @yieldparam [Struct] config the bot's config
+    # @return [void]
+    def configure(&block)
+      @callback.instance_exec(@config, &block)
+    end
+
+    # Disconnects from the server.
+    #
+    # @param [String] message The quit message to send while quitting
+    # @return [void]
+    def quit(message = nil)
+      @quitting = true
+      command = message ? "QUIT :#{message}" : "QUIT"
+      raw command
+    end
+
+    # Connects the bot to a server.
+    #
+    # @param [Boolean] plugins Automatically register plugins from
+    #   `@config.plugins.plugins`?
+    # @return [void]
+    def start(plugins = true)
+      register_plugins if plugins
+      @user_manager.each do |user|
+        user.in_whois = false
+        user.unsync_all
+      end # reset state of all users
+
+      @channel_manager.each do |channel|
+        channel.unsync_all
+      end # reset state of all channels
+
+      @logger.debug "Connecting to #{@config.server}:#{@config.port}"
+      @irc = IRC.new(self)
+      @irc.connect
+    end
+
+    # @endgroup
+    # @group Channel Control
+
     # Join a channel.
     #
     # @param [String, Channel] channel either the name of a channel or a {Channel} object
@@ -415,6 +436,74 @@ module Cinch
       Channel(channel).part(reason)
     end
 
+    # @endgroup
+
+    # (see Logger::Logger#debug)
+    # @see Logger::Logger#debug
+    def debug(msg)
+      @logger.debug(msg)
+    end
+
+    # @return [Boolean] True if the bot reports ISUPPORT violations as
+    #   exceptions.
+    def strict?
+      @config.strictness == :strict
+    end
+
+    # @yield
+    def initialize(&b)
+      @logger = Logger::FormattedLogger.new($stderr)
+      @events = {}
+      @config = OpenStruct.new({
+                                 :server => "localhost",
+                                 :port   => 6667,
+                                 :ssl    => OpenStruct.new({
+                                                             :use => false,
+                                                             :verify => false,
+                                                             :client_cert => nil,
+                                                             :ca_path => "/etc/ssl/certs",
+                                                           }),
+                                 :password => nil,
+                                 :nick   => "cinch",
+                                 :nicks  => nil,
+                                 :realname => "cinch",
+                                 :verbose => true,
+                                 :messages_per_second => 0.5,
+                                 :server_queue_size => 10,
+                                 :strictness => :forgiving,
+                                 :message_split_start => '... ',
+                                 :message_split_end   => ' ...',
+                                 :max_messages => nil,
+                                 :plugins => OpenStruct.new({
+                                                              :plugins => [],
+                                                              :prefix  => "!",
+                                                              :options => Hash.new {|h,k| h[k] = {}},
+                                                            }),
+                                 :channels => [],
+                                 :encoding => :irc,
+                                 :reconnect => true,
+                                 :local_host => nil,
+                               })
+
+      @semaphores_mutex = Mutex.new
+      @semaphores = Hash.new { |h,k| h[k] = Mutex.new }
+      @plugins = []
+      @callback = Callback.new(self)
+      @channels = []
+      @handler_threads = []
+      @quitting = false
+
+      @user_manager = UserManager.new(self)
+      @channel_manager = ChannelManager.new(self)
+
+      on :connect do
+        bot.config.channels.each do |channel|
+          bot.join channel
+        end
+      end
+
+      instance_eval(&b) if block_given?
+    end
 
     # The bot's nickname.
     # @overload nick=(new_nick)
@@ -488,80 +577,6 @@ module Cinch
     [:host, :mask, :user, :realname, :signed_on_at, :secure?].each do |attr|
       define_method(attr) do
         User(nick).__send__(attr)
-      end
-    end
-
-    # Disconnects from the server.
-    #
-    # @param [String] message The quit message to send while quitting
-    # @return [void]
-    def quit(message = nil)
-      @quitting = true
-      command = message ? "QUIT :#{message}" : "QUIT"
-      raw command
-    end
-
-    # Connects the bot to a server.
-    #
-    # @param [Boolean] plugins Automatically register plugins from
-    #   `@config.plugins.plugins`?
-    # @return [void]
-    def start(plugins = true)
-      register_plugins if plugins
-      @user_manager.each do |user|
-        user.in_whois = false
-        user.unsync_all
-      end # reset state of all users
-
-      @channel_manager.each do |channel|
-        channel.unsync_all
-      end # reset state of all channels
-
-      @logger.debug "Connecting to #{@config.server}:#{@config.port}"
-      @irc = IRC.new(self)
-      @irc.connect
-    end
-
-    # Register all plugins from `@config.plugins.plugins`.
-    #
-    # @return [void]
-    def register_plugins
-      @config.plugins.plugins.each do |plugin|
-        register_plugin(plugin)
-      end
-    end
-
-    # Registers a plugin.
-    #
-    # @param [Class<Plugin>] plugin The plugin class to register
-    # @return [void]
-    def register_plugin(plugin)
-      @plugins << plugin.new(self)
-    end
-
-    # @param [Symbol] event The event type
-    # @param [Message, nil] msg The message which is responsible for
-    #   and attached to the event, or nil.
-    # @param [Array] *arguments A list of additional arguments to pass
-    #   to event handlers
-    # @return [void]
-    def dispatch(event, msg = nil, *arguments)
-      if handlers = find(event, msg)
-        handlers.each do |handler|
-          regexps, args, block = *handler
-          # calling Message#match multiple times is not a problem
-          # because we cache the result
-          if msg
-            regexp = regexps.find { |rx|
-              msg.match(rx.to_r(msg), event)
-            }
-            captures = msg.match(regexp.to_r(msg), event).captures
-          else
-            captures = []
-          end
-
-          invoke(block, args, msg, captures, arguments)
-        end
       end
     end
 
