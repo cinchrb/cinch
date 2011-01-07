@@ -1,4 +1,5 @@
 module Cinch
+  # @api private
   module ModeParser
     def self.parse_modes(modes, params, param_modes = {})
       if modes.size == 0
