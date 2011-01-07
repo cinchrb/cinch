@@ -4,15 +4,18 @@ module Cinch
     # @return [Mask, String]
     attr_reader :mask
 
-    # @return [String]
+    # @return [User]
     attr_reader :by
 
     # @return [Time]
     attr_reader :created_at
 
-    # @return [Boolean]
+    # @return [Boolean] whether this is an extended ban (as used by for example Freenode)
     attr_reader :extended
 
+    # @param [String] mask The mask
+    # @param [User] by The user who created the ban
+    # @param [Time] at The time at which the ban was created
     def initialize(mask, by, at)
       @by, @created_at = by, at
       if mask =~ /^\$/
