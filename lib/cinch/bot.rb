@@ -62,6 +62,9 @@ module Cinch
     attr_reader :user_manager
     # @return [ChannelManager]
     attr_reader :channel_manager
+    # @return [Boolean]
+    # @api private
+    attr_accessor :last_connection_was_successful
 
     # Helper method for turning a String into a {Channel} object.
     #
@@ -135,6 +138,11 @@ module Cinch
                                  :encoding => :irc,
                                  :reconnect => true,
                                  :local_host => nil,
+                                 :timeouts => OpenStruct.new({
+                                                               :read => 240,
+                                                               :connect => 10,
+                                                             }),
+                                 :ping_interval => 120,
                                })
 
       @semaphores_mutex = Mutex.new
@@ -497,19 +505,39 @@ module Cinch
     #   `@config.plugins.plugins`?
     # @return [void]
     def start(plugins = true)
+      @reconnects = 0
       register_plugins if plugins
-      @user_manager.each do |user|
-        user.in_whois = false
-        user.unsync_all
-      end # reset state of all users
 
-      @channel_manager.each do |channel|
-        channel.unsync_all
-      end # reset state of all channels
+      begin
+        @user_manager.each do |user|
+          user.in_whois = false
+          user.unsync_all
+        end # reset state of all users
 
-      @logger.debug "Connecting to #{@config.server}:#{@config.port}"
-      @irc = IRC.new(self)
-      @irc.connect
+        @channel_manager.each do |channel|
+          channel.unsync_all
+        end # reset state of all channels
+
+        @logger.debug "Connecting to #{@config.server}:#{@config.port}"
+        @irc = IRC.new(self)
+        @irc.connect
+
+        if @config.reconnect && !@quitting
+          # double the delay for each unsuccesful reconnection attempt
+          if @last_connection_was_successful
+            @reconnects = 0
+            @last_connection_was_successful = false
+          else
+            @reconnects += 1
+          end
+
+          # Sleep for a few seconds before reconnecting to prevent being
+          # throttled by the IRC server
+          wait = 2**@reconnects
+          @logger.debug "Waiting #{wait} seconds before reconnecting"
+          sleep wait
+        end
+      end while @config.reconnect and not @quitting
     end
 
     # Register all plugins from `@config.plugins.plugins`.

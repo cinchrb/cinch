@@ -1,3 +1,6 @@
+require "timeout"
+require "net/protocol"
+
 module Cinch
   class IRC
     # @return [ISupport]
@@ -16,7 +19,18 @@ module Cinch
       @whois_updates = Hash.new {|h, k| h[k] = {}}
       @in_lists      = Set.new
 
-      tcp_socket = TCPSocket.open(@bot.config.server, @bot.config.port, @bot.config.local_host)
+      tcp_socket = nil
+      begin
+        Timeout::timeout(@bot.config.timeouts.connect) do
+          tcp_socket = TCPSocket.new(@bot.config.server, @bot.config.port, @bot.config.local_host)
+        end
+      rescue Timeout::Error
+        @bot.logger.debug("Timed out while connecting")
+        return
+      rescue => e
+        @bot.logger.log_exception(e)
+        return
+      end
 
       if @bot.config.ssl == true || @bot.config.ssl == false
         @bot.logger.debug "Deprecation warning: Beginning from version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
@@ -46,6 +60,9 @@ module Cinch
         @socket = tcp_socket
       end
 
+      @socket = Net::BufferedIO.new(@socket)
+      @socket.read_timeout = @bot.config.timeouts.read
+
       @queue = MessageQueue.new(@socket, @bot)
       message "PASS #{@bot.config.password}" if @bot.config.password
       message "NICK #{@bot.generate_next_nick}"
@@ -53,7 +70,7 @@ module Cinch
 
       reading_thread = Thread.new do
         begin
-          while line = @socket.gets
+          while line = @socket.readline
             begin
               line = Cinch.encode_incoming(line, @bot.config.encoding)
               parse line
@@ -61,6 +78,10 @@ module Cinch
               @bot.logger.log_exception(e)
             end
           end
+        rescue Timeout::Error
+          @bot.logger.debug "Connection timed out."
+        rescue EOFError
+          @bot.logger.debug "Lost connection."
         rescue => e
           @bot.logger.log_exception(e)
         end
@@ -78,9 +99,17 @@ module Cinch
         end
       end
 
+      ping_thread = Thread.new do
+        while true
+          sleep @bot.config.ping_interval
+          message("PING 0") # PING requires a single argument. In our
+                            # case the value doesn't matter though.
+        end
+      end
+
       reading_thread.join
       @sending_thread.kill
-      @bot.start(false) if @bot.config.reconnect && !@bot.quitting
+      ping_thread.kill
     end
 
     # @api private
@@ -94,6 +123,7 @@ module Cinch
         @registration << msg.command
         if registered?
           events << [:connect]
+          @bot.last_connection_was_successful = true
         end
       elsif ["PRIVMSG", "NOTICE"].include?(msg.command)
         events << [:ctcp] if msg.ctcp?
