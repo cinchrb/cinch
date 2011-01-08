@@ -3,10 +3,13 @@ module Cinch
     include Helpers
 
     module ClassMethods
+      # @api private
       Match = Struct.new(:pattern, :use_prefix, :method)
+      # @api private
       Listener = Struct.new(:event, :method)
       # @api private
       Timer = Struct.new(:interval, :method, :threaded)
+      # @api private
       Hook = Struct.new(:type, :for, :method)
 
       # Set a match pattern.
@@ -56,8 +59,8 @@ module Cinch
         (@__cinch_ctcps ||= []) << command.to_s.upcase
       end
 
-      # Define a help message which will be returned on "<prefix>help
-      # <pluginname>".
+      # Define a help message which will be returned on "&lt;prefix&gt;help
+      # &lt;pluginname&gt;".
       #
       # @param [String] message
       # @return [void]

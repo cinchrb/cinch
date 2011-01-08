@@ -9,7 +9,7 @@ require 'cinch'
 class Autovoice
   include Cinch::Plugin
   listen_to :join
-  match /autovoice (on|off)/
+  match /autovoice (on|off)$/
 
   def listen(m)
     unless m.user.nick == bot.nick

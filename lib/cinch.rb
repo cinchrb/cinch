@@ -15,7 +15,7 @@ module Cinch
     string = string.dup
     if encoding == :irc
       # If incoming text is valid UTF-8, it will be interpreted as
-      # such. If it fails validation, a CP1252 -> UTF-8 conversion
+      # such. If it fails validation, a CP1252 -&gt; UTF-8 conversion
       # is performed. This allows you to see non-ASCII from mIRC
       # users (non-UTF-8) and other users sending you UTF-8.
       #

@@ -3,6 +3,7 @@ module Cinch
   class Callback
     include Helpers
 
+    # @return [Bot]
     attr_reader :bot
     def initialize(bot)
       @bot = bot

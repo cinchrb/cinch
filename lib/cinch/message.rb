@@ -122,6 +122,7 @@ module Cinch
       $1
     end
 
+    # @return [Array<String>, nil]
     def ctcp_args
       return unless ctcp?
       ctcp_message.split(" ")[1..-1]
@@ -176,6 +177,7 @@ module Cinch
       user.notice "\001#{ctcp_command} #{answer}\001"
     end
 
+    # @return [String]
     def to_s
       "#<Cinch::Message @raw=#{raw.chomp.inspect} @params=#{@params.inspect} channel=#{channel.inspect} user=#{user.inspect}>"
     end

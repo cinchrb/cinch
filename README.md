@@ -169,3 +169,5 @@ to check it out.
 - darix &lt;darix [at] nordisch.org&gt; (wrote the message splitting algorithm)
 - robgleeson (thanks for testing, contributing a lot of ideas,
   discussing design decisions etc)
+- Emil Loer (http://github.com/thedjinn) for improving the handling of
+  unexpected disconnects and reconnects.

@@ -53,22 +53,22 @@ module Cinch
     # @return [Bot]
     attr_reader :bot
 
-    # @return [String]
+    # @return [String] the channel's name
     attr_reader :name
 
-    # @return [Array<User>]
+    # @return [Array<User>] all users in the channel
     attr_reader :users
     synced_attr_reader :users
 
-    # @return [String]
+    # @return [String] the channel's topic
     attr_accessor :topic
     synced_attr_reader :topic
 
-    # @return [Array<Ban>]
+    # @return [Array<Ban>] all active bans
     attr_reader :bans
     synced_attr_reader :bans
 
-    # @return [Array<String>]
+    # @return [Hash<String => Object>]
     attr_reader :modes
     synced_attr_reader :modes
     def initialize(name, bot)
@@ -102,14 +102,34 @@ module Cinch
       }
     end
 
-    # @param [User, String] user An User-object or a nickname
+    # @group Checks
+
+    # @param [User, String] user An {User}-object or a nickname
     # @return [Boolean] Check if a user is in the channel
     def has_user?(user)
       @users.has_key?(User(user))
     end
 
+
+    # @return [Boolean] true if `user` is opped in the channel
+    def opped?(user)
+      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
+      @users[user].include? "o"
+    end
+
+    # @return [Boolean] true if `user` is voiced in the channel
+    def voiced?(user)
+      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
+      @users[user].include? "v"
+    end
+
+    # @endgroup
+
+    # @return [Number] The maximum number of allowed users in the
+    #   channel. 0 if unlimited.
     attr_accessor :limit
-    # @return [Number]
+    undef_method "limit"
+    undef_method "limit="
     def limit
       @modes["l"].to_i
     end
@@ -174,7 +194,7 @@ module Cinch
       end
     end
 
-    # @return [String, nil]
+    # @return [String, nil] The channel's key (aka password)
     attr_accessor :key
     undef_method "key"
     undef_method "key="
@@ -190,17 +210,6 @@ module Cinch
       end
     end
 
-    # Sets or unsets modes. Most of the time you won't need this but
-    # use setter methods like {Channel#invite_only=}.
-    #
-    # @param [String] s a mode string
-    # @return [void]
-    # @example
-    #   channel.mode "+n"
-    def mode(s)
-      @bot.raw "MODE #@name #{s}"
-    end
-
     # @api private
     # @return [void]
     def sync_modes(all = true)
@@ -212,17 +221,7 @@ module Cinch
       @bot.raw "MODE #@name"
     end
 
-    # @return [Boolean] true if `user` is opped in the channel
-    def opped?(user)
-      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
-      @users[user].include? "o"
-    end
-
-    # @return [Boolean] true if `user` is voiced in the channel
-    def voiced?(user)
-      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
-      @users[user].include? "v"
-    end
+    # @group Channel Manipulation
 
     # Bans someone from the channel.
     #
@@ -270,6 +269,73 @@ module Cinch
       @bot.raw "MODE #@name -v #{user}"
     end
 
+    # Invites a user to the channel.
+    #
+    # @param [String, User] user the user to invite
+    # @return [void]
+    def invite(user)
+      @bot.raw("INVITE #{user} #@name")
+    end
+
+    # Sets the topic.
+    #
+    # @param [String] new_topic the new topic
+    # @raise [Exceptions::TopicTooLong]
+    def topic=(new_topic)
+      if new_topic.size > @bot.irc.isupport["TOPICLEN"] && @bot.strict?
+        raise Exceptions::TopicTooLong, new_topic
+      end
+
+      @bot.raw "TOPIC #@name :#{new_topic}"
+    end
+
+    # Kicks a user from the channel.
+    #
+    # @param [String, User] user the user to kick
+    # @param [String] a reason for the kick
+    # @raise [Exceptions::KickReasonTooLong]
+    # @return [void]
+    def kick(user, reason = nil)
+      if reason.to_s.size > @bot.irc.isupport["KICKLEN"] && @bot.strict?
+        raise Exceptions::KickReasonTooLong, reason
+      end
+
+      @bot.raw("KICK #@name #{user} :#{reason}")
+    end
+
+    # Sets or unsets modes. Most of the time you won't need this but
+    # use setter methods like {Channel#invite_only=}.
+    #
+    # @param [String] s a mode string
+    # @return [void]
+    # @example
+    #   channel.mode "+n"
+    def mode(s)
+      @bot.raw "MODE #@name #{s}"
+    end
+
+    # Causes the bot to part from the channel.
+    #
+    # @param [String] message the part message.
+    # @return [void]
+    def part(message = nil)
+      @bot.raw "PART #@name :#{message}"
+    end
+
+    # Joins the channel
+    #
+    # @param [String] key the channel key, if any. If none is
+    #   specified but @key is set, @key will be used
+    # @return [void]
+    def join(key = nil)
+      if key.nil? and self.key != true
+        key = self.key
+      end
+      @bot.raw "JOIN #{[@name, key].compact.join(" ")}"
+    end
+
+    # @endgroup
+
     # @api private
     # @return [void]
     def add_user(user, modes = [])
@@ -291,6 +357,8 @@ module Cinch
     def clear_users
       @users.clear
     end
+
+    # @group Sending messages
 
     # Send a message to the channel.
     #
@@ -372,68 +440,7 @@ module Cinch
       @bot.safe_action(@name, message)
     end
 
-
-    # Invites a user to the channel.
-    #
-    # @param [String, User] user the user to invite
-    # @return [void]
-    def invite(user)
-      @bot.raw("INVITE #{user} #@name")
-    end
-
-    # Sets the topic.
-    #
-    # @param [String] new_topic the new topic
-    # @raise [Exceptions::TopicTooLong]
-    def topic=(new_topic)
-      if new_topic.size > @bot.irc.isupport["TOPICLEN"] && @bot.strict?
-        raise Exceptions::TopicTooLong, new_topic
-      end
-
-      @bot.raw "TOPIC #@name :#{new_topic}"
-    end
-
-    # Kicks a user from the channel.
-    #
-    # @param [String, User] user the user to kick
-    # @param [String] a reason for the kick
-    # @raise [Exceptions::KickReasonTooLong]
-    # @return [void]
-    def kick(user, reason = nil)
-      if reason.to_s.size > @bot.irc.isupport["KICKLEN"] && @bot.strict?
-        raise Exceptions::KickReasonTooLong, reason
-      end
-
-      @bot.raw("KICK #@name #{user} :#{reason}")
-    end
-
-    # Invites a user to the channel.
-    #
-    # @param [String, User] user the user to invite
-    # @return [void]
-    def invite(user)
-      @bot.raw "INVITE #{user} #@name"
-    end
-
-    # Causes the bot to part from the channel.
-    #
-    # @param [String] message the part message.
-    # @return [void]
-    def part(message = nil)
-      @bot.raw "PART #@name :#{message}"
-    end
-
-    # Joins the channel
-    #
-    # @param [String] key the channel key, if any. If none is
-    #   specified but @key is set, @key will be used
-    # @return [void]
-    def join(key = nil)
-      if key.nil? and self.key != true
-        key = self.key
-      end
-      @bot.raw "JOIN #{[@name, key].compact.join(" ")}"
-    end
+    # @endgroup
 
     # @return [Boolean]
     def ==(other)

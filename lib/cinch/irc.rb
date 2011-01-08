@@ -417,6 +417,7 @@ module Cinch
     end
 
     def on_396(msg, events)
+      # RPL_HOSTHIDDEN
       # note: designed for freenode
       @bot.user_manager.find_ensured(msg.params[0]).sync(:host, msg.params[1], true)
     end
