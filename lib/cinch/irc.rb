@@ -188,7 +188,7 @@ module Cinch
       @bot.channel_manager.each do |channel|
         channel.remove_user(user)
       end
-      msg.user.unsync_all
+      user.unsync_all
       @bot.user_manager.delete(user)
     end
 
