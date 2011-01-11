@@ -145,7 +145,7 @@ module Cinch
       Channel.all.each do |channel|
         channel.remove_user(user)
       end
-      msg.user.unsync_all
+      user.unsync_all
       User.delete(user)
     end
 
