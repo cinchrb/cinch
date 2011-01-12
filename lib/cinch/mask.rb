@@ -14,6 +14,20 @@ module Cinch
       @regexp = Regexp.new(Regexp.escape(mask).gsub("\\*", ".*"))
     end
 
+    # @return [Boolean]
+    def ==(other)
+      other.respond_to?(:mask) && other.mask == @mask
+    end
+
+    # @return [Boolean]
+    def eql?(other)
+      other.is_a?(self.class) && self == other
+    end
+
+    def hash
+      @mask.hash
+    end
+
     # @param [User] user
     # @return [Boolean]
     def match(user)
