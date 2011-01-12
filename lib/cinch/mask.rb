@@ -14,10 +14,10 @@ module Cinch
       @regexp = Regexp.new(Regexp.escape(mask).gsub("\\*", ".*"))
     end
 
+    # @param [User] user
     # @return [Boolean]
     def match(user)
-      mask = "%s!%s@%s" % [nick, user, host]
-      return mask =~ @regexp
+      return user.mask =~ @regexp
 
       # TODO support CIDR (freenode)
     end
