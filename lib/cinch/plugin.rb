@@ -8,7 +8,7 @@ module Cinch
       # @api private
       Listener = Struct.new(:event, :method)
       # @api private
-      Timer = Struct.new(:interval, :method, :threaded)
+      Timer = Struct.new(:interval, :method, :threaded, :registered)
       # @api private
       Hook = Struct.new(:type, :for, :method)
 
@@ -106,7 +106,7 @@ module Cinch
       def timer(interval, options = {})
         options = {:method => :timer, :threaded => true}.merge(options)
         @__cinch_timers ||= []
-        @__cinch_timers << Timer.new(interval, options[:method], options[:threaded])
+        @__cinch_timers << Timer.new(interval, options[:method], options[:threaded], false)
       end
 
       # Defines a hook which will be run before or after a handler is
@@ -215,7 +215,10 @@ module Cinch
         (@__cinch_timers || []).each do |timer|
           bot.debug "[plugin] #{__plugin_name}: Registering timer with interval `#{timer.interval}` for method `#{timer.method}`"
           bot.on :connect do
+            next if timer.registered
+            timer.registered = true
             Thread.new do
+              bot.debug "registering timer..."
               loop do
                 sleep timer.interval
                 if instance.respond_to?(timer.method)
