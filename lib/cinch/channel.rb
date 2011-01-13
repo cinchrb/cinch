@@ -117,6 +117,12 @@ module Cinch
       @users[user].include? "o"
     end
 
+    # @return [Boolean] true if `user` is half-opped in the channel
+    def half_opped?(user)
+      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
+      @users[user].include? "h"
+    end
+
     # @return [Boolean] true if `user` is voiced in the channel
     def voiced?(user)
       user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
