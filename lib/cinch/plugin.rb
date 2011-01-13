@@ -217,6 +217,7 @@ module Cinch
           bot.on :connect do
             Thread.new do
               loop do
+                sleep timer.interval
                 if instance.respond_to?(timer.method)
                   l = lambda {
                     begin
@@ -233,7 +234,6 @@ module Cinch
                   else
                     l.call
                   end
-                  sleep timer.interval
                 end
               end
             end
