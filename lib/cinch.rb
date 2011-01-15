@@ -26,6 +26,7 @@ module Cinch
       end
     else
       string.force_encoding(encoding).encode!({:invalid => :replace, :undef => :replace})
+      string = string.chars.select { |c| c.valid_encoding? }.join
     end
 
     return string
