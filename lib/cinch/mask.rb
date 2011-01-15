@@ -11,13 +11,27 @@ module Cinch
     def initialize(mask)
       @mask = mask
       @nick, @user, @host = mask.match(/(.+)!(.+)@(.+)/)[1..-1]
-      @regexp = Regexp.new(Regexp.escape(mask).gsub("\\*", ".*"))
+      @regexp = Regexp.new("^" + Regexp.escape(mask).gsub("\\*", ".*") + "$")
     end
 
     # @return [Boolean]
+    def ==(other)
+      other.respond_to?(:mask) && other.mask == @mask
+    end
+
+    # @return [Boolean]
+    def eql?(other)
+      other.is_a?(self.class) && self == other
+    end
+
+    def hash
+      @mask.hash
+    end
+
+    # @param [User] user
+    # @return [Boolean]
     def match(user)
-      mask = "%s!%s@%s" % [nick, user, host]
-      return mask =~ @regexp
+      return user.mask =~ @regexp
 
       # TODO support CIDR (freenode)
     end

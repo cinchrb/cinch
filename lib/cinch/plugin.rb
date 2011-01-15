@@ -4,11 +4,11 @@ module Cinch
 
     module ClassMethods
       # @api private
-      Match = Struct.new(:pattern, :use_prefix, :method)
+      Match = Struct.new(:pattern, :use_prefix, :use_suffix, :method)
       # @api private
       Listener = Struct.new(:event, :method)
       # @api private
-      Timer = Struct.new(:interval, :method, :threaded)
+      Timer = Struct.new(:interval, :method, :threaded, :registered)
       # @api private
       Hook = Struct.new(:type, :for, :method)
 
@@ -21,9 +21,9 @@ module Cinch
       #   pattern.
       # @return [void]
       def match(pattern, options = {})
-        options = {:use_prefix => true, :method => :execute}.merge(options)
+        options = {:use_prefix => true, :use_suffix => true, :method => :execute}.merge(options)
         @__cinch_matches ||= []
-        @__cinch_matches << Match.new(pattern, options[:use_prefix], options[:method])
+        @__cinch_matches << Match.new(pattern, options[:use_prefix], options[:use_suffix], options[:method])
       end
 
       # Events to listen to.
@@ -77,6 +77,17 @@ module Cinch
         @__cinch_prefix = prefix || block
       end
 
+      # Set the plugin suffix.
+      #
+      # @param [String] suffix
+      # @return [void]
+      def prefix(suffix = nil, &block)
+        raise ArgumentError if suffix.nil? && block.nil?
+        @__cinch_suffix = suffix || block
+      end
+
+
+
       # Set which kind of messages to react on (i.e. call {#execute})
       #
       # @param [Symbol<:message, :channel, :private>] target React to all,
@@ -106,7 +117,7 @@ module Cinch
       def timer(interval, options = {})
         options = {:method => :timer, :threaded => true}.merge(options)
         @__cinch_timers ||= []
-        @__cinch_timers << Timer.new(interval, options[:method], options[:threaded])
+        @__cinch_timers << Timer.new(interval, options[:method], options[:threaded], false)
       end
 
       # Defines a hook which will be run before or after a handler is
@@ -168,21 +179,17 @@ module Cinch
         end
 
         if (@__cinch_matches ||= []).empty?
-          @__cinch_matches << Match.new(plugin_name, true, :execute)
+          @__cinch_matches << Match.new(plugin_name, true, true, :execute)
         end
 
         prefix = @__cinch_prefix || bot.config.plugins.prefix
+        suffix = @__cinch_suffix || bot.config.plugins.suffix
 
         @__cinch_matches.each do |pattern|
-          if pattern.use_prefix
-            _prefix = prefix
-          elsif pattern.pattern.is_a?(String)
-            _prefix = /^/
-          else
-            _prefix = nil
-          end
+          _prefix = pattern.use_prefix ? prefix : nil
+          _suffix = pattern.use_suffix ? suffix : nil
 
-          pattern_to_register = Pattern.new(_prefix, pattern.pattern)
+          pattern_to_register = Pattern.new(_prefix, pattern.pattern, _suffix)
           react_on = @__cinch_react_on || :message
 
           bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
@@ -215,8 +222,12 @@ module Cinch
         (@__cinch_timers || []).each do |timer|
           bot.debug "[plugin] #{__plugin_name}: Registering timer with interval `#{timer.interval}` for method `#{timer.method}`"
           bot.on :connect do
+            next if timer.registered
+            timer.registered = true
             Thread.new do
+              bot.debug "registering timer..."
               loop do
+                sleep timer.interval
                 if instance.respond_to?(timer.method)
                   l = lambda {
                     begin
@@ -233,7 +244,6 @@ module Cinch
                   else
                     l.call
                   end
-                  sleep timer.interval
                 end
               end
             end

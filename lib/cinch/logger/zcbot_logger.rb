@@ -24,7 +24,7 @@ module Cinch
         @mutex.synchronize do
           messages = [messages].flatten.map {|s| s.to_s.chomp}
           messages.each do |msg|
-            @output.puts Time.now.strftime("%m/%d/%Y %H:%M:%S ") + msg
+            @output.puts Time.now.strftime("%m/%d/%Y %H:%M:%S ") + msg.encode("locale", {:invalid => :replace, :undef => :replace})
           end
         end
       end

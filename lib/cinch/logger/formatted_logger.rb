@@ -55,7 +55,7 @@ module Cinch
               message << prefix + pre_parts.join(" ")
               message << colorize(" :#{msg}", :yellow) if msg
             end
-            @output.puts message.encode
+            @output.puts message.encode("locale", {:invalid => :replace, :undef => :replace})
           end
         end
       end

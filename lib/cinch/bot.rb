@@ -311,18 +311,20 @@ module Cinch
       event = event.to_sym
 
       regexps.map! do |regexp|
-        case regexp
-        when Pattern
-          regexp
-        when Regexp
-          Pattern.new(nil, regexp)
-        else
-          if event == :ctcp
-            Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/)
-          else
-            Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}$/)
-          end
-        end
+        pattern = case regexp
+                 when Pattern
+                   regexp
+                 when Regexp
+                   Pattern.new(nil, regexp, nil)
+                 else
+                   if event == :ctcp
+                     Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/)
+                   else
+                     Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
+                   end
+                 end
+        debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
+        pattern
       end
       (@events[event] ||= []) << [regexps, args, block]
     end
@@ -501,7 +503,8 @@ module Cinch
                                  :max_messages => nil,
                                  :plugins => OpenStruct.new({
                                                               :plugins => [],
-                                                              :prefix  => "!",
+                                                              :prefix  => /^!/,
+                                                              :suffix  => nil,
                                                               :options => Hash.new {|h,k| h[k] = {}},
                                                             }),
                                  :channels => [],
