@@ -1,4 +1,4 @@
-* Cinch 1.1.0, xx January 2011
+* Cinch 1.1.0, 15 January 2011
   - New signals
     - :op(<Message>message, <User>target)         – emitted when someone gets opped
     - :deop(<Message>message, <User>target)       – emitted when someone gets deopped
