@@ -81,7 +81,7 @@ module Cinch
       #
       # @param [String] suffix
       # @return [void]
-      def prefix(suffix = nil, &block)
+      def suffix(suffix = nil, &block)
         raise ArgumentError if suffix.nil? && block.nil?
         @__cinch_suffix = suffix || block
       end
