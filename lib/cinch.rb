@@ -1,7 +1,7 @@
 require 'cinch/bot'
 
 module Cinch
-  VERSION = '1.1.0'
+  VERSION = '1.1.1'
 
   # @return [String]
   # @todo Handle mIRC color codes more gracefully.
