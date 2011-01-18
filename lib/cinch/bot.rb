@@ -318,7 +318,7 @@ module Cinch
                    Pattern.new(nil, regexp, nil)
                  else
                    if event == :ctcp
-                     Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/)
+                     Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/, nil)
                    else
                      Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
                    end
