@@ -4,7 +4,7 @@ module Cinch
 
     module ClassMethods
       # @api private
-      Match = Struct.new(:pattern, :use_prefix, :use_suffix, :method)
+      Match = Struct.new(:pattern, :use_prefix, :use_suffix, :react_on, :targets, :method)
       # @api private
       Listener = Struct.new(:event, :method)
       # @api private
@@ -21,9 +21,15 @@ module Cinch
       #   pattern.
       # @return [void]
       def match(pattern, options = {})
-        options = {:use_prefix => true, :use_suffix => true, :method => :execute}.merge(options)
+        options = {
+          :use_prefix => true,
+          :use_suffix => true,
+          :method => :execute,
+          :react_on => nil,
+          :targets => nil,
+        }.merge(options)
         @__cinch_matches ||= []
-        @__cinch_matches << Match.new(pattern, options[:use_prefix], options[:use_suffix], options[:method])
+        @__cinch_matches << Match.new(pattern, options[:use_prefix], options[:use_suffix], options[:react_on], options[:targets], options[:method])
       end
 
       # Events to listen to.
@@ -179,7 +185,7 @@ module Cinch
         end
 
         if (@__cinch_matches ||= []).empty?
-          @__cinch_matches << Match.new(plugin_name, true, true, :execute)
+          @__cinch_matches << Match.new(plugin_name, true, true, nil, nil, :execute)
         end
 
         prefix = @__cinch_prefix || bot.config.plugins.prefix
@@ -190,22 +196,24 @@ module Cinch
           _suffix = pattern.use_suffix ? suffix : nil
 
           pattern_to_register = Pattern.new(_prefix, pattern.pattern, _suffix)
-          react_on = @__cinch_react_on || :message
+          react_on = pattern.react_on || @__cinch_react_on || :message
 
           bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
           bot.on(react_on, pattern_to_register, instance, pattern) do |message, plugin, pattern, *args|
-            if plugin.respond_to?(pattern.method)
-              method = plugin.method(pattern.method)
-              arity = method.arity - 1
-              if arity > 0
-                args = args[0..arity - 1]
-              elsif arity == 0
-                args = []
+            if pattern.targets.nil? || pattern.targets.any? { |target| target.to_s == ((message.channel? ? message.channel : message.user).to_s) }
+              if plugin.respond_to?(pattern.method)
+                method = plugin.method(pattern.method)
+                arity = method.arity - 1
+                if arity > 0
+                  args = args[0..arity - 1]
+                elsif arity == 0
+                  args = []
+                end
+                plugin.class.__hooks(:pre, :match).each {|hook| plugin.__send__(hook.method, message)}
+                method.call(message, *args)
+                plugin.class.__hooks(:post, :match).each {|hook| plugin.__send__(hook.method, message)}
               end
-              plugin.class.__hooks(:pre, :match).each {|hook| plugin.__send__(hook.method, message)}
-              method.call(message, *args)
-              plugin.class.__hooks(:post, :match).each {|hook| plugin.__send__(hook.method, message)}
             end
           end
         end
