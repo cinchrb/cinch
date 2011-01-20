@@ -103,6 +103,14 @@ module Cinch
         @__cinch_react_on = target
       end
 
+      # Set which targets to accept messages from
+      #
+      # @param [Array<String>] targets Channel names and nicknames
+      # @return [void]
+      def targets(targets)
+        @__cinch_targets = targets
+      end
+
       # Define the plugin name.
       #
       # @param [String] name
@@ -200,8 +208,9 @@ module Cinch
 
           bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
-          bot.on(react_on, pattern_to_register, instance, pattern) do |message, plugin, pattern, *args|
-            if pattern.targets.nil? || pattern.targets.any? { |target| target.to_s == ((message.channel? ? message.channel : message.user).to_s) }
+          bot.on(react_on, pattern_to_register, instance, pattern, @__cinch_targets) do |message, plugin, pattern, targets, *args|
+            targets ||= pattern.targets
+            if targets.nil? || targets.any? { |target| target.to_s == ((message.channel? ? message.channel : message.user).to_s) }
               if plugin.respond_to?(pattern.method)
                 method = plugin.method(pattern.method)
                 arity = method.arity - 1
