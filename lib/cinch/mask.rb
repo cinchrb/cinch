@@ -31,7 +31,7 @@ module Cinch
     # @param [User] user
     # @return [Boolean]
     def match(user)
-      return user.mask =~ @regexp
+      return user.mask.mask =~ @regexp
 
       # TODO support CIDR (freenode)
     end
