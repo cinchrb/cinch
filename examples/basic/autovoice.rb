@@ -22,7 +22,7 @@ bot = Cinch::Bot.new do
     end
   end
 
-  on :channel, /^!autovoice (on|off)/ do |m, option|
+  on :channel, /^!autovoice (on|off)$/ do |m, option|
     @autovoice = option == "on"
 
     m.reply "Autovoice is now #{@autovoice ? 'enabled' : 'disabled'}"

@@ -51,11 +51,15 @@ module Cinch
 
         message = @queue.pop.to_s.chomp
 
-        @log << Time.now
-        @bot.logger.log(message, :outgoing) if @bot.config.verbose
+        begin
+          @socket.writeline Cinch.encode_outgoing(message, @bot.config.encoding) + "\r\n"
+          @log << Time.now
+          @bot.logger.log(message, :outgoing) if @bot.config.verbose
 
-        @time_since_last_send = Time.now
-        @socket.print message.encode(@bot.config.encoding, {:invalid => :replace, :undef => :replace}) + "\r\n"
+          @time_since_last_send = Time.now
+        rescue IOError
+          @bot.debug "Could not send message (connectivity problems): #{message}"
+        end
       end
     end
   end

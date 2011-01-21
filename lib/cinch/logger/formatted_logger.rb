@@ -28,13 +28,13 @@ module Cinch
       def log(messages, kind = :generic)
         @mutex.synchronize do
           messages = [messages].flatten.map {|s| s.to_s.chomp}
-
-          messages.each do |message|
+          messages.each do |msg|
+            message = Time.now.strftime("[%Y/%m/%d %H:%M:%S.%L] ")
             if kind == :debug
               prefix = colorize("!! ", :yellow)
-              message = prefix + message
+              message << prefix + msg
             else
-              pre, msg = message.split(" :", 2)
+              pre, msg = msg.split(" :", 2)
               pre_parts = pre.split(" ")
 
               if kind == :incoming
@@ -52,10 +52,10 @@ module Cinch
                 pre_parts[0] = colorize(pre_parts[0], :bold)
               end
 
-              message = prefix + pre_parts.join(" ")
+              message << prefix + pre_parts.join(" ")
               message << colorize(" :#{msg}", :yellow) if msg
             end
-            @output.puts message.encode
+            @output.puts message.encode("locale", {:invalid => :replace, :undef => :replace})
           end
         end
       end
@@ -65,6 +65,7 @@ module Cinch
       # @param [Array<Symbol>] codes array of colors to apply
       # @return [String] colorized string
       def colorize(text, *codes)
+        return text unless @output.tty?
         COLORS.values_at(*codes).join + text + COLORS[:reset]
       end
 

@@ -38,7 +38,7 @@ module Cinch
   # 412 - 414 are returned by PRIVMSG to indicate that the message
   # wasn't delivered for some reason. ERR_NOTOPLEVEL and
   # ERR_WILDTOPLEVEL are errors that are returned when an invalid use of
-  # "PRIVMSG $<server>" or "PRIVMSG #<host>" is attempted.
+  # "PRIVMSG $&lt;server&gt;" or "PRIVMSG #&lt;host&gt;" is attempted.
   ERR_WILDTOPLEVEL = 414
 
   # Returned to a registered client to indicate that the command sent is
@@ -229,8 +229,10 @@ module Cinch
   # Reply by the server showing its version details. The &lt;version&gt;
   # is the version of the software being used (including any patchlevel
   # revisions) and the &lt;debuglevel&gt; is used to indicate if the
-  # server is running in "debug mode".<BR> The "comments" field may
-  # contain any comments about the version or further version details.
+  # server is running in "debug mode".
+  #
+  #The "comments" field may contain any comments about the version or
+  # further version details.
   RPL_VERSION  = 351
   RPL_WHOREPLY = 352
 
@@ -238,7 +240,7 @@ module Cinch
   # message. The RPL_WHOREPLY is only sent if there is an appropriate
   # match to the WHO query. If there is a list of parameters supplied
   # with a WHO message, a RPL_ENDOFWHO must be sent after processing
-  # each list item with <name> being the item.
+  # each list item with &lt;name&gt; being the item.
   RPL_ENDOFWHO  = 315
   RPL_NAMREPLY  = 353
   RPL_NAMEREPLY = RPL_NAMREPLY

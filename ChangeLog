@@ -1,0 +1,119 @@
+* Cinch 1.1.1, 18 January 2011
+  - Fixed a regression introduced by 1.1.0, which caused Plugin.ctcp
+    and thus implementing custom CTCP handlers to break
+
+* Cinch 1.1.0, 15 January 2011
+  - New signals
+    - :op(<Message>message, <User>target)         – emitted when someone gets opped
+    - :deop(<Message>message, <User>target)       – emitted when someone gets deopped
+    - :voice(<Message>message, <User>target)      – emitted when someone gets voiced
+    - :devoice(<Message>message, <User>target)    – emitted when someone gets devoiced
+    - :halfop(<Message>message, <User>target)     – emitted when someone gets half-opped
+    - :dehalfop(<Message>message, <User>target)   – emitted when someone gets de-half-opped
+    - :ban(<Message>message, <Ban>ban)            – emitted when someone gets banned
+    - :unban(<Message>message, <Ban>ban)          – emitted when someone gets unbanned
+    - :mode_change(<Message>message, <Array>modes) – emitted on any mode change on a user or channel
+    - :catchall(<Message>message)                 – a generic signal that matches any kind of event
+  - New methods
+    - User#last_nick    – stores the last nick of a user. This can for
+      example be used in `on :nick` to compare a user's old nick against
+      the new one.
+    - User#notice, Channel#notice and Bot#notice – for sending notices
+    - Message#to_s      – Provides a nicer representation of Message objects
+    - Channel#has_user? – Provides an easier way of checking if a given
+      user is in a channel
+    - Channel#half_opped? – Check if a user is half-opped
+  - Plugins/extensions can send their own events using Bot#dispatch
+  - Modes as reported by Channel#users now use mode characters, not prefixes (e.g. "@" becomes "o")
+  - Modes reported by Channel#users now are an array of modes, not a string anymore
+  - The formatted logger (which is the default one) has been improved
+    and now contains timestamps and won't use color codes when not
+    writing to a tty. Additionally it can log objects which are not
+    strings.
+  - A minor bug in the handling of the original IRC casemap has been fixed
+  - User#authed? now is synced and won't return a wrong value on the
+    first use
+  - The string "!help" in the middle of a message won't cause Cinch to
+    print help messages anymore
+  - Quitting will not cause a deadlock anymore
+  - Using a regexp prefix with a string pattern no longer breaks Cinch
+  - User and channel caching have been completly rewritten, allowing to
+    run multiple bots at once. This deprecates and replaces the
+    following methods (syntax: deprecated → substitution):
+    - User.find_ensured    → UserManager#find_ensured
+    - User.find            → UserManager#find
+    - User.all             → UserManager#each
+    - Channel.find_ensured → ChannelManager#find_ensured
+    - Channel.find         → ChannelManager#find
+    - Channel.all          → ChannelManager#each
+
+    Additionally this changes fix a bug where wrong User/Channel objects
+    could've been returned.
+  - Additionally to prefixes, plugins can now have suffixes
+    New option: plugins.suffix
+  - Various improvements to the handling of SSL have been made
+    - The option 'ssl' now is a set of options, as opposed to a simple boolean switch
+      - 'ssl.use' (Boolean) sets if SSL should be used
+      - 'ssl.verify' (Boolean) sets if the SSL certificate should be verified
+      - 'ssl.ca_path' (String) sets the path to a directory with
+        certificates. This has to be set properly for 'ssl.verify' to work.
+      - 'ssl.client_cert' (String) allows to set a client certificate,
+        which some networks can use for authentication (see
+        http://www.oftc.net/oftc/NickServ/CertFP)
+  - Instances of Mask can be checked for equality
+  - Mask#match has been fixed
+  - Timer functionality has been added to plugins
+  - A new option 'nicks' has been added which overrules 'nick' and
+    allows Cinch to try multiple nicks before appending underscores
+  - Proper disconnect and reconnect handling has been added to Cinch
+    - Cinch will notice unexpected disconnects
+    - New options:
+      - timeouts.read    – If no data has been received for X seconds,
+        consider the connection dead
+      - timeouts.connect – Give up connecting after X seconds
+      - ping_interval    – Ping the server every X seconds. This interval
+        should be smaller than 'timeouts.read' to prevent Cinch from
+        falsely declaring a connection dead
+      - reconnect        – If true, try to reconnect after a connection loss
+  - pre- and post-execution hooks have been added to the plugin
+    architecture
+  - A new option 'user_host' has been added, which allows Cinch to
+    bind to a specific IP/Host, which is commonly used for using so
+    called "vhosts"
+  - Added support for RPL_WHOISREGNICK (+r flag on UnrealIRC)
+  - Prefixes, suffixes and patterns can now, additionally to strings
+    and regexps, also be procs/lambdas, which get executed everytime
+    before a message is matched against the pattern. This allows for
+    highly dynamic patterns. One possible use case are plugins that
+    only respond if the bot was directly addressed.
+  - A new encoding called :irc has been added and made the default.
+    - If incoming text is valid UTF-8, it will be interpreted as such.
+      If it fails validation, a CP1252 -> UTF-8 conversion is
+      performed.
+    - If your outgoing message contains only characters that fit
+      inside the CP1252 code page, the entire message will be sent
+      that way. If the text doesn't fit inside the CP1252 code page,
+      it will be sent using its original encoding, which should be UTF-8.
+    - This hybrid encoding allows Cinch to transparently handle nearly
+      all configurations in western countries, even if users in a
+      single channel cannot decide on one encoding. The :irc encoding
+      exploits the fact that most people either use UTF-8 or CP1252
+      (which is nearly identical to ISO-8859-1) and that text encoded
+      in CP1252 is not valid in UTF-8.
+  - Invalid bytes in incoming messages (e.g. if a wrong encoding has
+    been used) will be replaced with question marks (or U+FFFD if
+    using UTF-8)
+
+* Cinch 1.0.2, 01 September 2010
+  - Left-over debug output has been removed
+  - Patterns won't be wrongly modified during registration anymore
+  - Using the same internal and external encoding doesn't break Cinch anymore
+  - Messages coming from SSL will be properly encoded
+
+* Cinch 1.0.1, 19 August 2010
+  - fix several bugs regarding user syncing and unsyncing which cause
+    exceptions in the core of Cinch and which don't unsync users who
+    quit.
+
+* Cinch 1.0.0, 18 August 2010
+  - first stable release of Cinch

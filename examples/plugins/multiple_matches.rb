@@ -1,11 +1,5 @@
 require 'cinch'
 
-# Give this bot ops in a channel and it'll auto voice
-# visitors
-#
-# Enable with !autovoice on
-# Disable with !autovoice off
-
 class MultiCommands
   include Cinch::Plugin
   match /command1 (.+)/, method: :command1
@@ -29,12 +23,9 @@ bot = Cinch::Bot.new do
   configure do |c|
     c.nick            = "cinch_multi"
     c.server          = "irc.freenode.org"
+    c.channels        = ["#cinch-bots"]
     c.verbose         = true
     c.plugins.plugins = [MultiCommands]
-  end
-
-  on :connect do
-    bot.join "#dominikh"
   end
 end
 

@@ -3,7 +3,7 @@ module Cinch
   class User
     include Syncable
 
-    @users = {}
+    @users = {} # this will be removed with version 2.0.0
     class << self
 
       # @overload find_ensured(nick, bot)
@@ -21,35 +21,54 @@ module Cinch
       #   @param [Bot]    bot  An instance of bot
       #
       # @return [User]
+      # @deprecated See {Bot#user_manager} and {UserManager#find_ensured} instead
+      # @note This method does not work properly if running more than one bot
+      # @note This method will be removed in Cinch 2.0.0
       def find_ensured(*args)
-        # FIXME CASEMAPPING
+        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.find_ensured should not be used anymore."
+        puts caller
+
         case args.size
         when 2
           nick = args.first
-          bargs = [args.first]
           bot  = args.last
+          bargs = [nick]
         when 4
           nick = args[1]
-          bot = args.pop
+          bot  = args.pop
           bargs = args
         else
           raise ArgumentError
         end
-        downcased_nick = nick.irc_downcase(bot.irc.isupport["CASEMAPPING"])
-        @users[downcased_nick] ||= new(*bargs, bot)
-        @users[downcased_nick]
+        downcased_nick = nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
+        @users[downcased_nick] = args.last.user_manager.find_ensured(*args[0..-2])
+        # note: the complete case statement and the assignment to
+        #   @users is only for keeping compatibility with older
+        #   versions, which still use User.find and User.all.
       end
 
       # Finds a user.
       #
       # @param [String] nick nick of a user
       # @return [User, nil]
+      # @deprecated See {Bot#user_manager} and {UserManager#find} instead
+      # @note This method does not work properly if running more than one bot
+      # @note This method will be removed in Cinch 2.0.0
       def find(nick)
-        @users[nick]
+        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.find should not be used anymore."
+        puts caller
+
+        @users[downcased_nick]
       end
 
       # @return [Array<User>] Returns all users
+      # @deprecated See {Bot#user_manager} and {CacheManager#each} instead
+      # @note This method does not work properly if running more than one bot
+      # @note This method will be removed in Cinch 2.0.0
       def all
+        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.all should not be used anymore."
+        puts caller
+
         @users.values
       end
     end
@@ -57,12 +76,16 @@ module Cinch
 
     # @return [String]
     attr_reader :nick
+    # @return [String]
+    attr_reader :last_nick
     # @return [Bot]
     attr_reader :bot
     # @return [Boolean]
     attr_reader :synced
     # @return [Boolean]
     attr_reader :in_whois
+    # @api private
+    attr_writer :in_whois
 
     # @return [String]
     attr_reader :user
@@ -115,12 +138,12 @@ module Cinch
     # By default, you can use methods like User#user, User#host and
     # alike – If you however fear that another thread might change
     # data while you're using it and if this means a critical issue to
-    # your code, you can store the result of this method and work with
-    # that instead.
+    # your code, you can store a clone of the result of this method
+    # and work with that instead.
     #
     # @example
-    #   on :channel do
-    #     data = user.data
+    #   on :channel do |m|
+    #     data = m.user.data.dup
     #     do_something_with(data.user)
     #     do_something_with(data.host)
     #   end
@@ -246,6 +269,8 @@ module Cinch
       super
     end
 
+    # @group Sending messages
+
     # Send a message to the user.
     #
     # @param [String] message the message
@@ -255,6 +280,24 @@ module Cinch
     end
     alias_method :privmsg, :send
     alias_method :msg, :send
+
+    # Send a notice to the user.
+    #
+    # @param [String] message the message
+    # @return [void]
+    def notice(message)
+      @bot.notice(@nick, message)
+    end
+
+    # Like {#safe_send} but for notices.
+    #
+    # @param (see #safe_send)
+    # @return (see #safe_send)
+    # @see #safe_send
+    # @todo (see #safe_send)
+    def safe_notice(message)
+      @bot.safe_notice(@nick, message)
+    end
 
     # Send a message to the user, but remove any non-printable
     # characters. The purpose of this method is to send text from
@@ -307,6 +350,8 @@ module Cinch
       @bot.safe_action(@name, message)
     end
 
+    # @endgroup
+
     # @return [String]
     def to_s
       @nick
@@ -345,6 +390,12 @@ module Cinch
       }
 
       Mask.new(s)
+    end
+
+    # @api private
+    def update_nick(new_nick)
+      @last_nick, @nick = @nick, new_nick
+      @bot.user_manager.update_nick(self)
     end
 
     # Provides synced access to user attributes.

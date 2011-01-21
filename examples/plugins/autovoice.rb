@@ -9,7 +9,7 @@ require 'cinch'
 class Autovoice
   include Cinch::Plugin
   listen_to :join
-  match /autovoice (on|off)/
+  match /autovoice (on|off)$/
 
   def listen(m)
     unless m.user.nick == bot.nick
@@ -28,12 +28,9 @@ bot = Cinch::Bot.new do
   configure do |c|
     c.nick            = "cinch_autovoice"
     c.server          = "irc.freenode.org"
+    c.channels        = ["#cinch-bots"]
     c.verbose         = true
     c.plugins.plugins = [Autovoice]
-  end
-
-  on :connect do
-    bot.join "#cinch"
   end
 end
 

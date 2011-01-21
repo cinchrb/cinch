@@ -10,7 +10,8 @@ module Cinch
     # @return [Array<String>]
     attr_accessor :params
     attr_reader :events
-
+    # @return [Bot]
+    attr_reader :bot
     def initialize(msg, bot)
       @raw = msg
       @bot = bot
@@ -50,7 +51,7 @@ module Cinch
       host = @prefix[/@(\S+)$/, 1]
 
       return nil if nick.nil?
-      @user ||= User.find_ensured(user, nick, host, @bot)
+      @user ||= @bot.user_manager.find_ensured(user, nick, host)
     end
 
     # @return [String, nil]
@@ -91,14 +92,14 @@ module Cinch
       @channel ||= begin
                      case command
                      when "INVITE", RPL_CHANNELMODEIS.to_s, RPL_BANLIST.to_s
-                       Channel.find_ensured(params[1], @bot)
+                       @bot.channel_manager.find_ensured(params[1])
                      when RPL_NAMEREPLY.to_s
-                       Channel.find_ensured(params[2], @bot)
+                       @bot.channel_manager.find_ensured(params[2])
                      else
                        if params.first.start_with?("#")
-                         Channel.find_ensured(params.first, @bot)
+                         @bot.channel_manager.find_ensured(params.first)
                        elsif numeric_reply? and params[1].start_with?("#")
-                         Channel.find_ensured(params[1], @bot)
+                         @bot.channel_manager.find_ensured(params[1])
                        end
                      end
                    end
@@ -121,6 +122,7 @@ module Cinch
       $1
     end
 
+    # @return [Array<String>, nil]
     def ctcp_args
       return unless ctcp?
       ctcp_message.split(" ")[1..-1]
@@ -172,7 +174,12 @@ module Cinch
     # @return [void]
     def ctcp_reply(answer)
       return unless ctcp?
-      @bot.raw "NOTICE #{user.nick} :\001#{ctcp_command} #{answer}\001"
+      user.notice "\001#{ctcp_command} #{answer}\001"
+    end
+
+    # @return [String]
+    def to_s
+      "#<Cinch::Message @raw=#{raw.chomp.inspect} @params=#{@params.inspect} channel=#{channel.inspect} user=#{user.inspect}>"
     end
 
     private
