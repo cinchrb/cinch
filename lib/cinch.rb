@@ -3,6 +3,13 @@ require 'cinch/bot'
 module Cinch
   VERSION = '1.1.1'
 
+  # @return [Object]
+  # @api private
+  def self.string_to_const(s)
+    return s unless s.is_a?(String)
+    s.split("::").inject(Kernel) {|base, name| base.const_get(name) }
+  end
+
   # @return [String]
   # @todo Handle mIRC color codes more gracefully.
   # @api private

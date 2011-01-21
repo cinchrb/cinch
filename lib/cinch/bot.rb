@@ -31,6 +31,13 @@ require "cinch/cache_manager"
 require "cinch/channel_manager"
 require "cinch/user_manager"
 
+require "cinch/configuration"
+require "cinch/bot_configuration"
+require "cinch/plugins_configuration"
+require "cinch/ssl_configuration"
+require "cinch/timeouts_configuration"
+
+
 module Cinch
 
   class Bot
@@ -481,42 +488,7 @@ module Cinch
     def initialize(&b)
       @logger = Logger::FormattedLogger.new($stderr)
       @events = {}
-      @config = OpenStruct.new({
-                                 :server => "localhost",
-                                 :port   => 6667,
-                                 :ssl    => OpenStruct.new({
-                                                             :use => false,
-                                                             :verify => false,
-                                                             :client_cert => nil,
-                                                             :ca_path => "/etc/ssl/certs",
-                                                           }),
-                                 :password => nil,
-                                 :nick   => "cinch",
-                                 :nicks  => nil,
-                                 :realname => "cinch",
-                                 :verbose => true,
-                                 :messages_per_second => 0.5,
-                                 :server_queue_size => 10,
-                                 :strictness => :forgiving,
-                                 :message_split_start => '... ',
-                                 :message_split_end   => ' ...',
-                                 :max_messages => nil,
-                                 :plugins => OpenStruct.new({
-                                                              :plugins => [],
-                                                              :prefix  => /^!/,
-                                                              :suffix  => nil,
-                                                              :options => Hash.new {|h,k| h[k] = {}},
-                                                            }),
-                                 :channels => [],
-                                 :encoding => :irc,
-                                 :reconnect => true,
-                                 :local_host => nil,
-                                 :timeouts => OpenStruct.new({
-                                                               :read => 240,
-                                                               :connect => 10,
-                                                             }),
-                                 :ping_interval => 120,
-                               })
+      @config = BotConfiguration.new
 
       @semaphores_mutex = Mutex.new
       @semaphores = Hash.new { |h,k| h[k] = Mutex.new }
