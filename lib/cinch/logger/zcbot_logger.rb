@@ -24,7 +24,9 @@ module Cinch
         @mutex.synchronize do
           messages = [messages].flatten.map {|s| s.to_s.chomp}
           messages.each do |msg|
-            @output.puts Time.now.strftime("%m/%d/%Y %H:%M:%S ") + msg.encode("locale", {:invalid => :replace, :undef => :replace})
+            # working around a bug in jruby 1.6.0.RC1
+            destination_encoding = Encoding.find("locale")
+            @output.puts Time.now.strftime("%m/%d/%Y %H:%M:%S ") + msg.encode(destination_encoding, {:invalid => :replace, :undef => :replace})
           end
         end
       end
