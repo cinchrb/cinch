@@ -1,4 +1,11 @@
 begin
+  # rr requires ObjectSpace
+  require "java"
+  JRuby.objectspace = true
+rescue LoadError
+end
+
+begin
   require 'simplecov'
   SimpleCov.start do
     add_filter "/test/"
