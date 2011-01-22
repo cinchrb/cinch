@@ -50,7 +50,45 @@ class TestIRC
   end
 end
 
+require "cinch/logger/null_logger"
 Bot = TestBot.new
+Bot.logger = Cinch::Logger::NullLogger.new
+
+
+require "thread"
+class FakeSocket
+  def initialize
+    @queue = Queue.new
+  end
+
+  def __write(s)
+    @queue << s
+  end
+
+  def __wait_until_empty
+    loop do
+      return if @queue.empty?
+      sleep 0.001
+    end
+  end
+
+  def readline
+    @queue.pop
+  end
+end
+
+class FakeMessageQueue
+  attr_reader :messages
+  def initialize
+    @messages = []
+  end
+
+  def queue(s)
+    @messages << s
+  end
+end
+
+Thread.abort_on_exception = true
 
 path = File.expand_path(File.dirname __FILE__)
 Dir["#{path}/cinch/**/*_test.rb"].each { |tf| require tf }
