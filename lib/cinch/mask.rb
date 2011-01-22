@@ -28,10 +28,10 @@ module Cinch
       @mask.hash
     end
 
-    # @param [User] user
+    # @param [Ban, Mask, User, String] target
     # @return [Boolean]
-    def match(user)
-      return user.mask.mask =~ @regexp
+    def match(target)
+      return self.class.from(target).mask =~ @regexp
 
       # TODO support CIDR (freenode)
     end
