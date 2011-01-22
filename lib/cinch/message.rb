@@ -78,7 +78,7 @@ module Cinch
 
     # @return [Boolean] true if the message is an CTCP message
     def ctcp?
-      params.last =~ /\001.+\001/
+      !!(params.last =~ /\001.+\001/)
     end
 
     # @return [String, nil] the command part of an CTCP message
