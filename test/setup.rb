@@ -50,10 +50,6 @@ class TestIRC
   end
 end
 
-class Cinch::Message
-  attr_reader :bot
-end
-
 Bot = TestBot.new
 
 path = File.expand_path(File.dirname __FILE__)
