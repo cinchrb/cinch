@@ -67,28 +67,28 @@ context "A message" do
     asserts("Channel#name") { topic.channel.name }.equals("#channel")
     asserts(:ctcp?).equals(false)
     asserts("can be replied to, without a prefix") {
-      user = Cinch::User.find_ensured("cinch", topic.bot)
+      user = Bot.user_manager.find_ensured("cinch")
       mock(user).user.returns "cinch"
       mock(user).host.returns "cinchrb.org"
       topic.reply "reply message"
       topic.bot.raw_log.last == "PRIVMSG #channel :reply message"
     }
     asserts("can be replied to, with a prefix") {
-      user = Cinch::User.find_ensured("cinch", topic.bot)
+      user = Bot.user_manager.find_ensured("cinch")
       mock(user).user.returns "cinch"
       mock(user).host.returns "cinchrb.org"
       topic.reply "reply message", true
       topic.bot.raw_log.last == "PRIVMSG #channel :nick: reply message"
     }
     asserts("can be safe-replied to, without a prefix") {
-      user = Cinch::User.find_ensured("cinch", topic.bot)
+      user = Bot.user_manager.find_ensured("cinch")
       mock(user).user.returns "cinch"
       mock(user).host.returns "cinchrb.org"
       topic.safe_reply "reply message\000"
       topic.bot.raw_log.last == "PRIVMSG #channel :reply message"
     }
     asserts("can be safe-replied to, with a prefix") {
-      user = Cinch::User.find_ensured("cinch", topic.bot)
+      user = Bot.user_manager.find_ensured("cinch")
       mock(user).user.returns "cinch"
       mock(user).host.returns "cinchrb.org"
       topic.safe_reply "reply message\000", true
@@ -101,28 +101,28 @@ context "A message" do
     asserts(:channel?).equals(false)
     asserts(:ctcp?).equals(false)
     asserts("can be replied to, without a prefix") {
-      user = Cinch::User.find_ensured("cinch", topic.bot)
+      user = Bot.user_manager.find_ensured("cinch")
       mock(user).user.returns "cinch"
       mock(user).host.returns "cinchrb.org"
       topic.reply "reply message"
       topic.bot.raw_log.last == "PRIVMSG nick :reply message"
     }
     asserts("can be replied to, but a prefix will be ignored") {
-      user = Cinch::User.find_ensured("cinch", topic.bot)
+      user = Bot.user_manager.find_ensured("cinch")
       mock(user).user.returns "cinch"
       mock(user).host.returns "cinchrb.org"
       topic.reply "reply message", true
       topic.bot.raw_log.last == "PRIVMSG nick :reply message"
     }
     asserts("can be safe-replied to, without a prefix") {
-      user = Cinch::User.find_ensured("cinch", topic.bot)
+      user = Bot.user_manager.find_ensured("cinch")
       mock(user).user.returns "cinch"
       mock(user).host.returns "cinchrb.org"
       topic.safe_reply "reply message\000"
       topic.bot.raw_log.last == "PRIVMSG nick :reply message"
     }
     asserts("can be safe-replied to, but a prefix will be ignored") {
-      user = Cinch::User.find_ensured("cinch", topic.bot)
+      user = Bot.user_manager.find_ensured("cinch")
       mock(user).user.returns "cinch"
       mock(user).host.returns "cinchrb.org"
       topic.safe_reply "reply message\000", true
