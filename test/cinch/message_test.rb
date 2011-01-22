@@ -24,7 +24,7 @@ context "A message" do
     context "and arguments" do
       setup { Cinch::Message.new(":nick!user@host COMMAND arg1 arg2", Bot) }
       asserts(:params).equals(["arg1", "arg2"])
-      asserts(:message).nil
+      asserts(:message).equals("arg2")
       asserts(:ctcp?).equals(false)
 
       context "and a message" do
