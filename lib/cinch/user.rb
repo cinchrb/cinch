@@ -40,7 +40,7 @@ module Cinch
         else
           raise ArgumentError
         end
-        downcased_nick = nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
+        downcased_nick = nick.irc_downcase(bot.irc.isupport["CASEMAPPING"])
         @users[downcased_nick] = args.last.user_manager.find_ensured(*args[0..-2])
         # note: the complete case statement and the assignment to
         #   @users is only for keeping compatibility with older
