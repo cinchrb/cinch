@@ -7,7 +7,7 @@ context "A mask" do
   asserts(:host).equals("cinchrb.org")
   asserts(:mask).equals(test_mask)
   asserts(:to_s).equals(test_mask)
-  asserts("#to_s returns a *copy* of the stored mask") { topic.to_s.object_id != topic.mask }
+  asserts("#to_s returns a *copy* of the stored mask") { topic.to_s.object_id != topic.mask && topic.to_s == topic.mask}
   should("be checkable for equality using #==") { topic == topic.dup }
   should("match a User with a matching mask") { topic.match(test_user) }
   should("not match a User with a mismatching mask") { not topic.match(test_user("not_cinchy!cinch@cinchrb.org")) }
@@ -27,7 +27,7 @@ context "A mask" do
   should("not be able to be created from any other object")
 
   context "with wildcards" do
-    setup { Cinch::Mask.new("*!*@cinchrb.org") }
+    setup { Cinch::Mask.new("someon?!*@cinchrb.org") }
     should("match a User with a matching mask") { topic.match(test_user("someone!someone@cinchrb.org")) }
     should("not match a User with a mismatching mask") { not topic.match(test_user("someone!someone@localhost")) }
     should("match a matching Mask") { topic.match(Cinch::Mask.new("someone!someone@cinchrb.org")) }
