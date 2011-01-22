@@ -5,12 +5,14 @@ begin
 rescue LoadError
 end
 
-begin
-  require 'simplecov'
-  SimpleCov.start do
-    add_filter "/test/"
+if ENV["SIMPLECOV"]
+  begin
+    require 'simplecov'
+    SimpleCov.start do
+      add_filter "/test/"
+    end
+  rescue LoadError
   end
-rescue LoadError
 end
 
 $: << File.expand_path('../../lib/', __FILE__)
