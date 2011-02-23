@@ -107,7 +107,8 @@ module Cinch
     # @param [User, String] user An {User}-object or a nickname
     # @return [Boolean] Check if a user is in the channel
     def has_user?(user)
-      @users.has_key?(User(user))
+      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
+      @users.has_key?(user)
     end
 
 
