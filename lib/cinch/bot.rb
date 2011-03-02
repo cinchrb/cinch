@@ -101,7 +101,7 @@ module Cinch
     # @yield Expects a block containing method definitions
     # @return [void]
     def helpers(&b)
-      Callback.class_eval(&b)
+      @callback.instance_eval(&b)
     end
 
     # Since Cinch uses threads, all handlers can be run
