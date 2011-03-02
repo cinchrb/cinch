@@ -39,12 +39,12 @@ module Cinch
         @bot.logger.debug "Deprecation warning: Beginning from version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
       end
 
-      if @bot.config.ssl == true || (@bot.config.ssl.is_a?(OpenStruct) && @bot.config.ssl.use)
+      if @bot.config.ssl == true || (@bot.config.ssl.is_a?(SSLConfiguration) && @bot.config.ssl.use)
         require 'openssl'
 
         ssl_context = OpenSSL::SSL::SSLContext.new
 
-        if @bot.config.ssl.is_a?(OpenStruct)
+        if @bot.config.ssl.is_a?(SSLConfiguration)
           if @bot.config.ssl.client_cert
             ssl_context.cert = OpenSSL::X509::Certificate.new(File.read(@bot.config.ssl.client_cert))
             ssl_context.key = OpenSSL::PKey::RSA.new(File.read(@bot.config.ssl.client_cert))
