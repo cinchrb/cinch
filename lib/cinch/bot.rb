@@ -380,8 +380,8 @@ module Cinch
     #
     # @yieldparam [Struct] config the bot's config
     # @return [void]
-    def configure(&block)
-      @callback.instance_exec(@config, &block)
+    def configure
+      yield @config
     end
 
     # Disconnects from the server.
