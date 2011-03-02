@@ -494,6 +494,7 @@ module Cinch
                                  :nick   => "cinch",
                                  :nicks  => nil,
                                  :realname => "cinch",
+                                 :user => "cinch",
                                  :verbose => true,
                                  :messages_per_second => 0.5,
                                  :server_queue_size => 10,
