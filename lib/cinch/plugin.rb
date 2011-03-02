@@ -295,7 +295,7 @@ module Cinch
     #
     # @return [Hash] A hash of options
     def config
-      @bot.config.plugins.options[self.class]
+      @bot.config.plugins.options[self.class] || {}
     end
 
     def self.included(by)
