@@ -9,6 +9,7 @@ require "cinch/rubyext/infinity"
 
 require "cinch/exceptions"
 
+require "cinch/handler"
 require "cinch/helpers"
 require "cinch/logger/logger"
 require "cinch/logger/null_logger"
@@ -34,6 +35,8 @@ require "cinch/user_manager"
 module Cinch
 
   class Bot
+    include Helpers
+
     # @return [Config]
     attr_reader :config
     # @return [IRC]
@@ -69,39 +72,12 @@ module Cinch
 
     # @group Helper methods
 
-    # Helper method for turning a String into a {Channel} object.
-    #
-    # @param [String] channel a channel name
-    # @return [Channel] a {Channel} object
-    # @example
-    #   on :message, /^please join (#.+)$/ do |m, target|
-    #     Channel(target).join
-    #   end
-    def Channel(channel)
-      return channel if channel.is_a?(Channel)
-      @channel_manager.find_ensured(channel)
-    end
-
-    # Helper method for turning a String into an {User} object.
-    #
-    # @param [String] user a user's nickname
-    # @return [User] an {User} object
-    # @example
-    #   on :message, /^tell me everything about (.+)$/ do |m, target|
-    #     user = User(target)
-    #     m.reply "%s is named %s and connects from %s" % [user.nick, user.name, user.host]
-    #   end
-    def User(user)
-      return user if user.is_a?(User)
-      @user_manager.find_ensured(user)
-    end
-
     # Define helper methods in the context of the bot.
     #
     # @yield Expects a block containing method definitions
     # @return [void]
     def helpers(&b)
-      Callback.class_eval(&b)
+      @callback.instance_eval(&b)
     end
 
     # Since Cinch uses threads, all handlers can be run
@@ -303,14 +279,16 @@ module Cinch
     #   be one argument to the block. It is optional to accept them,
     #   though
     #
-    # @return [void]
+    # @return [Array<Handler>] The handlers that have been registered
     def on(event, regexps = [], *args, &block)
       regexps = [*regexps]
       regexps = [//] if regexps.empty?
 
       event = event.to_sym
 
-      regexps.map! do |regexp|
+      handlers = []
+
+      regexps.each do |regexp|
         pattern = case regexp
                  when Pattern
                    regexp
@@ -324,9 +302,27 @@ module Cinch
                    end
                  end
         debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
-        pattern
+        handler = Handler.new(event, pattern, args, block)
+        handlers << handler
+        (@handlers[event] ||= []) << handler
       end
-      (@events[event] ||= []) << [regexps, args, block]
+
+      return handlers
+    end
+
+    # @see Bot#unregister_handlers
+    def unregister_handler(handler)
+      unregister_handlers(handler)
+    end
+
+    # @param [Handler, Array<Handler>] *handlers The handlers to unregister.
+    # @return [Handler, nil] The unregistered handler
+    def unregister_handlers(*handlers)
+      handlers = *handlers.flatten
+      handlers.each do |handler|
+        debug "[on handler] Unregistering handler with pattern `#{handler.pattern.inspect}`, reacting on `#{handler.event}`"
+        @handlers[handler.event].delete(handler)
+      end
     end
 
     # @param [Symbol] event The event type
@@ -338,19 +334,15 @@ module Cinch
     def dispatch(event, msg = nil, *arguments)
       if handlers = find(event, msg)
         handlers.each do |handler|
-          regexps, args, block = *handler
           # calling Message#match multiple times is not a problem
           # because we cache the result
           if msg
-            regexp = regexps.find { |rx|
-              msg.match(rx.to_r(msg), event)
-            }
-            captures = msg.match(regexp.to_r(msg), event).captures
+            captures = msg.match(handler.pattern.to_r(msg), event).captures
           else
             captures = []
           end
 
-          invoke(block, args, msg, captures, arguments)
+          invoke(handler.block, handler.args, msg, captures, arguments)
         end
       end
     end
@@ -380,8 +372,8 @@ module Cinch
     #
     # @yieldparam [Struct] config the bot's config
     # @return [void]
-    def configure(&block)
-      @callback.instance_exec(@config, &block)
+    def configure
+      yield @config
     end
 
     # Disconnects from the server.
@@ -480,7 +472,7 @@ module Cinch
     # @yield
     def initialize(&b)
       @logger = Logger::FormattedLogger.new($stderr)
-      @events = {}
+      @handlers = {}
       @config = OpenStruct.new({
                                  :server => "localhost",
                                  :port   => 6667,
@@ -537,6 +529,10 @@ module Cinch
       end
 
       instance_eval(&b) if block_given?
+    end
+
+    def bot
+      self
     end
 
     # The bot's nickname.
@@ -616,15 +612,13 @@ module Cinch
 
     private
     def find(type, msg = nil)
-      if events = @events[type]
+      if handlers = @handlers[type]
         if msg.nil?
-          return events
+          return handlers
         end
 
-        events.select { |regexps|
-          regexps.first.any? { |regexp|
-            msg.match(regexp.to_r(msg), type)
-          }
+        handlers.select { |handler|
+          msg.match(handler.pattern.to_r(msg), type)
         }
       end
     end

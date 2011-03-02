@@ -3,8 +3,12 @@ require "net/protocol"
 
 module Cinch
   class IRC
+    include Helpers
+
     # @return [ISupport]
     attr_reader :isupport
+    # @return [Bot]
+    attr_reader :bot
     def initialize(bot)
       @bot      = bot
       @isupport = ISupport.new
@@ -202,10 +206,10 @@ module Cinch
         modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1], param_modes)
         modes.each do |direction, mode, param|
           if @bot.irc.isupport["PREFIX"].keys.include?(mode)
-            target = @bot.User(param)
+            target = User(param)
             # (un)set a user-mode
             if direction == :add
-              msg.channel.users[target] << mode unless msg.channel.users[@bot.User(param)].include?(mode)
+              msg.channel.users[target] << mode unless msg.channel.users[User(param)].include?(mode)
             else
               msg.channel.users[target].delete mode
             end
