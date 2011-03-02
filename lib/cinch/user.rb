@@ -412,6 +412,14 @@ module Cinch
       end
     end
 
+    def respond_to?(m)
+      if m.to_s =~ /^(.+)_unsynced$/
+        m = $1.to_sym
+      end
+
+      return @data.has_key?(m) || super
+    end
+
     # @return [Boolean]
     def ==(other)
       return case other
