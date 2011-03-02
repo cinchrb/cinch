@@ -66,7 +66,7 @@ module Cinch
       @queue = MessageQueue.new(@socket, @bot)
       message "PASS #{@bot.config.password}" if @bot.config.password
       message "NICK #{@bot.generate_next_nick}"
-      message "USER #{@bot.config.nick} 0 * :#{@bot.config.realname}"
+      message "USER #{@bot.config.user} 0 * :#{@bot.config.realname}"
 
       reading_thread = Thread.new do
         begin
