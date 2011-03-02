@@ -1,3 +1,17 @@
+* Cinch 1.1.2, 02 March 2011
+  - Fix Mask#match (it was completly unusable in v1.1.0 and later)
+  - Fix User#find_ensured (it was completly unusable in v1.1.0 and later; note
+    however that this method is deprecated)
+  - Fix Channel#has_user? (it was completly unusable in v1.1.0 and later)
+  - Support the question mark as a globbing character in ban masks.
+    Before, only the asterisk was supported.
+  - Fix !help <plugin> – Since v1.1.0 it was not possible to use !help
+    if the plugin prefix was not a plain string.
+  - Plugin#config will never return nil
+  - It is now possible to set the user name of the bot. Before, it was
+    identical to the nick.
+  - Implement User#respond_to? to match User#method_missing
+
 * Cinch 1.1.1, 18 January 2011
   - Fixed a regression introduced by 1.1.0, which caused Plugin.ctcp
     and thus implementing custom CTCP handlers to break

@@ -55,9 +55,7 @@ module Cinch
               message << prefix + pre_parts.join(" ")
               message << colorize(" :#{msg}", :yellow) if msg
             end
-            # working around a bug in jruby 1.6.0.RC1
-            destination_encoding = Encoding.find("locale")
-            @output.puts message.encode(destination_encoding, {:invalid => :replace, :undef => :replace})
+            @output.puts message.encode("locale", {:invalid => :replace, :undef => :replace})
           end
         end
       end
