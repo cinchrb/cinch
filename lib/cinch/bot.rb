@@ -30,6 +30,7 @@ require "cinch/mode_parser"
 require "cinch/cache_manager"
 require "cinch/channel_manager"
 require "cinch/user_manager"
+require "cinch/plugin_manager"
 
 require "cinch/configuration"
 require "cinch/bot_configuration"
@@ -61,8 +62,6 @@ module Cinch
     attr_reader :realname
     # @return [Time]
     attr_reader :signed_on_at
-    # @return [Array<Plugin>] All registered plugins
-    attr_reader :plugins
     # @return [Array<Thread>]
     # @api private
     attr_reader :handler_threads
@@ -72,6 +71,8 @@ module Cinch
     attr_reader :user_manager
     # @return [ChannelManager]
     attr_reader :channel_manager
+    # @return [PluginManager]
+    attr_reader :plugin_manager
     # @return [Boolean]
     # @api private
     attr_accessor :last_connection_was_successful
@@ -356,18 +357,24 @@ module Cinch
     # Register all plugins from `@config.plugins.plugins`.
     #
     # @return [void]
+    # @deprecated See {Bot#plugin_manager} and {PluginManager#register_plugins} instead
     def register_plugins
-      @config.plugins.plugins.each do |plugin|
-        register_plugin(plugin)
-      end
+      $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#register_plugins should not be used anymore."
+      puts caller
+
+      @plugin_manager.register_plugins(@config.plugins.plugins)
     end
 
     # Registers a plugin.
     #
     # @param [Class<Plugin>] plugin The plugin class to register
     # @return [void]
+    # @deprecated See {Bot#plugin_manager} and {PluginManager#register_plugin} instead
     def register_plugin(plugin)
-      @plugins << plugin.new(self)
+      $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#register_plugin should not be used anymore."
+      puts caller
+
+      @plugin_manager.register_plugin(plugin)
     end
 
     # @endgroup
@@ -404,7 +411,7 @@ module Cinch
     # @return [void]
     def start(plugins = true)
       @reconnects = 0
-      register_plugins if plugins
+      @plugin_manager.register_plugins(@config.plugins.plugins) if plugins
 
       begin
         @user_manager.each do |user|
@@ -483,7 +490,6 @@ module Cinch
 
       @semaphores_mutex = Mutex.new
       @semaphores = Hash.new { |h,k| h[k] = Mutex.new }
-      @plugins = []
       @callback = Callback.new(self)
       @channels = []
       @handler_threads = []
@@ -491,6 +497,7 @@ module Cinch
 
       @user_manager = UserManager.new(self)
       @channel_manager = ChannelManager.new(self)
+      @plugin_manager = PluginManager.new(self)
 
       on :connect do
         bot.config.channels.each do |channel|
@@ -503,6 +510,15 @@ module Cinch
 
     def bot
       self
+    end
+
+    # @return [Array<Plugin>] All registered plugins
+    # @deprecated See {Bot#plugin_manager} instead
+    def plugins
+      $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#plugin should not be used anymore."
+      puts caller
+
+      return @plugin_manager.to_a
     end
 
     # The bot's nickname.
