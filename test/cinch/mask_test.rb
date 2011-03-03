@@ -16,15 +16,15 @@ context "A mask" do
   should("match a mask in String form") { topic.match(test_user.mask.to_s) }
   should("not match a mismatching mask in String form") { not topic.match("not_cinchy!cinch@cinchrb.org") }
   should("be able to be created from a String") { Cinch::Mask.from(test_mask) == Cinch::Mask.new(test_mask) }
-  should("be able to be created from a Mask") { Cinch::Mask.from(topic) == topic }
-  should("be able to be created from a User") { Cinch::Mask.from(test_user) == topic }
+  should("be able to be created from a Mask") { Cinch::Mask.from(topic) }.equals { topic }
+  should("be able to be created from a User") { Cinch::Mask.from(test_user) }.equals { topic }
 
   should("be able to be created from a Ban") {
     ban = Cinch::Ban.new(test_mask, nil, Time.now)
-    Cinch::Mask.from(ban) == topic
-  }
+    Cinch::Mask.from(ban)
+  }.equals { topic }
 
-  should("not be able to be created from any other object")
+  should("not be able to be created from any other object") { Cinch::Mask.from(0) }.raises(ArgumentError)
 
   context "with wildcards" do
     setup { Cinch::Mask.new("someon?!*@cinchrb.org") }
