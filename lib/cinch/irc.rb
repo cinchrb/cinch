@@ -180,7 +180,7 @@ module Cinch
     end
 
     def on_kick(msg, events)
-      target = @bot.user_manager.find_ensured(msg.params[1])
+      target = User(msg.params[1])
       if target == @bot
         @bot.channels.delete(msg.channel)
       end
@@ -188,7 +188,7 @@ module Cinch
     end
 
     def on_kill(msg, events)
-      user = @bot.user_manager.find_ensured(msg.params[1])
+      user = User(msg.params[1])
       @bot.channel_manager.each do |channel|
         channel.remove_user(user)
       end
@@ -291,13 +291,13 @@ module Cinch
 
     def on_307(msg, events)
       # RPL_WHOISREGNICK
-      user = @bot.user_manager.find_ensured(msg.params[1])
+      user = User(msg.params[1])
       @whois_updates[user].merge!({:authname => user.nick})
     end
 
     def on_311(msg, events)
       # RPL_WHOISUSER
-      user = @bot.user_manager.find_ensured(msg.params[1])
+      user = User(msg.params[1])
       @whois_updates[user].merge!({
                                     :user => msg.params[2],
                                     :host => msg.params[3],
@@ -307,7 +307,7 @@ module Cinch
 
     def on_317(msg, events)
       # RPL_WHOISIDLE
-      user = @bot.user_manager.find_ensured(msg.params[1])
+      user = User(msg.params[1])
       @whois_updates[user].merge!({
                                     :idle => msg.params[2].to_i,
                                     :signed_on_at => Time.at(msg.params[3].to_i),
@@ -316,7 +316,7 @@ module Cinch
 
     def on_318(msg, events)
       # RPL_ENDOFWHOIS
-      user = @bot.user_manager.find_ensured(msg.params[1])
+      user = User(msg.params[1])
 
       if @whois_updates[user].empty? && !user.attr(:unknown?, true, true)
         user.end_of_whois(nil)
@@ -328,8 +328,8 @@ module Cinch
 
     def on_319(msg, events)
       # RPL_WHOISCHANNELS
-      user = @bot.user_manager.find_ensured(msg.params[1])
-      channels = msg.params[2].scan(/#{@isupport["CHANTYPES"].join}[^ ]+/o).map {|c| @bot.channel_manager.find_ensured(c) }
+      user = User(msg.params[1])
+      channels = msg.params[2].scan(/#{@isupport["CHANTYPES"].join}[^ ]+/o).map {|c| Channel(c) }
       user.sync(:channels, channels, true)
     end
 
@@ -351,7 +351,7 @@ module Cinch
 
     def on_330(msg, events)
       # RPL_WHOISACCOUNT
-      user = @bot.user_manager.find_ensured(msg.params[1])
+      user = User(msg.params[1])
       authname = msg.params[2]
       @whois_updates[user].merge!({:authname => authname})
     end
@@ -382,7 +382,7 @@ module Cinch
           nick   = user
           prefixes = []
         end
-        user = @bot.user_manager.find_ensured(nick)
+        user = User(nick)
         msg.channel.add_user(user, prefixes)
       end
     end
@@ -401,7 +401,7 @@ module Cinch
       @in_lists << :bans
 
       mask = msg.params[2]
-      by   = @bot.user_manager.find_ensured(msg.params[3].split("!").first)
+      by   = User(msg.params[3].split("!").first)
       at   = Time.at(msg.params[4].to_i)
 
       ban = Ban.new(mask, by, at)
@@ -423,12 +423,12 @@ module Cinch
     def on_396(msg, events)
       # RPL_HOSTHIDDEN
       # note: designed for freenode
-      @bot.user_manager.find_ensured(msg.params[0]).sync(:host, msg.params[1], true)
+      User(msg.params[0]).sync(:host, msg.params[1], true)
     end
 
     def on_401(msg, events)
       # ERR_NOSUCHNICK
-      user = @bot.user_manager.find_ensured(msg.params[1])
+      user = User(msg.params[1])
       user.sync(:unknown?, true, true)
       if @whois_updates.key?(user)
         user.end_of_whois(nil, true)
@@ -452,7 +452,7 @@ module Cinch
     end
 
     def on_671(msg, events)
-      user = @bot.user_manager.find_ensured(msg.params[1])
+      user = User(msg.params[1])
       @whois_updates[user].merge!({:secure? => true})
     end
   end
