@@ -4,7 +4,11 @@ module Cinch
     # @return [Mask, String]
     attr_reader :mask
 
-    # @return [User]
+    # The user who created the ban. Might be nil on networks that do
+    # not strictly follow the RFCs, for example IRCnet in some(?)
+    # cases.
+    #
+    # @return [User, nil] The user who created the ban
     attr_reader :by
 
     # @return [Time]
@@ -14,7 +18,7 @@ module Cinch
     attr_reader :extended
 
     # @param [String] mask The mask
-    # @param [User] by The user who created the ban
+    # @param [User, nil] by The user who created the ban.
     # @param [Time] at The time at which the ban was created
     def initialize(mask, by, at)
       @by, @created_at = by, at

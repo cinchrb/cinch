@@ -441,9 +441,13 @@ module Cinch
         mask = "%s!%s@%s" % [mask, mask, mask + ".irc.justin.tv"]
       end
 
-      by   = @bot.user_manager.find_ensured(msg.params[3].split("!").first)
-      at   = Time.at(msg.params[4].to_i)
+      if msg.params[3]
+        by = @bot.user_manager.find_ensured(msg.params[3].split("!").first)
+      else
+        by = nil
+      end
 
+      at   = Time.at(msg.params[4].to_i)
       ban = Ban.new(mask, by, at)
       msg.channel.bans_unsynced << ban
     end
