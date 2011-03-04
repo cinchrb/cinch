@@ -614,6 +614,10 @@ module Cinch
       end
     end
 
+    def to_user
+      User(nick)
+    end
+
     private
     def find(type, msg = nil)
       if events = @events[type]
