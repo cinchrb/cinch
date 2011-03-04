@@ -48,6 +48,8 @@ module Cinch
       case target
       when User, Ban
         target.mask
+      when Bot
+        target.to_user.mask
       when String
         Mask.new(target)
       when Mask

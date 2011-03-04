@@ -398,6 +398,15 @@ module Cinch
       Mask.new(s)
     end
 
+    # Check if the user matches a mask.
+    #
+    # @param [Ban, Mask, User, String] other The user or mask to match against
+    # @return [Boolean]
+    def match(other)
+      Mask.from(other) =~ Mask.from(self)
+    end
+    alias_method :=~, :match
+
     # @api private
     def update_nick(new_nick)
       @last_nick, @nick = @nick, new_nick
