@@ -134,7 +134,7 @@ module Cinch
         end
 
         if msg.command == "PRIVMSG"
-          events << [:message]
+          events << [:message] << [:privmsg]
         else
           events << [:notice]
         end

@@ -1,3 +1,9 @@
+* Cinch 1.1.3, 12 May 2011
+  - PRIVMSGs can now be matched with the event :privmsg (additionally
+    to :message, :private and :channel)
+  - Moved execution of the configure block further up the chain, to
+    allow setting the logger before any log output is happening
+
 * Cinch 1.1.2, 02 March 2011
   - Fix Mask#match (it was completly unusable in v1.1.0 and later)
   - Fix User#find_ensured (it was completly unusable in v1.1.0 and later; note

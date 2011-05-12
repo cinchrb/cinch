@@ -1,7 +1,7 @@
 require 'cinch/bot'
 
 module Cinch
-  VERSION = '1.1.2'
+  VERSION = '1.1.3'
 
   # @return [Object]
   # @api private
