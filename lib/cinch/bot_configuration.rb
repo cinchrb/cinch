@@ -3,7 +3,7 @@ require "cinch/configuration"
 module Cinch
   class BotConfiguration < Configuration
     KnownOptions = [:server, :port, :ssl, :password, :nick, :nicks,
-                    :realname, :verbose, :messages_per_second, :server_queue_size,
+                    :realname, :user, :verbose, :messages_per_second, :server_queue_size,
                     :strictness, :message_split_start, :message_split_end,
                     :max_messages, :plugins, :channels, :encoding, :reconnect,
                     :local_host, :timeouts, :ping_interval]
