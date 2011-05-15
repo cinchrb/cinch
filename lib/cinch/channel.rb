@@ -2,6 +2,11 @@
 require "set"
 
 module Cinch
+  # @attr limit
+  # @attr secret
+  # @attr moderated
+  # @attr invite_only
+  # @attr key
   class Channel
     include Syncable
     @channels = {}
@@ -134,9 +139,6 @@ module Cinch
 
     # @return [Number] The maximum number of allowed users in the
     #   channel. 0 if unlimited.
-    attr_accessor :limit
-    undef_method "limit"
-    undef_method "limit="
     def limit
       @modes["l"].to_i
     end
@@ -150,9 +152,6 @@ module Cinch
     end
 
     # @return [Boolean] true if the channel is secret (+s)
-    attr_accessor :secret
-    undef_method "secret"
-    undef_method "secret="
     def secret
       @modes["s"]
     end
@@ -168,9 +167,6 @@ module Cinch
 
     # @return [Boolean] true if the channel is moderated (only users
     #   with +o and +v are able to send messages)
-    attr_accessor :moderated
-    undef_method "moderated"
-    undef_method "moderated="
     def moderated
       @modes["m"]
     end
@@ -185,9 +181,6 @@ module Cinch
     end
 
     # @return [Boolean] true if the channel is invite only (+i)
-    attr_accessor :invite_only
-    undef_method "invite_only"
-    undef_method "invite_only="
     def invite_only
       @modes["i"]
     end
@@ -202,9 +195,6 @@ module Cinch
     end
 
     # @return [String, nil] The channel's key (aka password)
-    attr_accessor :key
-    undef_method "key"
-    undef_method "key="
     def key
       @modes["k"]
     end

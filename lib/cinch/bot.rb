@@ -39,7 +39,7 @@ require "cinch/timeouts_configuration"
 
 
 module Cinch
-
+  # @attr nick
   class Bot
     # @return [Config]
     attr_reader :config
@@ -519,9 +519,6 @@ module Cinch
     # @overload nick
     #   @return [String]
     # @return [String]
-    attr_accessor :nick
-    undef_method "nick"
-    undef_method "nick="
     def nick
       @config.nick
     end

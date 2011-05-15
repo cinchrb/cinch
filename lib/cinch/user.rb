@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 module Cinch
+  # @attr_reader [String] user
+  # @attr_reader [String] host
+  # @attr_reader [String] realname
+  # @attr_reader [String] authname
+  # @attr_reader [Number] idle How long this user has been idle, in seconds.
+  #   This is a snapshot of the last WHOIS.
+  # @attr_reader [Time] signed_on_at
+  # @attr_reader [Array<Channel>] channels All channels the user is in.
   class User
     include Syncable
 
@@ -87,31 +95,6 @@ module Cinch
     # @api private
     attr_writer :in_whois
 
-    # @return [String]
-    attr_reader :user
-    undef_method "user"
-
-    # @return [String]
-    attr_reader :host
-    undef_method "host"
-
-    # @return [String]
-    attr_reader :realname
-    undef_method "realname"
-
-    # @return [String]
-    attr_reader :authname
-    undef_method "authname"
-
-    # @return [Number] How long this user has been idle, in seconds.
-    #   This is a snapshot of the last WHOIS.
-    attr_reader :idle
-    undef_method "idle"
-
-    # @return [Time]
-    attr_reader :signed_on_at
-    undef_method "signed_on_at"
-
     # @return [Boolean] True if the instance references an user who
     #   cannot be found on the server.
     attr_reader :unknown
@@ -121,10 +104,6 @@ module Cinch
     def unknown
       self.unknown?
     end
-
-    # @return [Array<Channel>] All channels the user is in.
-    attr_reader :channels
-    undef_method "channels"
 
     # @return [Boolean] True if the user is using a secure connection, i.e. SSL.
     attr_reader :secure
