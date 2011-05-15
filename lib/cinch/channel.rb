@@ -9,6 +9,7 @@ module Cinch
   # @attr key
   class Channel
     include Syncable
+    include Helpers
     @channels = {}
 
     class << self
@@ -112,27 +113,23 @@ module Cinch
     # @param [User, String] user An {User}-object or a nickname
     # @return [Boolean] Check if a user is in the channel
     def has_user?(user)
-      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
-      @users.has_key?(user)
+      @users.has_key?(User(user))
     end
 
 
     # @return [Boolean] true if `user` is opped in the channel
     def opped?(user)
-      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
-      @users[user].include? "o"
+      @users[User(user)].include? "o"
     end
 
     # @return [Boolean] true if `user` is half-opped in the channel
     def half_opped?(user)
-      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
-      @users[user].include? "h"
+      @users[User(user)].include? "h"
     end
 
     # @return [Boolean] true if `user` is voiced in the channel
     def voiced?(user)
-      user = @bot.user_manager.find_ensured(user) unless user.is_a?(User)
-      @users[user].include? "v"
+      @users[User(user)].include? "v"
     end
 
     # @endgroup
