@@ -3,7 +3,6 @@ require 'socket'
 require "thread"
 require "ostruct"
 require "cinch/rubyext/module"
-require "cinch/rubyext/queue"
 require "cinch/rubyext/string"
 require "cinch/rubyext/infinity"
 

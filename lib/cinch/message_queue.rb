@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-require "thread"
+require "cinch/open_ended_queue"
 
 module Cinch
   # @api private
   class MessageQueue
     def initialize(socket, bot)
       @socket               = socket
-      @queue                = Queue.new
+      @queue                = OpenEndedQueue.new
       @time_since_last_send = nil
       @bot                  = bot
 

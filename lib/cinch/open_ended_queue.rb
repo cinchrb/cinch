@@ -1,5 +1,5 @@
 require "thread"
-class Queue
+class OpenEndedQueue < Queue
   def unshift(obj)
     t = nil
     @mutex.synchronize{
