@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [7/34]
+** TODO v1.2.0 [8/34]
 *** Plugin improvements
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -327,7 +327,8 @@
     :PROPERTIES:
     :Branch:   feature/hash_config
     :END:
-*** DEV-BRANCH Modularize Cinch::IRC#connect
+*** DONE Modularize Cinch::IRC#connect
+    CLOSED: [2011-05-15 Sun 17:51]
     :PROPERTIES:
     :Branch:   feature/modularized_irc_connect
     :END:
