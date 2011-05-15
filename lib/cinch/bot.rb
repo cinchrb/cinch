@@ -401,7 +401,7 @@ module Cinch
 
         @logger.debug "Connecting to #{@config.server}:#{@config.port}"
         @irc = IRC.new(self)
-        @irc.connect
+        @irc.start
 
         if @config.reconnect && !@quitting
           # double the delay for each unsuccesful reconnection attempt

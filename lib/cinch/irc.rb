@@ -14,16 +14,14 @@ module Cinch
       @isupport = ISupport.new
     end
 
-    # Establish a connection.
-    #
-    # @return [void]
-    def connect
+    def setup
       @registration = []
-
       @whois_updates = Hash.new {|h, k| h[k] = {}}
       @in_lists      = Set.new
+    end
 
-      tcp_socket = nil
+    def connect
+            tcp_socket = nil
       begin
         Timeout::timeout(@bot.config.timeouts.connect) do
           tcp_socket = TCPSocket.new(@bot.config.server, @bot.config.port, @bot.config.local_host)
@@ -35,7 +33,6 @@ module Cinch
         @bot.logger.log_exception(e)
         return
       end
-
       if @bot.config.ssl == true || @bot.config.ssl == false
         @bot.logger.debug "Deprecation warning: Beginning from version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
       end
@@ -66,13 +63,17 @@ module Cinch
 
       @socket = Net::BufferedIO.new(@socket)
       @socket.read_timeout = @bot.config.timeouts.read
-
       @queue = MessageQueue.new(@socket, @bot)
+    end
+
+    def send_login
       message "PASS #{@bot.config.password}" if @bot.config.password
       message "NICK #{@bot.generate_next_nick}"
       message "USER #{@bot.config.user} 0 * :#{@bot.config.realname}"
+    end
 
-      reading_thread = Thread.new do
+    def start_reading_thread
+      Thread.new do
         begin
           while line = @socket.readline
             begin
@@ -94,25 +95,41 @@ module Cinch
         @bot.dispatch(:disconnect)
         @bot.handler_threads.each { |t| t.join(10); t.kill }
       end
+    end
 
-      @sending_thread = Thread.new do
+    def start_sending_thread
+      Thread.new do
         begin
           @queue.process!
         rescue => e
           @bot.logger.log_exception(e)
         end
       end
+    end
 
-      ping_thread = Thread.new do
+    def start_ping_thread
+      Thread.new do
         while true
           sleep @bot.config.ping_interval
           message("PING 0") # PING requires a single argument. In our
                             # case the value doesn't matter though.
         end
       end
+    end
+
+    # Establish a connection.
+    #
+    # @return [void]
+    def start
+      setup
+      connect
+      send_login
+      reading_thread = start_reading_thread
+      sending_thread = start_sending_thread
+      ping_thread = start_ping_thread
 
       reading_thread.join
-      @sending_thread.kill
+      sending_thread.kill
       ping_thread.kill
     end
 
