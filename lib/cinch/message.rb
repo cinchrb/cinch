@@ -34,6 +34,12 @@ module Cinch
       match = @raw.match(/(^:(\S+) )?(\S+)(.*)/)
       _, @prefix, @command, raw_params = match.captures
 
+      if @bot.irc.network == "ngametv"
+        if @prefix != "ngame"
+          @prefix = "%s!user@host" % [@prefix, @prefix, @prefix]
+        end
+      end
+
       raw_params.strip!
       if match = raw_params.match(/(?:^:| :)(.*)$/)
         @params = match.pre_match.split(" ")

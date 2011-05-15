@@ -321,6 +321,18 @@ module Cinch
     def on_005(msg, events)
       # ISUPPORT
       @isupport.parse(*msg.params[1..-2].map {|v| v.split(" ")}.flatten)
+      if @isupport["NETWORK"] == "NGameTV"
+        # the NGameTV "IRC" server does not have proper prefixes but
+        # only nicks.
+        #
+        # PONGs do not include the argument we sent in a PING but the
+        # fixed string "chat.ngame.tv"
+        #
+        # If we send a PONG, the server responds with a PONG.
+        #
+        # Neither PING nor PONG have a prefix
+        @network = "ngametv"
+      end
     end
 
     def on_307(msg, events)
