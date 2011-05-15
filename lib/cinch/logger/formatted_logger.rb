@@ -29,6 +29,7 @@ module Cinch
         @mutex.synchronize do
           messages = [messages].flatten.map {|s| s.to_s.chomp}
           messages.each do |msg|
+            next if msg.empty?
             message = Time.now.strftime("[%Y/%m/%d %H:%M:%S.%L] ")
             if kind == :debug
               prefix = colorize("!! ", :yellow)

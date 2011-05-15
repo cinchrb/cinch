@@ -138,6 +138,7 @@ module Cinch
     # @api private
     # @return [void]
     def parse(input)
+      return if input.chomp.empty?
       @bot.logger.log(input, :incoming) if @bot.config.verbose
       msg          = Message.new(input, @bot)
       events       = [[:catchall]]
