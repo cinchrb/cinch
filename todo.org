@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [2/38]
+** TODO v1.2.0 [7/34]
 *** Plugin improvements
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -335,15 +335,18 @@
     :PROPERTIES:
     :Branch:   feature-support_jtv
     :END:
-*** DEV-BRANCH Helpers should get defined on the specific Callback, not all. :bug:
+*** DONE Helpers should get defined on the specific Callback, not all.  :bug:
+    CLOSED: [2011-05-15 Sun 17:44]
     :PROPERTIES:
     :Branch: fix/helpers
     :END:
-*** DEV-BRANCH Define helpers in Helpers module and include it in Bot
+*** DONE Define helpers in Helpers module and include it in Bot
+    CLOSED: [2011-05-15 Sun 17:47]
     :PROPERTIES:
     :Branch: improve/helpers
     :END:
-*** DEV-BRANCH include Helpers in User and Channel (and maybe IRC, too) and use its helper methods
+*** DONE include Helpers in User and Channel (and maybe IRC, too) and use its helper methods
+    CLOSED: [2011-05-15 Sun 17:47]
     :PROPERTIES:
     :Branch: improve/helpers
     :END:
@@ -354,12 +357,14 @@
     - New class: Handler
     - New methods: unregister_handler, unregister_handlers
     - Bot#on now returns an array of Handlers
-*** DEV-BRANCH Support malformed ircnet bans                    :improvement:
+*** DONE Support malformed ircnet bans                          :improvement:
+    CLOSED: [2011-05-15 Sun 17:42]
     :PROPERTIES:
     :Branch: improve/malformed_bans
     :END:
     Some (all?) bans on IRCnet are lacking the host of the banner
-*** DEV-BRANCH Subclass Queue instead of monkeypatching it      :improvement:
+*** DONE Subclass Queue instead of monkeypatching it            :improvement:
+    CLOSED: [2011-05-15 Sun 17:42]
     :PROPERTIES:
     :Branch: improve/subclass_queue
     :END:
