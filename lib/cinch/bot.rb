@@ -107,7 +107,7 @@ module Cinch
     # @yield Expects a block containing method definitions
     # @return [void]
     def helpers(&b)
-      Callback.class_eval(&b)
+      @callback.instance_eval(&b)
     end
 
     # Since Cinch uses threads, all handlers can be run
@@ -386,8 +386,8 @@ module Cinch
     #
     # @yieldparam [Struct] config the bot's config
     # @return [void]
-    def configure(&block)
-      @callback.instance_exec(@config, &block)
+    def configure
+      yield @config
     end
 
     # Disconnects from the server.
