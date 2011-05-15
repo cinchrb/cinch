@@ -9,6 +9,7 @@ module Cinch
     attr_reader :isupport
     # @return [Bot]
     attr_reader :bot
+    attr_reader :network
     def initialize(bot)
       @bot      = bot
       @isupport = ISupport.new
@@ -16,6 +17,7 @@ module Cinch
 
     def setup
       @registration = []
+      @network = :other
       @whois_updates = Hash.new {|h, k| h[k] = {}}
       @in_lists      = Set.new
     end
@@ -146,7 +148,9 @@ module Cinch
           events << [:connect]
           @bot.last_connection_was_successful = true
         end
-      elsif ["PRIVMSG", "NOTICE"].include?(msg.command)
+      end
+
+      if ["PRIVMSG", "NOTICE"].include?(msg.command)
         events << [:ctcp] if msg.ctcp?
         if msg.channel?
           events << [:channel]
@@ -301,6 +305,19 @@ module Cinch
       @bot.user_manager.delete(msg.user)
     end
 
+    def on_002(msg, events)
+      if msg.params.last == "Your host is jtvchat"
+        # the justin tv "IRC" server lacks support for WHOIS with more
+        # than one argument and does not use full banmasks in
+        # RPL_BANLIST
+        @network = "jtv"
+      else
+        # this catches all other networks that do not require custom
+        # behaviour.
+        @network = :other
+      end
+    end
+
     def on_005(msg, events)
       # ISUPPORT
       @isupport.parse(*msg.params[1..-2].map {|v| v.split(" ")}.flatten)
@@ -418,6 +435,12 @@ module Cinch
       @in_lists << :bans
 
       mask = msg.params[2]
+      if @network == "jtv"
+        # on the justin tv network, ban "masks" only consist of the
+        # nick/username
+        mask = "%s!%s@%s" % [mask, mask, mask + ".irc.justin.tv"]
+      end
+
       if msg.params[3]
         by = User(msg.params[3].split("!").first)
       else

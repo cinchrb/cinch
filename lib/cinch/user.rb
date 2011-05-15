@@ -188,7 +188,13 @@ module Cinch
       end
 
       @in_whois = true
-      @bot.raw "WHOIS #@nick #@nick"
+      if @bot.irc.network == "jtv"
+        # the justin tv "IRC" network does not support WHOIS with two
+        # arguments
+        @bot.raw "WHOIS #@nick"
+      else
+        @bot.raw "WHOIS #@nick #@nick"
+      end
     end
     alias_method :refresh, :whois
 
