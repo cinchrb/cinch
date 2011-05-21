@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [9/34]
+** TODO v1.2.0 [9/36]
 *** Plugin improvements
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -399,6 +399,24 @@
             - :exception
     - [ ] Bot#initialize causes log messages before the user had a chance to configure the logger
 *** TODO Support ERR_UNAVAILRESOURCE (437)                      :improvement:
+*** TOPIC-BRANCH In Bot#generate_next_nick, also set the new nick as the bot's nick :bug:
+    :PROPERTIES:
+    :Branch: fix/bot_nick
+    :END:
+*** TODO Investigate if Cinch forgets modes for people who change their nicks  :bug:
+    21:28:37 snapcase │ dominikh: seems the bot forgets whatever
+    people have op/voice whenever they change their nicknames while
+    running the development branch (don't think it was like this in
+    the stable release)
+
+    !! -- debug method --
+    !! {#<User nick="dorayaki">=>["o"], #<User nick="snapcase3">=>["o"], #<User nick="fooki">=>["o"], #<User nick="snapcase">=>["o"]}
+    !! -- EOF --
+    >> :snapcase3!~snapcase@xxx NICK :snapcase4
+    >> :snapcase4!~snapcase@xxx PRIVMSG #a :!add
+    !! -- debug method --
+    !! {#<User nick="dorayaki">=>["o"], #<User nick="snapcase4">=>["o"], #<User nick="fooki">=>["o"], #<User nick="snapcase">=>["o"], #<User nick="snapcase4">=>[]}
+    !! -- EOF --
 *** TODO Persistent store                                           :feature:
     - optional dependencies
     - API to plug in other stores
