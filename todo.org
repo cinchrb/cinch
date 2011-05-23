@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [10/36]
+** TODO v1.2.0 [11/38]
 *** TODO Plugin improvements [0/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -352,13 +352,15 @@
     :PROPERTIES:
     :Branch: improve/helpers
     :END:
-*** DEV-BRANCH Allow unregistering handlers
+*** DONE Allow unregistering handlers
+    CLOSED: [2011-05-23 Mon 21:44]
     :PROPERTIES:
     :Branch: feature/unload
     :END:
     - New class: Handler
     - New methods: unregister_handler, unregister_handlers
     - Bot#on now returns an array of Handlers
+*** TODO Add a HandlerManager class, move Bot#find to it, possibly others
 *** DONE Support malformed ircnet bans                          :improvement:
     CLOSED: [2011-05-15 Sun 17:42]
     :PROPERTIES:
@@ -464,7 +466,6 @@
     - Make this configurable
     - Clear @bot.channels after the reconnect to get rid of not rejoined channels
     - Be sure to store passwords for channels
-*** TODO Check documentation for wrong multiline docs (e.g. Message#reply)
 *** TODO Get rid of all useless checks (do methods for matchers/timers/executor/listener exist, etc)
     - Phase 1: Print warnings if methods are missing
     - Phase 2 (Cinch v2.0.0): completly remove the checks and raise exceptions instead
@@ -476,6 +477,7 @@
     :END:
 *** TODO Channel#ops and an equivalent for voiced people (how do you call those, anyway?), halfops, admins :feature:
 *** TODO Improve documentation
+    - [ ] Check documentation for wrong multiline docs (e.g. Message#reply)
     - [ ] document the :use_suffix option of Plugin.match
     - [ ] Fix "eaxmple" typo
 ** TODO v2.0.0 [0/1]
