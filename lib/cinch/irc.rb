@@ -70,7 +70,7 @@ module Cinch
 
     def send_login
       message "PASS #{@bot.config.password}" if @bot.config.password
-      message "NICK #{@bot.generate_next_nick}"
+      message "NICK #{@bot.generate_next_nick!}"
       message "USER #{@bot.config.user} 0 * :#{@bot.config.realname}"
     end
 
@@ -505,7 +505,7 @@ module Cinch
 
     def on_433(msg, events)
       # ERR_NICKNAMEINUSE
-      @bot.nick = @bot.generate_next_nick(msg.params[1])
+      @bot.nick = @bot.generate_next_nick!(msg.params[1])
     end
 
     def on_671(msg, events)
