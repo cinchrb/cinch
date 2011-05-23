@@ -95,7 +95,7 @@ module Cinch
 
         @socket.close
         @bot.dispatch(:disconnect)
-        @bot.handler_threads.each { |t| t.join(10); t.kill }
+        @bot.handlers.values.flatten.each { |h| h.stop  }
       end
     end
 
