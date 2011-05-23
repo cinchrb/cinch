@@ -294,8 +294,8 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [9/36]
-*** Plugin improvements
+** TODO v1.2.0 [10/36]
+*** TODO Plugin improvements [0/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
 **** DEV-BRANCH matches should be able to specify allowed message targets (private, channel) :feature:
@@ -399,7 +399,8 @@
             - :exception
     - [ ] Bot#initialize causes log messages before the user had a chance to configure the logger
 *** TODO Support ERR_UNAVAILRESOURCE (437)                      :improvement:
-*** TOPIC-BRANCH In Bot#generate_next_nick, also set the new nick as the bot's nick :bug:
+*** DONE In Bot#generate_next_nick, also set the new nick as the bot's nick :bug:
+    CLOSED: [2011-05-23 Mon 20:35]
     :PROPERTIES:
     :Branch: fix/bot_nick
     :END:
