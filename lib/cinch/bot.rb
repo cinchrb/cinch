@@ -55,9 +55,6 @@ module Cinch
     attr_reader :signed_on_at
     # @return [Array<Plugin>] All registered plugins
     attr_reader :plugins
-    # @return [Array<Thread>]
-    # @api private
-    attr_reader :handler_threads
     # @return [Boolean] whether the bot is in the process of disconnecting
     attr_reader :quitting
     # @return [UserManager]
@@ -67,6 +64,12 @@ module Cinch
     # @return [Boolean]
     # @api private
     attr_accessor :last_connection_was_successful
+    # @return [Callback]
+    # @api private
+    attr_reader :callback
+    # @return [Hash<:event => Array<Handler>>]
+    # @api private
+    attr_reader :handlers
 
     # @group Helper methods
 
@@ -327,7 +330,7 @@ module Cinch
                    end
                  end
         debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
-        handler = Handler.new(event, pattern, args, block)
+        handler = Handler.new(self, event, pattern, args, block)
         handlers << handler
         (@handlers[event] ||= []) << handler
       end
@@ -342,6 +345,8 @@ module Cinch
 
     # @param [Handler, Array<Handler>] *handlers The handlers to unregister.
     # @return [Handler, nil] The unregistered handler
+    # @api private
+    # @see Handler#unregister
     def unregister_handlers(*handlers)
       handlers = *handlers.flatten
       handlers.each do |handler|
@@ -367,7 +372,7 @@ module Cinch
             captures = []
           end
 
-          invoke(handler.block, handler.args, msg, captures, arguments)
+          handler.call(msg, captures, arguments)
         end
       end
     end
@@ -541,7 +546,6 @@ module Cinch
       @plugins = []
       @callback = Callback.new(self)
       @channels = []
-      @handler_threads = []
       @quitting = false
 
       @user_manager = UserManager.new(self)
@@ -641,21 +645,6 @@ module Cinch
         handlers.select { |handler|
           msg.match(handler.pattern.to_r(msg), type)
         }
-      end
-    end
-
-    def invoke(block, args, msg, match, arguments)
-      bargs = match + arguments
-      @handler_threads << Thread.new do
-        begin
-          catch(:halt) do
-            @callback.instance_exec(msg, *args, *bargs, &block)
-          end
-        rescue => e
-          @logger.log_exception(e)
-        ensure
-          @handler_threads.delete Thread.current
-        end
       end
     end
   end
