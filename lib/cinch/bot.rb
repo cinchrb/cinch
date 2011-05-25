@@ -30,6 +30,7 @@ require "cinch/mode_parser"
 require "cinch/cache_manager"
 require "cinch/channel_manager"
 require "cinch/user_manager"
+require "cinch/timer"
 
 require "cinch/configuration"
 require "cinch/bot_configuration"

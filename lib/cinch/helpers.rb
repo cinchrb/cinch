@@ -26,5 +26,36 @@ module Cinch
       return user if user.is_a?(User)
       bot.user_manager.find_ensured(user)
     end
+
+    # @example Used as a class method in a plugin
+    #   timer 5, method: :some_method
+    #   def some_method
+    #     Channel("#cinch-bots").send(Time.now.to_s)
+    #   end
+    #
+    # @example Used as an instance method in a plugin
+    #   match "start timer"
+    #   def execute(m)
+    #     timer(5) { puts "timer fired" }
+    #   end
+    #
+    # @example Used as an instance method in a traditional `on` handler
+    #   on :message, "start timer" do
+    #     timer(5) { puts "timer fired" }
+    #   end
+    #
+    # @param [Number] interval Interval in seconds
+    # @param [Proc] block A proc to execute
+    # @option options [Symbol] :method (:timer) Method to call (only if no proc is provided)
+    # @option options [Boolean] :threaded (true) Call method in a thread?
+    # @return [Timer]
+    def timer(interval, options = {}, &block)
+      options = {:method => :timer, :threaded => true}.merge(options)
+      block ||= self.method(options[:method])
+      timer = Cinch::Timer.new(bot, interval, {:threaded => options[:threaded]}, &block)
+      timer.start
+
+      timer
+    end
   end
 end
