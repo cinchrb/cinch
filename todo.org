@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [11/38]
+** TODO v1.2.0 [11/40]
 *** TODO Plugin improvements [0/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -361,6 +361,11 @@
     - New methods: unregister_handler, unregister_handlers
     - Bot#on now returns an array of Handlers
 *** TODO Add a HandlerManager class, move Bot#find to it, possibly others
+*** TODO clean up Plugin.__register_with_bot, make use of HandlerList, don't use Bot#on
+*** TODO provide a class representing timers
+    - provide same interface as handlers (stop/call/unregister)
+    - provide a way to query the system for all existing timers
+*** TODO rename *Manager classes to *List classes
 *** DONE Support malformed ircnet bans                          :improvement:
     CLOSED: [2011-05-15 Sun 17:42]
     :PROPERTIES:
@@ -471,6 +476,8 @@
     - Phase 2 (Cinch v2.0.0): completly remove the checks and raise exceptions instead
     - Maybe consider printing nicely formatted errors (and quitting) instead of raw exceptions
 *** TODO Support setting user modes                                 :feature:
+*** TODO Deprecate Bot#halt
+    Useless method, people should use next or break instead
 *** TODO One-shot option for timer                              :improvement:
     :PROPERTIES:
     :Depends: feature/unload
