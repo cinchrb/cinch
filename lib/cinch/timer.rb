@@ -1,7 +1,7 @@
 module Cinch
   class Timer
     attr_reader :bot
-    attr_reader :interval
+    attr_accessor :interval
     attr_accessor :threaded
     attr_reader :block
     alias_method :threaded?, :threaded
