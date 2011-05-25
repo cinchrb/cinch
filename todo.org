@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [11/40]
+** TODO v1.2.0 [14/41]
 *** TODO Plugin improvements [0/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -362,9 +362,12 @@
     - Bot#on now returns an array of Handlers
 *** TODO Add a HandlerManager class, move Bot#find to it, possibly others
 *** TODO clean up Plugin.__register_with_bot, make use of HandlerList, don't use Bot#on
-*** TODO provide a class representing timers
-    - provide same interface as handlers (stop/call/unregister)
-    - provide a way to query the system for all existing timers
+*** DONE provide a class representing timers
+    CLOSED: [2011-05-25 Wed 18:26]
+    :PROPERTIES:
+    :Branch: improve/timers
+    :Depends: feature/dynamic_timers
+    :END:
 *** TODO rename *Manager classes to *List classes
 *** DONE Support malformed ircnet bans                          :improvement:
     CLOSED: [2011-05-15 Sun 17:42]
@@ -377,14 +380,16 @@
     :PROPERTIES:
     :Branch: improve/subclass_queue
     :END:
-*** DEV-BRANCH add User#match (alias to User#=~) which calls Mask#match with self :feature:
+*** DONE add User#match (alias to User#=~) which calls Mask#match with self :feature:
+    CLOSED: [2011-05-25 Wed 18:29]
     :PROPERTIES:
     :Branch: feature/user_match
     :END:
     New methods:
     - Bot#to_user
     - User#match (#=~)
-*** TOPIC-BRANCH Allow creating new timers dynamically              :feature:
+*** DONE Allow creating new timers dynamically                      :feature:
+    CLOSED: [2011-05-25 Wed 18:28]
     :PROPERTIES:
     :Branch: feature/dynamic_timers
     :END:
@@ -406,6 +411,10 @@
             - :exception
     - [ ] Bot#initialize causes log messages before the user had a chance to configure the logger
 *** TODO Support ERR_UNAVAILRESOURCE (437)                      :improvement:
+*** DONE Provide a #rescue_exception method
+    :PROPERTIES:
+    :Branch: master
+    :END:
 *** DONE In Bot#generate_next_nick, also set the new nick as the bot's nick :bug:
     CLOSED: [2011-05-23 Mon 20:35]
     :PROPERTIES:
