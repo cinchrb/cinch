@@ -403,11 +403,6 @@ module Cinch
     # @param [Boolean] plugins Automatically register plugins from
     #   `@config.plugins.plugins`?
     # @return [void]
-    # Connects the bot to a server.
-    #
-    # @param [Boolean] plugins Automatically register plugins from
-    #   `@config.plugins.plugins`?
-    # @return [void]
     def start(plugins = true)
       @reconnects = 0
       register_plugins if plugins
@@ -536,6 +531,7 @@ module Cinch
     # @param [String] base The base nick to start trying from
     # @api private
     # @return String
+    # @since 1.2.0
     def generate_next_nick!(base = nil)
       nicks = @config.nicks || []
 

@@ -1,4 +1,5 @@
 require "thread"
+# @api private
 class OpenEndedQueue < Queue
   def unshift(obj)
     t = nil

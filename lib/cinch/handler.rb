@@ -1,10 +1,15 @@
 module Cinch
   # @since 1.2.0
   class Handler
+    # @return [Bot]
     attr_reader :bot
+    # @return [Symbol]
     attr_reader :event
+    # @return [Pattern]
     attr_reader :pattern
+    # @return [Array]
     attr_reader :args
+    # @return [Proc]
     attr_reader :block
     # @return [Array<Thread>]
     # @api private
