@@ -4,7 +4,9 @@ module Cinch
     attr_accessor :interval
     attr_accessor :threaded
     attr_reader :block
+    attr_reader :started
     alias_method :threaded?, :threaded
+    alias_method :started?, :started
 
     def initialize(bot, interval, threaded = true, &block)
       @bot      = bot
@@ -14,10 +16,6 @@ module Cinch
 
       @started = false
       @thread  = nil
-    end
-
-    def started?
-      @started
     end
 
     def stopped?
