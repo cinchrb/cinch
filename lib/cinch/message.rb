@@ -20,10 +20,8 @@ module Cinch
       parse if msg
     end
 
-
-
     # @return [Boolean] true if the message is an numeric reply (as
-    # opposed to a command)
+    #   opposed to a command)
     def numeric_reply?
       !!(@numeric_reply ||= @command.match(/^\d{3}$/))
     end
@@ -150,8 +148,8 @@ module Cinch
     #
     # @param [String] text the message
     # @param [Boolean] prefix if prefix is true and the message was in
-    # a channel, the reply will be prefixed by the nickname of whoever
-    # send the mesage
+    #   a channel, the reply will be prefixed by the nickname of whoever
+    #   send the mesage
     # @return [void]
     def reply(text, prefix = false)
       text = text.to_s

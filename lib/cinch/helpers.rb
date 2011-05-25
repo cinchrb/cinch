@@ -49,6 +49,7 @@ module Cinch
     # @option options [Symbol] :method (:timer) Method to call (only if no proc is provided)
     # @option options [Boolean] :threaded (true) Call method in a thread?
     # @return [Timer]
+    # @since 1.2.0
     def timer(interval, options = {}, &block)
       options = {:method => :timer, :threaded => true}.merge(options)
       block ||= self.method(options[:method])
@@ -68,6 +69,7 @@ module Cinch
     #   end
     #
     # @return [void]
+    # @since 1.2.0
     def rescue_exception
       begin
         yield

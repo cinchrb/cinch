@@ -9,12 +9,16 @@ module Cinch
     attr_reader :isupport
     # @return [Bot]
     attr_reader :bot
+    # @return [Symbol] The detected network or `:other` if no network
+    #   was detected.
     attr_reader :network
     def initialize(bot)
       @bot      = bot
       @isupport = ISupport.new
     end
 
+    # @api private
+    # @since 1.2.0
     def setup
       @registration = []
       @network = :other
@@ -22,8 +26,9 @@ module Cinch
       @in_lists      = Set.new
     end
 
+    # @api private
     def connect
-            tcp_socket = nil
+      tcp_socket = nil
       begin
         Timeout::timeout(@bot.config.timeouts.connect) do
           tcp_socket = TCPSocket.new(@bot.config.server, @bot.config.port, @bot.config.local_host)
@@ -68,12 +73,16 @@ module Cinch
       @queue = MessageQueue.new(@socket, @bot)
     end
 
+    # @api private
+    # @since 1.2.0
     def send_login
       message "PASS #{@bot.config.password}" if @bot.config.password
       message "NICK #{@bot.generate_next_nick!}"
       message "USER #{@bot.config.user} 0 * :#{@bot.config.realname}"
     end
 
+    # @api private
+    # @since 1.2.0
     def start_reading_thread
       Thread.new do
         begin
@@ -97,6 +106,8 @@ module Cinch
       end
     end
 
+    # @api private
+    # @since 1.2.0
     def start_sending_thread
       Thread.new do
         rescue_exception do
@@ -105,6 +116,9 @@ module Cinch
       end
     end
 
+    # @api private
+    # @since 1.2.0
+    # @since 1.2.0
     def start_ping_thread
       Thread.new do
         while true
@@ -118,6 +132,7 @@ module Cinch
     # Establish a connection.
     #
     # @return [void]
+    # @since 1.2.0
     def start
       setup
       connect

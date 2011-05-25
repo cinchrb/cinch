@@ -1,4 +1,5 @@
 module Cinch
+  # @api private
   class CacheManager
     include Enumerable
 
