@@ -78,11 +78,9 @@ module Cinch
       Thread.new do
         begin
           while line = @socket.readline
-            begin
+            rescue_exception do
               line = Cinch.encode_incoming(line, @bot.config.encoding)
               parse line
-            rescue => e
-              @bot.logger.log_exception(e)
             end
           end
         rescue Timeout::Error
@@ -101,10 +99,8 @@ module Cinch
 
     def start_sending_thread
       Thread.new do
-        begin
+        rescue_exception do
           @queue.process!
-        rescue => e
-          @bot.logger.log_exception(e)
         end
       end
     end

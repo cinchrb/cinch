@@ -57,5 +57,23 @@ module Cinch
 
       timer
     end
+
+    # Use this method to automatically log exceptions to the loggers.
+    #
+    # @example
+    #   def my_method
+    #     rescue_exception do
+    #       something_that_might_raise()
+    #     end
+    #   end
+    #
+    # @return [void]
+    def rescue_exception
+      begin
+        yield
+      rescue => e
+        bot.logger.log_exception(e)
+      end
+    end
   end
 end
