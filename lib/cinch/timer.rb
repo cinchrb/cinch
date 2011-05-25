@@ -2,20 +2,18 @@ module Cinch
   class Timer
     attr_reader :bot
     attr_reader :interval
-    attr_reader :options
+    attr_accessor :threaded
     attr_reader :block
-    def initialize(bot, interval, options = {}, &block)
+    alias_method :threaded?, :threaded
+
+    def initialize(bot, interval, threaded = true, &block)
       @bot      = bot
       @interval = interval
-      @options  = options
+      @threaded = threaded
       @block    = block
 
       @started = false
       @thread  = nil
-    end
-
-    def threaded?
-      @options[:threaded]
     end
 
     def started?
