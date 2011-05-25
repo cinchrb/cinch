@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [14/41]
+** TODO v1.2.0 [15/42]
 *** TODO Plugin improvements [0/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -368,7 +368,10 @@
     :Branch: improve/timers
     :Depends: feature/dynamic_timers
     :END:
-*** TODO rename *Manager classes to *List classes
+*** TOPIC-BRANCH rename *Manager classes to *List classes
+    :PROPERTIES:
+    :Branch: improve/rename_managers
+    :END:
 *** DONE Support malformed ircnet bans                          :improvement:
     CLOSED: [2011-05-15 Sun 17:42]
     :PROPERTIES:
