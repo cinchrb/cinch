@@ -1,5 +1,5 @@
 module Cinch
-  class PluginManager
+  class PluginList
     include Enumerable
 
     def initialize(bot)
