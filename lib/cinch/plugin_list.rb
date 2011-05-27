@@ -1,24 +1,18 @@
 module Cinch
-  class PluginList
-    include Enumerable
-
+  class PluginList < Array
     def initialize(bot)
       @bot     = bot
-      @plugins = []
-    end
-
-    def each
-      @plugins.each { |plugin| yield(plugin)}
+      super()
     end
 
     # @param [Class<Plugin>] plugin
     def register_plugin(plugin)
-      @plugins << plugin.new(@bot)
+      self << plugin.new(@bot)
     end
 
     # @param [Array<Class<Plugin>>] plugins
     def register_plugins(plugins)
-      plugins.each { |plugin| register_plugin(plugin) }
+      each { |plugin| register_plugin(plugin) }
     end
   end
 end
