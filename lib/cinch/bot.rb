@@ -62,8 +62,9 @@ module Cinch
     attr_reader :user_manager
     # @return [ChannelManager]
     attr_reader :channel_manager
-    # @return [PluginList]
-    attr_reader :plugin_list
+    # @return [PluginList] The plugin list. See {PluginList} for more
+    #   information
+    attr_reader :plugins
     # @return [Boolean]
     # @api private
     attr_accessor :last_connection_was_successful
@@ -364,7 +365,7 @@ module Cinch
       $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#register_plugins should not be used anymore."
       puts caller
 
-      @plugin_list.register_plugins(@config.plugins.plugins)
+      @plugins.register_plugins(@config.plugins.plugins)
     end
 
     # Registers a plugin.
@@ -376,7 +377,7 @@ module Cinch
       $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#register_plugin should not be used anymore."
       puts caller
 
-      @plugin_list.register_plugin(plugin)
+      @plugins.register_plugin(plugin)
     end
 
     # @endgroup
@@ -413,7 +414,7 @@ module Cinch
     # @return [void]
     def start(plugins = true)
       @reconnects = 0
-      @plugin_list.register_plugins(@config.plugins.plugins) if plugins
+      @plugins.register_plugins(@config.plugins.plugins) if plugins
 
       begin
         @user_manager.each do |user|
@@ -535,7 +536,7 @@ module Cinch
 
       @user_manager = UserManager.new(self)
       @channel_manager = ChannelManager.new(self)
-      @plugin_list = PluginList.new(self)
+      @plugins = PluginList.new(self)
 
       on :connect do
         bot.config.channels.each do |channel|
@@ -544,15 +545,6 @@ module Cinch
       end
 
       instance_eval(&b) if block_given?
-    end
-
-    # @return [Array<Plugin>] All registered plugins
-    # @deprecated See {Bot#plugin_list} instead
-    def plugins
-      $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#plugin should not be used anymore."
-      puts caller
-
-      return @plugin_list.to_a
     end
 
     # The bot's nickname.
