@@ -154,7 +154,8 @@ module Cinch
 
     # @deprecated See {Target#msg} instead
     def msg(recipient, text, notice = false)
-      # TODO deprecation warning
+      Cinch.print_deprecation("1.2.0", "Bot#msg")
+
       Target(recipient).msg(text, notice)
     end
     alias_method :privmsg, :msg
@@ -162,13 +163,15 @@ module Cinch
 
     # @deprecated See {Target#notice} instead
     def notice(recipient, text)
-      # TODO deprecation warning
+      Cinch.print_deprecation("1.2.0", "Bot#notice")
+
       Target(recipient).msg(text, true)
     end
 
     # @deprecated See {Target#safe_msg} instead
     def safe_msg(recipient, text)
-      # TODO deprecation warning
+      Cinch.print_deprecation("1.2.0", "Bot#safe_msg")
+
       Target(recipient).safe_msg(text)
     end
     alias_method :safe_privmsg, :safe_msg
@@ -176,19 +179,22 @@ module Cinch
 
     # @deprecated See {Target#safe_notice} instead
     def safe_notice(recipient, text)
-      # TODO deprecation warning
+      Cinch.print_deprecation("1.2.0", "Bot#safe_notice")
+
       Target(recipient).safe_msg(text, true)
     end
 
     # @deprecated See {Target#action} instead
     def action(recipient, text)
-      # TODO deprecation warning
+      Cinch.print_deprecation("1.2.0", "Bot#action")
+
       Target(recipient).action(text)
     end
 
     # @deprecated See {Target#safe_action} instead
     def safe_action(recipient, text)
-      # TODO deprecation warning
+      Cinch.print_deprecation("1.2.0", "Bot#safe_action")
+
       Target(recipient).safe_action(text)
     end
 
