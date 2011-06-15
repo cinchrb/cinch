@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require "set"
+require "cinch/target"
 
 module Cinch
   # @attr limit
@@ -7,7 +8,7 @@ module Cinch
   # @attr moderated
   # @attr invite_only
   # @attr key
-  class Channel
+  class Channel < Target
     include Syncable
     include Helpers
     @channels = {}
@@ -55,12 +56,6 @@ module Cinch
         @channels.values
       end
     end
-
-    # @return [Bot]
-    attr_reader :bot
-
-    # @return [String] the channel's name
-    attr_reader :name
 
     # @return [Array<User>] all users in the channel
     attr_reader :users
@@ -351,90 +346,6 @@ module Cinch
     def clear_users
       @users.clear
     end
-
-    # @group Sending messages
-
-    # Send a message to the channel.
-    #
-    # @param [String] message the message
-    # @return [void]
-    # @see #safe_send
-    def send(message)
-      @bot.msg(@name, message)
-    end
-    alias_method :privmsg, :send
-    alias_method :msg, :send
-
-    # Send a notice to the channel.
-    #
-    # @param [String] message the message
-    # @return [void]
-    def notice(message)
-      @bot.notice(@name, message)
-    end
-
-    # Like {#safe_send} but for notices.
-    #
-    # @param (see #safe_send)
-    # @return (see #safe_send)
-    # @see #safe_send
-    # @todo (see #safe_send)
-    def safe_notice(message)
-      @bot.safe_notice(@name, message)
-    end
-
-    # Send a message to the channel, but remove any non-printable
-    # characters. The purpose of this method is to send text from
-    # untrusted sources, like other users or feeds.
-    #
-    # Note: this will **break** any mIRC color codes embedded in the
-    # string.
-    #
-    # @param (see #send)
-    # @return (see #send)
-    # @see #send
-    # @todo Handle mIRC color codes more gracefully.
-    def safe_send(message)
-      @bot.safe_msg(@name, message)
-    end
-    alias_method :safe_privmsg, :safe_send
-    alias_method :safe_msg, :safe_send
-
-
-
-    # Send a CTCP to the channel.
-    #
-    # @param [String] message the ctcp message
-    # @return [void]
-    def ctcp(message)
-      send "\001#{message}\001"
-    end
-
-    # Invoke an action (/me) in the channel.
-    #
-    # @param [String] message the message
-    # @return [void]
-    # @see #safe_action
-    def action(message)
-      @bot.action(@name, message)
-    end
-
-    # Invoke an action (/me) in the channel but remove any
-    # non-printable characters. The purpose of this method is to send
-    # text from untrusted sources, like other users or feeds.
-    #
-    # Note: this will **break** any mIRC color codes embedded in the
-    # string.
-    #
-    # @param (see #action)
-    # @return (see #action)
-    # @see #action
-    # @todo Handle mIRC color codes more gracefully.
-    def safe_action(message)
-      @bot.safe_action(@name, message)
-    end
-
-    # @endgroup
 
     # @return [Boolean]
     def ==(other)

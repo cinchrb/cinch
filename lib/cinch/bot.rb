@@ -17,6 +17,7 @@ require "cinch/syncable"
 require "cinch/message"
 require "cinch/message_queue"
 require "cinch/irc"
+require "cinch/target"
 require "cinch/channel"
 require "cinch/user"
 require "cinch/constants"
@@ -151,123 +152,44 @@ module Cinch
       @irc.message(command)
     end
 
-    # Sends a PRIVMSG to a recipient (a channel or user).
-    # You should be using {Channel#send} and {User#send} instead.
-    #
-    # @param [String] recipient the recipient
-    # @param [String] text the message to send
-    # @param [Boolean] notice Use NOTICE instead of PRIVMSG?
-    # @return [void]
-    # @see Channel#send
-    # @see User#send
-    # @see #safe_msg
+    # @deprecated See {Target#msg} instead
     def msg(recipient, text, notice = false)
-      text = text.to_s
-      split_start = @config.message_split_start || ""
-      split_end   = @config.message_split_end   || ""
-      command = notice ? "NOTICE" : "PRIVMSG"
-
-      text.split(/\r\n|\r|\n/).each do |line|
-        maxlength = 510 - (":" + " #{command} " + " :").size
-        maxlength = maxlength - self.mask.to_s.length - recipient.to_s.length
-        maxlength_without_end = maxlength - split_end.bytesize
-
-        if line.bytesize > maxlength
-          splitted = []
-
-          while line.bytesize > maxlength_without_end
-            pos = line.rindex(/\s/, maxlength_without_end)
-            r = pos || maxlength_without_end
-            splitted << line.slice!(0, r) + split_end.tr(" ", "\u00A0")
-            line = split_start.tr(" ", "\u00A0") + line.lstrip
-          end
-
-          splitted << line
-          splitted[0, (@config.max_messages || splitted.size)].each do |string|
-            string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
-            raw("#{command} #{recipient} :#{string}")
-          end
-        else
-          raw("#{command} #{recipient} :#{line}")
-        end
-      end
+      # TODO deprecation warning
+      Target(recipient).msg(text, notice)
     end
     alias_method :privmsg, :msg
     alias_method :send, :msg
 
-    # Sends a NOTICE to a recipient (a channel or user).
-    # You should be using {Channel#notice} and {User#notice} instead.
-    #
-    # @param [String] recipient the recipient
-    # @param [String] text the message to send
-    # @return [void]
-    # @see Channel#notice
-    # @see User#notice
-    # @see #safe_notice
+    # @deprecated See {Target#notice} instead
     def notice(recipient, text)
-      msg(recipient, text, true)
+      # TODO deprecation warning
+      Target(recipient).msg(text, true)
     end
 
-    # Like {#msg}, but remove any non-printable characters from
-    # `text`. The purpose of this method is to send text of untrusted
-    # sources, like other users or feeds.
-    #
-    # Note: this will **break** any mIRC color codes embedded in the
-    # string.
-    #
-    # @return (see #msg)
-    # @param (see #msg)
-    # @see #msg
-    # @see User#safe_send
-    # @see Channel#safe_send
-    # @todo Handle mIRC color codes more gracefully.
+    # @deprecated See {Target#safe_msg} instead
     def safe_msg(recipient, text)
-      msg(recipient, Cinch.filter_string(text))
+      # TODO deprecation warning
+      Target(recipient).safe_msg(text)
     end
     alias_method :safe_privmsg, :safe_msg
     alias_method :safe_send, :safe_msg
 
-    # Like {#safe_msg} but for notices.
-    #
-    # @return (see #safe_msg)
-    # @param (see #safe_msg)
-    # @see #safe_notice
-    # @see #notice
-    # @see User#safe_notice
-    # @see Channel#safe_notice
-    # @todo (see #safe_msg)
+    # @deprecated See {Target#safe_notice} instead
     def safe_notice(recipient, text)
-      msg(recipient, Cinch.filter_string(text), true)
+      # TODO deprecation warning
+      Target(recipient).safe_msg(text, true)
     end
 
-    # Invoke an action (/me) in/to a recipient (a channel or user).
-    # You should be using {Channel#action} and {User#action} instead.
-    #
-    # @param [String] recipient the recipient
-    # @param [String] text the message to send
-    # @return [void]
-    # @see Channel#action
-    # @see User#action
-    # @see #safe_action
+    # @deprecated See {Target#action} instead
     def action(recipient, text)
-      raw("PRIVMSG #{recipient} :\001ACTION #{text}\001")
+      # TODO deprecation warning
+      Target(recipient).action(text)
     end
 
-    # Like {#action}, but remove any non-printable characters from
-    # `text`. The purpose of this method is to send text from
-    # untrusted sources, like other users or feeds.
-    #
-    # Note: this will **break** any mIRC color codes embedded in the
-    # string.
-    #
-    # @param (see #action)
-    # @return (see #action)
-    # @see #action
-    # @see Channel#safe_action
-    # @see User#safe_action
-    # @todo Handle mIRC color codes more gracefully.
+    # @deprecated See {Target#safe_action} instead
     def safe_action(recipient, text)
-      action(recipient, Cinch.filter_string(text))
+      # TODO deprecation warning
+      Target(recipient).safe_action(text)
     end
 
     # @endgroup

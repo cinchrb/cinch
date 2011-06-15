@@ -160,8 +160,7 @@ module Cinch
       (channel || user).send(text)
     end
 
-    # Like #reply, but using {Channel#safe_send}/{User#safe_send}
-    # instead
+    # Like #reply, but using {Target#safe_send} instead
     #
     # @param (see #reply)
     # @return (see #reply)

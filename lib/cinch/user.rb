@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+require "cinch/target"
+
 module Cinch
   # @attr_reader [String] user
   # @attr_reader [String] host
@@ -8,7 +10,7 @@ module Cinch
   #   This is a snapshot of the last WHOIS.
   # @attr_reader [Time] signed_on_at
   # @attr_reader [Array<Channel>] channels All channels the user is in.
-  class User
+  class User < Target
     include Syncable
 
     @users = {} # this will be removed with version 2.0.0
@@ -81,13 +83,9 @@ module Cinch
       end
     end
 
-
-    # @return [String]
-    attr_reader :nick
+    alias_method :nick, :name
     # @return [String]
     attr_reader :last_nick
-    # @return [Bot]
-    attr_reader :bot
     # @return [Boolean]
     attr_reader :synced
     # @return [Boolean]
@@ -142,9 +140,9 @@ module Cinch
       }
       case args.size
       when 2
-        @nick, @bot = args
+        @name, @bot = args
       when 4
-        @data[:user], @nick, @data[:host], @bot = args
+        @data[:user], @name, @data[:host], @bot = args
       else
         raise ArgumentError
       end
@@ -191,9 +189,9 @@ module Cinch
       if @bot.irc.network == "jtv"
         # the justin tv "IRC" network does not support WHOIS with two
         # arguments
-        @bot.raw "WHOIS #@nick"
+        @bot.raw "WHOIS #@name"
       else
-        @bot.raw "WHOIS #@nick #@nick"
+        @bot.raw "WHOIS #@name #@name"
       end
     end
     alias_method :refresh, :whois
@@ -254,97 +252,14 @@ module Cinch
       super
     end
 
-    # @group Sending messages
-
-    # Send a message to the user.
-    #
-    # @param [String] message the message
-    # @return [void]
-    def send(message)
-      @bot.msg(@nick, message)
-    end
-    alias_method :privmsg, :send
-    alias_method :msg, :send
-
-    # Send a notice to the user.
-    #
-    # @param [String] message the message
-    # @return [void]
-    def notice(message)
-      @bot.notice(@nick, message)
-    end
-
-    # Like {#safe_send} but for notices.
-    #
-    # @param (see #safe_send)
-    # @return (see #safe_send)
-    # @see #safe_send
-    # @todo (see #safe_send)
-    def safe_notice(message)
-      @bot.safe_notice(@nick, message)
-    end
-
-    # Send a message to the user, but remove any non-printable
-    # characters. The purpose of this method is to send text from
-    # untrusted sources, like other users or feeds.
-    #
-    # Note: this will **break** any mIRC color codes embedded in the
-    # string.
-    #
-    # @param (see #send)
-    # @return (see #send)
-    # @see #send
-    # @see Bot#safe_msg
-    # @todo Handle mIRC color codes more gracefully.
-    def safe_send(message)
-      @bot.safe_msg(@nick, message)
-    end
-    alias_method :safe_privmsg, :safe_send
-    alias_method :safe_msg, :safe_send
-
-    # Send a CTCP to the user.
-    #
-    # @param [String] message the ctcp message
-    # @return [void]
-    def ctcp(message)
-      send "\001#{message}\001"
-    end
-
-    # Send an action (/me) to the user.
-    #
-    # @param [String] message the message
-    # @return [void]
-    # @see #safe_action
-    def action(message)
-      @bot.action(@name, message)
-    end
-
-    # Send an action (/me) to the user but remove any non-printable
-    # characters. The purpose of this method is to send text from
-    # untrusted sources, like other users or feeds.
-    #
-    # Note: this will **break** any mIRC color codes embedded in the
-    # string.
-    #
-    # @param (see #action)
-    # @return (see #action)
-    # @see #action
-    # @see Bot#safe_action
-    # @todo Handle mIRC color codes more gracefully.
-    def safe_action(message)
-      @bot.safe_action(@name, message)
-    end
-
-    # @endgroup
-
     # @return [String]
     def to_s
-      @nick
+      @name
     end
 
     # @return [String]
     def inspect
-      "#<User nick=#{@nick.inspect}>"
+      "#<User nick=#{@name.inspect}>"
     end
 
     # Generates a mask for the user.
@@ -362,7 +277,7 @@ module Cinch
       s = s.gsub(/%(.)/) {
         case $1
         when "n"
-          @nick
+          @name
         when "u"
           self.user
         when "h"
@@ -388,7 +303,7 @@ module Cinch
 
     # @api private
     def update_nick(new_nick)
-      @last_nick, @nick = @nick, new_nick
+      @last_nick, @name = @name, new_nick
       @bot.user_manager.update_nick(self)
     end
 
@@ -418,7 +333,7 @@ module Cinch
     def ==(other)
       return case other
              when self.class
-               @nick == other.nick
+               @name == other.nick
              when String
                self.to_s == other
              when Bot
@@ -431,7 +346,7 @@ module Cinch
 
     # @return [Fixnum]
     def hash
-      @nick.hash
+      @name.hash
     end
   end
 end
