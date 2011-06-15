@@ -27,9 +27,11 @@ require "cinch/isupport"
 require "cinch/plugin"
 require "cinch/pattern"
 require "cinch/mode_parser"
+require "cinch/handler_list"
 require "cinch/cached_list"
 require "cinch/channel_list"
 require "cinch/user_list"
+require "cinch/plugin_list"
 require "cinch/timer"
 
 require "cinch/configuration"
@@ -62,7 +64,7 @@ module Cinch
     attr_reader :realname
     # @return [Time]
     attr_reader :signed_on_at
-    # @return [Array<Plugin>] All registered plugins
+    # @return [PluginList] All registered plugins
     attr_reader :plugins
     # @return [Boolean] whether the bot is in the process of disconnecting
     attr_reader :quitting
@@ -70,14 +72,16 @@ module Cinch
     attr_reader :user_manager
     # @return [ChannelManager]
     attr_reader :channel_manager
+    # @return [PluginList] The plugin list. See {PluginList} for more
+    #   information
+    attr_reader :plugins
     # @return [Boolean]
     # @api private
     attr_accessor :last_connection_was_successful
     # @return [Callback]
     # @api private
     attr_reader :callback
-    # @return [Hash<:event => Array<Handler>>]
-    # @api private
+    # @return [HandlerList]
     attr_reader :handlers
 
     # @group Helper methods
@@ -314,66 +318,40 @@ module Cinch
         debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
         handler = Handler.new(self, event, pattern, args, block)
         handlers << handler
-        (@handlers[event] ||= []) << handler
+        @handlers.register(event, handler)
       end
 
       return handlers
     end
 
-    # @see Bot#unregister_handlers
-    def unregister_handler(handler)
-      unregister_handlers(handler)
-    end
-
-    # @param [Handler, Array<Handler>] *handlers The handlers to unregister.
-    # @return [Handler, nil] The unregistered handler
-    # @api private
-    # @see Handler#unregister
-    def unregister_handlers(*handlers)
-      handlers = *handlers.flatten
-      handlers.each do |handler|
-        debug "[on handler] Unregistering handler with pattern `#{handler.pattern.inspect}`, reacting on `#{handler.event}`"
-        @handlers[handler.event].delete(handler)
-      end
-    end
-
-    # @param [Symbol] event The event type
-    # @param [Message, nil] msg The message which is responsible for
-    #   and attached to the event, or nil.
-    # @param [Array] *arguments A list of additional arguments to pass
-    #   to event handlers
-    # @return [void]
+    # @deprecated See {HandlerList#dispatch} instead
     def dispatch(event, msg = nil, *arguments)
-      if handlers = find(event, msg)
-        handlers.each do |handler|
-          # calling Message#match multiple times is not a problem
-          # because we cache the result
-          if msg
-            captures = msg.match(handler.pattern.to_r(msg), event).captures
-          else
-            captures = []
-          end
-
-          handler.call(msg, captures, arguments)
-        end
-      end
+      @logger.debug "Deprecation warning: Beginning with version 1.2.0, Bot#dispatch should not be used anymore."
+      puts caller
+      @handlers.dispatch(event, msg, *arguments)
     end
 
     # Register all plugins from `@config.plugins.plugins`.
     #
     # @return [void]
+    # @deprecated See {Bot#plugins} and {PluginList#register_plugins} instead
     def register_plugins
-      @config.plugins.plugins.each do |plugin|
-        register_plugin(plugin)
-      end
+      $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#register_plugins should not be used anymore."
+      puts caller
+
+      @plugins.register_plugins(@config.plugins.plugins)
     end
 
     # Registers a plugin.
     #
     # @param [Class<Plugin>] plugin The plugin class to register
     # @return [void]
+    # @deprecated See {Bot#plugins} and {PluginList#register_plugin} instead
     def register_plugin(plugin)
-      @plugins << plugin.new(self)
+      $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#register_plugin should not be used anymore."
+      puts caller
+
+      @plugins.register_plugin(plugin)
     end
 
     # @endgroup
@@ -405,7 +383,7 @@ module Cinch
     # @return [void]
     def start(plugins = true)
       @reconnects = 0
-      register_plugins if plugins
+      @plugins.register_plugins(@config.plugins.plugins) if plugins
 
       begin
         @user_manager.each do |user|
@@ -480,16 +458,16 @@ module Cinch
     def initialize(&b)
       @logger = Logger::FormattedLogger.new($stderr)
       @config = BotConfiguration.new
-      @handlers = {}
+      @handlers = HandlerList.new
       @semaphores_mutex = Mutex.new
       @semaphores = Hash.new { |h,k| h[k] = Mutex.new }
-      @plugins = []
       @callback = Callback.new(self)
       @channels = []
       @quitting = false
 
       @user_manager = UserManager.new(self)
       @channel_manager = ChannelManager.new(self)
+      @plugins = PluginList.new(self)
 
       instance_eval(&b) if block_given?
 
@@ -581,19 +559,6 @@ module Cinch
 
     def to_user
       User(nick)
-    end
-
-    private
-    def find(type, msg = nil)
-      if handlers = @handlers[type]
-        if msg.nil?
-          return handlers
-        end
-
-        handlers.select { |handler|
-          msg.match(handler.pattern.to_r(msg), type)
-        }
-      end
     end
   end
 end

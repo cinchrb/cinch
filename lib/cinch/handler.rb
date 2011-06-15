@@ -25,7 +25,7 @@ module Cinch
     end
 
     def unregister
-      @bot.unregister_handler(self)
+      @bot.handlers.unregister(self)
     end
 
     def stop
