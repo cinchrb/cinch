@@ -248,8 +248,8 @@ module Cinch
 
     # @deprecated See {HandlerList#dispatch} instead
     def dispatch(event, msg = nil, *arguments)
-      @logger.debug "Deprecation warning: Beginning with version 1.2.0, Bot#dispatch should not be used anymore."
-      puts caller
+      Cinch.print_deprecation("1.2.0", "Bot#dispatch")
+
       @handlers.dispatch(event, msg, *arguments)
     end
 
@@ -258,8 +258,7 @@ module Cinch
     # @return [void]
     # @deprecated See {Bot#plugins} and {PluginList#register_plugins} instead
     def register_plugins
-      $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#register_plugins should not be used anymore."
-      puts caller
+      Cinch.print_deprecation("1.2.0", "Bot#register_plugins")
 
       @plugins.register_plugins(@config.plugins.plugins)
     end
@@ -270,8 +269,7 @@ module Cinch
     # @return [void]
     # @deprecated See {Bot#plugins} and {PluginList#register_plugin} instead
     def register_plugin(plugin)
-      $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#register_plugin should not be used anymore."
-      puts caller
+      Cinch.print_deprecation("1.2.0", "Bot#register_plugin")
 
       @plugins.register_plugin(plugin)
     end

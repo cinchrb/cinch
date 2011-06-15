@@ -24,8 +24,7 @@ module Cinch
       # @note This method does not work properly if running more than one bot
       # @note This method will be removed in Cinch 2.0.0
       def find_ensured(name, bot)
-        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, Channel.find_ensured should not be used anymore."
-        puts caller
+        Cinch.print_deprecation("1.1.0", "Channel.find_ensured")
 
         downcased_name = name.irc_downcase(bot.irc.isupport["CASEMAPPING"])
         @channels[downcased_name] ||= bot.channel_manager.find_ensured(name)
@@ -39,8 +38,7 @@ module Cinch
       # @note This method does not work properly if running more than one bot
       # @note This method will be removed in Cinch 2.0.0
       def find(name)
-        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, Channel.find should not be used anymore."
-        puts caller
+        Cinch.print_deprecation("1.1.0", "Channel.find")
 
         @channels[name]
       end
@@ -50,8 +48,7 @@ module Cinch
       # @note This method does not work properly if running more than one bot
       # @note This method will be removed in Cinch 2.0.0
       def all
-        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.all should not be used anymore."
-        puts caller
+        Cinch.print_deprecation("1.1.0", "User.all")
 
         @channels.values
       end

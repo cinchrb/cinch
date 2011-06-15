@@ -35,8 +35,7 @@ module Cinch
       # @note This method does not work properly if running more than one bot
       # @note This method will be removed in Cinch 2.0.0
       def find_ensured(*args)
-        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.find_ensured should not be used anymore."
-        puts caller
+        Cinch.print_deprecation("1.1.0", "User.find_ensured")
 
         case args.size
         when 2
@@ -65,8 +64,7 @@ module Cinch
       # @note This method does not work properly if running more than one bot
       # @note This method will be removed in Cinch 2.0.0
       def find(nick)
-        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.find should not be used anymore."
-        puts caller
+        Cinch.print_deprecation("1.1.0", "User.find")
 
         @users[downcased_nick]
       end
@@ -76,8 +74,7 @@ module Cinch
       # @note This method does not work properly if running more than one bot
       # @note This method will be removed in Cinch 2.0.0
       def all
-        $stderr.puts "Deprecation warning: Beginning with version 1.1.0, User.all should not be used anymore."
-        puts caller
+        Cinch.print_deprecation("1.1.0", "User.all")
 
         @users.values
       end
