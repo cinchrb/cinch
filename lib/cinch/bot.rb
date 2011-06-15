@@ -77,8 +77,7 @@ module Cinch
     # @return [Callback]
     # @api private
     attr_reader :callback
-    # @return [Hash<:event => Array<Handler>>]
-    # @api private
+    # @return [HandlerList]
     attr_reader :handlers
 
     # @group Helper methods
@@ -321,13 +320,10 @@ module Cinch
       return handlers
     end
 
-    # @param [Symbol] event The event type
-    # @param [Message, nil] msg The message which is responsible for
-    #   and attached to the event, or nil.
-    # @param [Array] *arguments A list of additional arguments to pass
-    #   to event handlers
-    # @return [void]
+    # @deprecated See {HandlerList#dispatch} instead
     def dispatch(event, msg = nil, *arguments)
+      # TODO deprecate this?
+      @bot.logger.debug "Deprecation warning: Beginning with version 1.2.0, Bot#dispatch should not be used anymore."
       @handlers.dispatch(event, msg, *arguments)
     end
 
