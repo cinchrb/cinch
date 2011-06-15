@@ -360,7 +360,7 @@ module Cinch
     # Register all plugins from `@config.plugins.plugins`.
     #
     # @return [void]
-    # @deprecated See {Bot#plugin_list} and {PluginManager#register_plugins} instead
+    # @deprecated See {Bot#plugins} and {PluginList#register_plugins} instead
     def register_plugins
       $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#register_plugins should not be used anymore."
       puts caller
@@ -372,7 +372,7 @@ module Cinch
     #
     # @param [Class<Plugin>] plugin The plugin class to register
     # @return [void]
-    # @deprecated See {Bot#plugin_list} and {PluginManager#register_plugin} instead
+    # @deprecated See {Bot#plugins} and {PluginList#register_plugin} instead
     def register_plugin(plugin)
       $stderr.puts "Deprecation warning: Beginning with version 1.2.0, Bot#register_plugin should not be used anymore."
       puts caller
