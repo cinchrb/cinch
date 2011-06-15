@@ -27,6 +27,7 @@ require "cinch/isupport"
 require "cinch/plugin"
 require "cinch/pattern"
 require "cinch/mode_parser"
+require "cinch/handler_list"
 require "cinch/cached_list"
 require "cinch/channel_list"
 require "cinch/user_list"
@@ -314,27 +315,10 @@ module Cinch
         debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
         handler = Handler.new(self, event, pattern, args, block)
         handlers << handler
-        (@handlers[event] ||= []) << handler
+        @handlers.register(event, handler)
       end
 
       return handlers
-    end
-
-    # @see Bot#unregister_handlers
-    def unregister_handler(handler)
-      unregister_handlers(handler)
-    end
-
-    # @param [Handler, Array<Handler>] *handlers The handlers to unregister.
-    # @return [Handler, nil] The unregistered handler
-    # @api private
-    # @see Handler#unregister
-    def unregister_handlers(*handlers)
-      handlers = *handlers.flatten
-      handlers.each do |handler|
-        debug "[on handler] Unregistering handler with pattern `#{handler.pattern.inspect}`, reacting on `#{handler.event}`"
-        @handlers[handler.event].delete(handler)
-      end
     end
 
     # @param [Symbol] event The event type
@@ -344,19 +328,7 @@ module Cinch
     #   to event handlers
     # @return [void]
     def dispatch(event, msg = nil, *arguments)
-      if handlers = find(event, msg)
-        handlers.each do |handler|
-          # calling Message#match multiple times is not a problem
-          # because we cache the result
-          if msg
-            captures = msg.match(handler.pattern.to_r(msg), event).captures
-          else
-            captures = []
-          end
-
-          handler.call(msg, captures, arguments)
-        end
-      end
+      @handlers.dispatch(event, msg, *arguments)
     end
 
     # Register all plugins from `@config.plugins.plugins`.
@@ -480,7 +452,7 @@ module Cinch
     def initialize(&b)
       @logger = Logger::FormattedLogger.new($stderr)
       @config = BotConfiguration.new
-      @handlers = {}
+      @handlers = HandlerList.new
       @semaphores_mutex = Mutex.new
       @semaphores = Hash.new { |h,k| h[k] = Mutex.new }
       @plugins = []
@@ -581,19 +553,6 @@ module Cinch
 
     def to_user
       User(nick)
-    end
-
-    private
-    def find(type, msg = nil)
-      if handlers = @handlers[type]
-        if msg.nil?
-          return handlers
-        end
-
-        handlers.select { |handler|
-          msg.match(handler.pattern.to_r(msg), type)
-        }
-      end
     end
   end
 end
