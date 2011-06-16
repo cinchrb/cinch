@@ -512,7 +512,10 @@
     :PROPERTIES:
     :Depends: feature/unload
     :END:
-*** TODO Channel#ops and an equivalent for voiced people (how do you call those, anyway?), halfops, admins :feature:
+*** TOPIC-BRANCH Channel#ops and an equivalent for voiced people (how do you call those, anyway?), halfops, admins :feature:
+    :PROPERTIES:
+    :Branch: feature/channel_user_classes
+    :END:
 *** TODO Improve documentation
     - [ ] Check documentation for wrong multiline docs (e.g. Message#reply)
     - [ ] document the :use_suffix option of Plugin.match
