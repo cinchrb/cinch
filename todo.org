@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [15/42]
+** TODO v1.2.0 [20/43]
 *** TODO Plugin improvements [0/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -317,7 +317,7 @@
      :PROPERTIES:
      :Branch: feature/plugin_manager
      :END:
-*** DONE Only return booleans from foo? methods
+*** DONE Only return booleans from foo? methods                 :improvement:
     CLOSED: [2011-01-22 Sat 04:30]
     :PROPERTIES:
     :Branch:   improve-real_booleans
@@ -327,12 +327,12 @@
     :PROPERTIES:
     :Branch:   feature/hash_config
     :END:
-*** DONE Modularize Cinch::IRC#connect
+*** DONE Modularize Cinch::IRC#connect                             :refactor:
     CLOSED: [2011-05-15 Sun 17:51]
     :PROPERTIES:
     :Branch:   feature/modularized_irc_connect
     :END:
-*** DONE Support justin tv
+*** DONE Support justin tv                                          :feature:
     CLOSED: [2011-05-15 Sun 17:57]
     :PROPERTIES:
     :Branch:   feature-support_jtv
@@ -342,17 +342,17 @@
     :PROPERTIES:
     :Branch: fix/helpers
     :END:
-*** DONE Define helpers in Helpers module and include it in Bot
+*** DONE Define helpers in Helpers module and include it in Bot :improvement:
     CLOSED: [2011-05-15 Sun 17:47]
     :PROPERTIES:
     :Branch: improve/helpers
     :END:
-*** DONE include Helpers in User and Channel (and maybe IRC, too) and use its helper methods
+*** DONE include Helpers in User and Channel (and maybe IRC, too) and use its helper methods :improvement:
     CLOSED: [2011-05-15 Sun 17:47]
     :PROPERTIES:
     :Branch: improve/helpers
     :END:
-*** DONE Allow unregistering handlers
+*** DONE Allow unregistering handlers                               :feature:
     CLOSED: [2011-05-23 Mon 21:44]
     :PROPERTIES:
     :Branch: feature/unload
@@ -360,15 +360,20 @@
     - New class: Handler
     - New methods: unregister_handler, unregister_handlers
     - Bot#on now returns an array of Handlers
-*** TODO Add a HandlerManager class, move Bot#find to it, possibly others
-*** TODO clean up Plugin.__register_with_bot, make use of HandlerList, don't use Bot#on
-*** DONE provide a class representing timers
+*** DONE Add a HandlerList class, move Bot#find to it, possibly others  :refactor:
+    CLOSED: [2011-06-15 Wed 20:15]
+    :PROPERTIES:
+    :Branch: refactor/handler_list
+    :END:
+*** TODO clean up Plugin.__register_with_bot, make use of HandlerList, don't use Bot#on :refactor:
+*** DONE provide a class representing timers                    :improvement:
     CLOSED: [2011-05-25 Wed 18:26]
     :PROPERTIES:
     :Branch: improve/timers
     :Depends: feature/dynamic_timers
     :END:
-*** TOPIC-BRANCH rename *Manager classes to *List classes
+*** DONE rename *Manager classes to *List classes                  :refactor:
+    CLOSED: [2011-06-15 Wed 06:17]
     :PROPERTIES:
     :Branch: improve/rename_managers
     :END:
@@ -414,7 +419,7 @@
             - :exception
     - [ ] Bot#initialize causes log messages before the user had a chance to configure the logger
 *** TODO Support ERR_UNAVAILRESOURCE (437)                      :improvement:
-*** DONE Provide a #rescue_exception method
+*** DONE Provide a #rescue_exception method                         :feature:
     :PROPERTIES:
     :Branch: master
     :END:
@@ -423,7 +428,11 @@
     :PROPERTIES:
     :Branch: fix/bot_nick
     :END:
-*** TODO Investigate if Cinch forgets modes for people who change their nicks  :bug:
+*** DONE Investigate if Cinch forgets modes for people who change their nicks :bug:
+    CLOSED: [2011-06-15 Wed 07:21]
+    :PROPERTIES:
+    :Branch: fix/user_hash
+    :END:
     21:28:37 snapcase │ dominikh: seems the bot forgets whatever
     people have op/voice whenever they change their nicknames while
     running the development branch (don't think it was like this in
@@ -437,6 +446,11 @@
     !! -- debug method --
     !! {#<User nick="dorayaki">=>["o"], #<User nick="snapcase4">=>["o"], #<User nick="fooki">=>["o"], #<User nick="snapcase">=>["o"], #<User nick="snapcase4">=>[]}
     !! -- EOF --
+*** DONE Add a Target class and helper methods that is the base class of User/Channel :refactor:
+    CLOSED: [2011-06-16 Thu 15:04]
+    :PROPERTIES:
+    :Branch: refactor/target
+    :END:
 *** TODO Persistent store                                           :feature:
     - optional dependencies
     - API to plug in other stores
@@ -455,16 +469,16 @@
     - `:filter => false` to disable filtering
 *** TODO Provide automatic per-server throttle options (looks like QuakeNet is more anal than Freenode) :feature:
     - Consider putting the throttling into a class of its own
-*** TODO More meaningful exceptions when classes are used wrong
+*** TODO More meaningful exceptions when classes are used wrong :improvement:
     - More typechecking
     - warn about unknown options for methods taking argument hashes
       - Plugin.*
-*** TODO Bot#ping to get the current delay to the server
+*** TODO Bot#ping to get the current delay to the server            :feature:
     :PROPERTIES:
     :Depends:  feature/unload
     :END:
     - Use a cached value from the last time we pinged the server if no block is passed
-*** TODO Allow plugin unloading
+*** TODO Allow plugin unloading                                     :feature:
     :PROPERTIES:
     :Depends:  feature/unload
     :END:
@@ -483,12 +497,16 @@
     - Make this configurable
     - Clear @bot.channels after the reconnect to get rid of not rejoined channels
     - Be sure to store passwords for channels
-*** TODO Get rid of all useless checks (do methods for matchers/timers/executor/listener exist, etc)
+*** TODO Get rid of all useless checks (do methods for matchers/timers/executor/listener exist, etc) :refactor:
     - Phase 1: Print warnings if methods are missing
     - Phase 2 (Cinch v2.0.0): completly remove the checks and raise exceptions instead
     - Maybe consider printing nicely formatted errors (and quitting) instead of raw exceptions
 *** TODO Support setting user modes                                 :feature:
-*** TODO Deprecate Bot#halt
+*** DONE Deprecate Bot#halt
+    CLOSED: [2011-06-16 Thu 15:05]
+    :PROPERTIES:
+    :Branch: deprecate/halt
+    :END:
     Useless method, people should use next or break instead
 *** TODO One-shot option for timer                              :improvement:
     :PROPERTIES:
