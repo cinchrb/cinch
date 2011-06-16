@@ -428,10 +428,5 @@ module Cinch
              end
     end
     alias_method :eql?, "=="
-
-    # @return [Fixnum]
-    def hash
-      @nick.hash
-    end
   end
 end
