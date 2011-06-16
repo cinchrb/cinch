@@ -1,5 +1,18 @@
 module Cinch
   module Helpers
+    # Helper method for turning a String into a {Target} object.
+    #
+    # @param [String] target a target name
+    # @return [Target] a {Target} object
+    # @example
+    #   on :message, /^message (.+)$/ do |m, target|
+    #     Target(target).send "hi!"
+    #   end
+    def Target(target)
+      return target if target.is_a?(Target)
+      Target.new(target, bot)
+    end
+
     # Helper method for turning a String into a {Channel} object.
     #
     # @param [String] channel a channel name

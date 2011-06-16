@@ -109,6 +109,10 @@ module Cinch
                    end
     end
 
+    def target
+      channel || user
+    end
+
     # @api private
     # @return [MatchData]
     def match(regexp, type)
@@ -157,11 +161,10 @@ module Cinch
         text = text.split("\n").map {|l| "#{user.nick}: #{l}"}.join("\n")
       end
 
-      (channel || user).send(text)
+      target.send(text)
     end
 
-    # Like #reply, but using {Channel#safe_send}/{User#safe_send}
-    # instead
+    # Like #reply, but using {Target#safe_send} instead
     #
     # @param (see #reply)
     # @return (see #reply)
@@ -170,7 +173,7 @@ module Cinch
       if channel && prefix
         text = "#{user.nick}: #{text}"
       end
-      (channel || user).safe_send(text)
+      target.safe_send(text)
     end
 
     # Reply to a CTCP message
