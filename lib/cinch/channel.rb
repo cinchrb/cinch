@@ -126,6 +126,28 @@ module Cinch
 
     # @endgroup
 
+    # @group User groups
+    # @return [Array<User>] All ops in the channel
+    def ops
+      @users.select {|user, modes| modes.include?("o")}.keys
+    end
+
+    # @return [Array<User>] All half-ops in the channel
+    def half_ops
+      @users.select {|user, modes| modes.include?("h")}.keys
+    end
+
+    # @return [Array<User>] All voiced users in the channel
+    def voiced
+      @users.select {|user, modes| modes.include?("v")}.keys
+    end
+
+    # @return [Array<User>] All admins in the channel
+    def admins
+      @users.select {|user, modes| modes.include?("o")}.keys
+    end
+    # @endgroup
+
     # @return [Number] The maximum number of allowed users in the
     #   channel. 0 if unlimited.
     def limit

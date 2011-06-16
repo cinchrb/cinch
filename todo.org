@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [20/43]
+** TODO v1.2.0 [21/43]
 *** TODO Plugin improvements [0/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -512,7 +512,11 @@
     :PROPERTIES:
     :Depends: feature/unload
     :END:
-*** TODO Channel#ops and an equivalent for voiced people (how do you call those, anyway?), halfops, admins :feature:
+*** DONE Channel#ops and an equivalent for voiced people (how do you call those, anyway?), halfops, admins :feature:
+    CLOSED: [2011-06-16 Thu 18:02]
+    :PROPERTIES:
+    :Branch: feature/channel_user_classes
+    :END:
 *** TODO Improve documentation
     - [ ] Check documentation for wrong multiline docs (e.g. Message#reply)
     - [ ] document the :use_suffix option of Plugin.match
