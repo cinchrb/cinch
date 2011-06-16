@@ -135,7 +135,9 @@ module Cinch
     # Stop execution of the current {#on} handler.
     #
     # @return [void]
+    # @deprecated Use `next` or `break` instead
     def halt
+      Cinch.print_deprecation("1.2.0", "Bot#halt")
       throw :halt
     end
 
