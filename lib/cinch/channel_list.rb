@@ -1,4 +1,4 @@
-require "cinch/cache_manager"
+require "cinch/cached_list"
 
 module Cinch
   class ChannelList < CachedList
