@@ -137,6 +137,7 @@ module Cinch
     #
     # @return [void]
     # @deprecated Use `next` or `break` instead
+    # @note This method will be removed in Cinch 2.0.0
     def halt
       Cinch.print_deprecation("1.2.0", "Bot#halt")
       throw :halt
@@ -155,6 +156,7 @@ module Cinch
     end
 
     # @deprecated See {Target#msg} instead
+    # @note This method will be removed in Cinch 2.0.0
     def msg(recipient, text, notice = false)
       Cinch.print_deprecation("1.2.0", "Bot#msg")
 
@@ -164,6 +166,7 @@ module Cinch
     alias_method :send, :msg
 
     # @deprecated See {Target#notice} instead
+    # @note This method will be removed in Cinch 2.0.0
     def notice(recipient, text)
       Cinch.print_deprecation("1.2.0", "Bot#notice")
 
@@ -171,6 +174,7 @@ module Cinch
     end
 
     # @deprecated See {Target#safe_msg} instead
+    # @note This method will be removed in Cinch 2.0.0
     def safe_msg(recipient, text)
       Cinch.print_deprecation("1.2.0", "Bot#safe_msg")
 
@@ -180,6 +184,7 @@ module Cinch
     alias_method :safe_send, :safe_msg
 
     # @deprecated See {Target#safe_notice} instead
+    # @note This method will be removed in Cinch 2.0.0
     def safe_notice(recipient, text)
       Cinch.print_deprecation("1.2.0", "Bot#safe_notice")
 
@@ -187,6 +192,7 @@ module Cinch
     end
 
     # @deprecated See {Target#action} instead
+    # @note This method will be removed in Cinch 2.0.0
     def action(recipient, text)
       Cinch.print_deprecation("1.2.0", "Bot#action")
 
@@ -194,6 +200,7 @@ module Cinch
     end
 
     # @deprecated See {Target#safe_action} instead
+    # @note This method will be removed in Cinch 2.0.0
     def safe_action(recipient, text)
       Cinch.print_deprecation("1.2.0", "Bot#safe_action")
 
@@ -255,6 +262,7 @@ module Cinch
     end
 
     # @deprecated See {HandlerList#dispatch} instead
+    # @note This method will be removed in Cinch 2.0.0
     def dispatch(event, msg = nil, *arguments)
       Cinch.print_deprecation("1.2.0", "Bot#dispatch")
 
@@ -265,6 +273,7 @@ module Cinch
     #
     # @return [void]
     # @deprecated See {Bot#plugins} and {PluginList#register_plugins} instead
+    # @note This method will be removed in Cinch 2.0.0
     def register_plugins
       Cinch.print_deprecation("1.2.0", "Bot#register_plugins")
 
@@ -276,6 +285,7 @@ module Cinch
     # @param [Class<Plugin>] plugin The plugin class to register
     # @return [void]
     # @deprecated See {Bot#plugins} and {PluginList#register_plugin} instead
+    # @note This method will be removed in Cinch 2.0.0
     def register_plugin(plugin)
       Cinch.print_deprecation("1.2.0", "Bot#register_plugin")
 
