@@ -12,7 +12,7 @@ module Cinch
 
     # @param [Array<Class<Plugin>>] plugins
     def register_plugins(plugins)
-      each { |plugin| register_plugin(plugin) }
+      plugins.each { |plugin| register_plugin(plugin) }
     end
   end
 end
