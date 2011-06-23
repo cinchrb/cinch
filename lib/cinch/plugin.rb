@@ -44,9 +44,25 @@ module Cinch
     module ClassMethods
       include ClassAttributes
 
+      # @attr [String, Regexp, Proc] pattern
+      # @attr [Boolean] use_prefix
+      # @attr [Boolean] use_suffix
+      # @attr [Symbol] method
       Match = Struct.new(:pattern, :use_prefix, :use_suffix, :method)
+
+      # @attr [Symbol] event
+      # @attr [Symbol] method
       Listener = Struct.new(:event, :method)
+
+      # @attr [Number] interval
+      # @attr [Symbol] method
+      # @attr [Boolean] threaded
+      # @attr [Boolean] registered
       Timer = Struct.new(:interval, :method, :threaded, :registered)
+
+      # @attr [Symbol] type
+      # @attr [Array<Symbol>] for
+      # @attr [Symbol] method
       Hook = Struct.new(:type, :for, :method)
 
       # @api private
