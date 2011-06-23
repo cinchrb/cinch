@@ -42,6 +42,8 @@ module Cinch
     end
 
     module ClassMethods
+      include ClassAttributes
+
       Match = Struct.new(:pattern, :use_prefix, :use_suffix, :method)
       Listener = Struct.new(:event, :method)
       Timer = Struct.new(:interval, :method, :threaded, :registered)
@@ -49,7 +51,6 @@ module Cinch
 
       # @api private
       def self.extended(by)
-        by.extend ClassAttributes
         by.instance_exec do
           @matchers  = []
           @ctcps     = []
