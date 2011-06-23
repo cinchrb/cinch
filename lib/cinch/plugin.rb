@@ -50,6 +50,42 @@ module Cinch
         by.extend ClassAttributes
       end
 
+      # Set options.
+      #
+      # Available options:
+      #
+      #   - {ClassAttributes#help= help}
+      #   - {ClassAttributes#plugin_name= plugin_name}
+      #   - {ClassAttributes#prefix= prefix}
+      #   - {ClassAttributes#react_on= react_on}
+      #   - {ClassAttributes#suffix= suffx}
+      #
+      # @overload set(key, value)
+      #   @param [Symbol] key The option's name
+      #   @param [Object] value
+      #   @return [void]
+      # @overload set(options)
+      #   @param [Hash<Symbol => Object>] options The options, as key => value associations
+      #   @return [void]
+      #   @example
+      #     set(:help   => "the help message",
+      #         :prefix => "^")
+      # @return [void]
+      # @since 1.2.0
+      def set(*args)
+        case args.size
+        when 1
+          # {:key => value, ...}
+          args.first.each do |key, value|
+            self.send("#{key}=", value)
+          end
+        when 2
+          # key, value
+          self.send("#{args.first}=", args.last)
+        else
+          raise ArgumentError # TODO proper error message
+        end
+      end
 
       # Set a match pattern.
       #
