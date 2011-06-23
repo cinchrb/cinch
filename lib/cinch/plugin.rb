@@ -50,6 +50,17 @@ module Cinch
       # @api private
       def self.extended(by)
         by.extend ClassAttributes
+        by.instance_exec do
+          @matchers  = []
+          @ctcps     = []
+          @listeners = []
+          @timers    = []
+          @help      = nil
+          @hooks     = Hash.new{|h, k| h[k] = []}
+          @prefix    = nil
+          @suffix    = nil
+          @react_on  = :message
+        end
       end
 
       # Set options.
@@ -102,7 +113,6 @@ module Cinch
       # @return [void]
       def match(pattern, options = {})
         options = {:use_prefix => true, :use_suffix => true, :method => :execute}.merge(options)
-        @matchers ||= []
         @matchers << Match.new(pattern, options[:use_prefix], options[:use_suffix], options[:method])
       end
 
@@ -128,15 +138,13 @@ module Cinch
           options.merge!(types.pop)
         end
 
-        @listeners ||= []
-
         types.each do |type|
           @listeners << Listener.new(type, options[:method])
         end
       end
 
       def ctcp(command)
-        (@ctcps ||= []) << command.to_s.upcase
+        @ctcps << command.to_s.upcase
       end
 
       # Set or query the help message.
@@ -254,7 +262,6 @@ module Cinch
       # @return [void]
       def timer(interval, options = {}, &block)
         options = {:method => :timer, :threaded => true}.merge(options)
-        @timers ||= []
         @timers << Timer.new(interval, block || options[:method], options[:threaded], false)
       end
 
@@ -275,8 +282,6 @@ module Cinch
       # @return [Hash]
       # @api private
       def __hooks(type = nil, events = nil)
-        @hooks ||= Hash.new{|h,k| h[k] = []}
-
         if type.nil?
           hooks = @hooks
         else
@@ -297,7 +302,7 @@ module Cinch
       # @return [void]
       # @api private
       def __register_with_bot(bot, instance)
-        (@listeners || []).each do |listener|
+        @listeners.each do |listener|
           bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
           bot.on(listener.event, [], instance) do |message, plugin, *args|
             if plugin.respond_to?(listener.method)
@@ -308,7 +313,7 @@ module Cinch
           end
         end
 
-        if (@matchers ||= []).empty?
+        if @matchers.empty?
           @matchers << Match.new(plugin_name, true, true, :execute)
         end
 
@@ -340,7 +345,7 @@ module Cinch
           end
         end
 
-        (@ctcps || []).each do |ctcp|
+        @ctcps.each do |ctcp|
           bot.debug "[plugin] #{plugin_name}: Registering CTCP `#{ctcp}`"
           bot.on(:ctcp, ctcp, instance, ctcp) do |message, plugin, ctcp, *args|
             plugin.class.__hooks(:pre, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
@@ -349,7 +354,7 @@ module Cinch
           end
         end
 
-        (@timers || []).each do |timer|
+        @timers.each do |timer|
           # TODO move debug message to instance method
           bot.debug "[plugin] #{plugin_name}: Registering timer with interval `#{timer.interval}` for method `#{timer.method}`"
           bot.on :connect do
