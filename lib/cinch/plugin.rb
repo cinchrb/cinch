@@ -365,10 +365,10 @@ module Cinch
           end
         end
 
-        if @help_message
+        if @help
           bot.debug "[plugin] #{plugin_name}: Registering help message"
           help_pattern = Pattern.new(prefix, "help #{plugin_name}", suffix)
-          bot.on(:message, help_pattern, @__cinch_help_message) do |message, help_message|
+          bot.on(:message, help_pattern, @help) do |message, help_message|
             message.reply(help_message)
           end
         end
