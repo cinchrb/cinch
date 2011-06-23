@@ -42,13 +42,9 @@ module Cinch
     end
 
     module ClassMethods
-      # @api private
       Match = Struct.new(:pattern, :use_prefix, :use_suffix, :method)
-      # @api private
       Listener = Struct.new(:event, :method)
-      # @api private
       Timer = Struct.new(:interval, :method, :threaded, :registered)
-      # @api private
       Hook = Struct.new(:type, :for, :method)
 
       # @api private
