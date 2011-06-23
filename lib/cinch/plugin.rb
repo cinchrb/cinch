@@ -2,6 +2,39 @@ module Cinch
   module Plugin
     include Helpers
 
+    # @since 1.2.0
+    module ClassAttributes
+      # @since 1.2.0
+      attr_accessor :hooks
+
+      # @since 1.2.0
+      attr_writer   :react_on
+
+      # @since 1.2.0
+      attr_writer   :plugin_name
+
+      # @since 1.2.0
+      attr_reader   :matchers
+
+      # @since 1.2.0
+      attr_reader   :listeners
+
+      # @since 1.2.0
+      attr_reader   :timers
+
+      # @since 1.2.0
+      attr_reader   :ctcps
+
+      # @since 1.2.0
+      attr_writer   :help
+
+      # @since 1.2.0
+      attr_writer   :prefix
+
+      # @since 1.2.0
+      attr_writer   :suffix
+    end
+
     module ClassMethods
       # @api private
       Match = Struct.new(:pattern, :use_prefix, :use_suffix, :method)
@@ -12,6 +45,12 @@ module Cinch
       # @api private
       Hook = Struct.new(:type, :for, :method)
 
+      # @api private
+      def self.extended(by)
+        by.extend ClassAttributes
+      end
+
+
       # Set a match pattern.
       #
       # @param [Regexp, String] pattern A pattern
@@ -19,11 +58,14 @@ module Cinch
       # @option options [Boolean] :use_prefix (true) If true, the
       #   plugin prefix will automatically be prepended to the
       #   pattern.
+      # @option options [Boolean] :use_suffix (true) If true, the
+      #   plugin suffix will automatically be appended to the
+      #   pattern.
       # @return [void]
       def match(pattern, options = {})
         options = {:use_prefix => true, :use_suffix => true, :method => :execute}.merge(options)
-        @__cinch_matches ||= []
-        @__cinch_matches << Match.new(pattern, options[:use_prefix], options[:use_suffix], options[:method])
+        @matchers ||= []
+        @matchers << Match.new(pattern, options[:use_prefix], options[:use_suffix], options[:method])
       end
 
       # Events to listen to.
@@ -48,60 +90,118 @@ module Cinch
           options.merge!(types.pop)
         end
 
-        @__cinch_listeners ||= []
+        @listeners ||= []
 
         types.each do |type|
-          @__cinch_listeners << Listener.new(type, options[:method])
+          @listeners << Listener.new(type, options[:method])
         end
       end
 
       def ctcp(command)
-        (@__cinch_ctcps ||= []) << command.to_s.upcase
+        (@ctcps ||= []) << command.to_s.upcase
       end
 
-      # Define a help message which will be returned on "&lt;prefix&gt;help
-      # &lt;pluginname&gt;".
+      # Set or query the help message.
+      # @overload help()
+      #   @return [String, nil] The help message
+      #   @since 1.2.0
       #
-      # @param [String] message
-      # @return [void]
-      def help(message)
-        @__cinch_help_message = message
+      # @overload help(message)
+      #   Sets the help message
+      #
+      #   @param [String] message
+      #   @return [void]
+      #   @deprecated See {#set} or {ClassAttributes#help=} instead
+      # @return [String, nil, void]
+      def help(*args)
+        case args.size
+        when 0
+          return @help
+        when 1
+          self.help = args.first
+        else
+          raise ArgumentError # TODO proper error message
+        end
       end
 
-      # Set the plugin prefix.
+      # Set or query the plugin prefix.
+      # @overload prefix()
+      #   @return [String, Regexp, Proc] The plugin prefix
+      #   @since 1.2.0
       #
-      # @param [String] prefix
-      # @return [void]
+      # @overload prefix(prefix = nil, &block)
+      #   Sets the plugin prefix
+      #
+      #   @param [String, Regexp, Proc] prefix
+      #   @return [void]
+      #   @deprecated See {#set} or {ClassAttributes#prefix=} instead
+      # @return [String, Regexp, Proc, void]
       def prefix(prefix = nil, &block)
-        raise ArgumentError if prefix.nil? && block.nil?
-        @__cinch_prefix = prefix || block
+        return @prefix if prefix.nil? && block.nil?
+        self.prefix = prefix || block
       end
 
-      # Set the plugin suffix.
+      # Set or query the plugin suffix.
+      # @overload suffix()
+      #   @return [String, Regexp, Proc] The plugin suffix
+      #   @since 1.2.0
       #
-      # @param [String] suffix
-      # @return [void]
+      # @overload suffix(suffix = nil, &block)
+      #   Sets the plugin suffix
+      #
+      #   @param [String, Regexp, Proc] suffix
+      #   @return [void]
+      #   @deprecated See {#set} or {ClassAttributes#suffix=} instead
+      # @return [String, Regexp, Proc, void]
       def suffix(suffix = nil, &block)
-        raise ArgumentError if suffix.nil? && block.nil?
-        @__cinch_suffix = suffix || block
+        return @suffix if suffix.nil? && block.nil?
+        self.suffix = suffix || block
       end
 
-      # Set which kind of messages to react on (i.e. call {#execute})
-      #
-      # @param [Symbol<:message, :channel, :private>] target React to all,
-      #   only public or only private messages?
-      # @return [void]
-      def react_on(target)
-        @__cinch_react_on = target
+      # Set or query which kind of messages to react on (i.e. call {#execute})
+      # @overload react_on()
+      #   @return [Array<Symbol<:message, :channel, :private>>] What kind of messages to react on
+      #   @since 1.2.0
+      # @overload react_on(events)
+      #   Set which kind of messages to react on
+      #   @param [Array<Symbol<:message, :channel, :private>>] events Which events to react on
+      #   @return [void]
+      #   @deprecated See {#set} or {ClassAttributes#react_on=} instead
+      # @return [Array<Symbol>, void]
+      def react_on(*args)
+        case args.size
+        when 0
+          return @react_on
+        when 1
+          self.react_on = args.first
+        else
+          raise ArgumentError # TODO proper error message
+        end
       end
 
-      # Define the plugin name.
+      # Set or query the plugin name.
+      # @overload plugin_name()
+      #   @return [String] The plugin name
+      #   @since 1.2.0
       #
-      # @param [String] name
-      # @return [void]
-      def plugin(name)
-        @__cinch_name = name
+      # @overload plugin_name(name)
+      #   Sets the plugin name
+      #
+      #   @param [String] name
+      #   @return [void]
+      #   @deprecated See {#set} or {ClassAttributes#plugin_name=} instead
+      # @return [String, void]
+      def plugin_name(*args)
+        case args.size
+        when 0
+          return @plugin_name || self.name.split("::").last.downcase
+        when 1
+          self.plugin_name = args.first
+        else
+          raise ArgumentError # TODO proper error message
+        end
       end
+      alias_method :plugin, :plugin_name
 
       # @example
       #   timer 5, method: :some_method
@@ -116,8 +216,8 @@ module Cinch
       # @return [void]
       def timer(interval, options = {}, &block)
         options = {:method => :timer, :threaded => true}.merge(options)
-        @__cinch_timers ||= []
-        @__cinch_timers << Timer.new(interval, block || options[:method], options[:threaded], false)
+        @timers ||= []
+        @timers << Timer.new(interval, block || options[:method], options[:threaded], false)
       end
 
       # Defines a hook which will be run before or after a handler is
@@ -134,21 +234,15 @@ module Cinch
         __hooks(type) << Hook.new(type, options[:for], options[:method])
       end
 
-      # @return [String]
-      # @api private
-      def __plugin_name
-        @__cinch_name || self.name.split("::").last.downcase
-      end
-
       # @return [Hash]
       # @api private
       def __hooks(type = nil, events = nil)
-        @__cinch_hooks ||= Hash.new{|h,k| h[k] = []}
+        @hooks ||= Hash.new{|h,k| h[k] = []}
 
         if type.nil?
-          hooks = @__cinch_hooks
+          hooks = @hooks
         else
-          hooks = @__cinch_hooks[type]
+          hooks = @hooks[type]
         end
 
         if events.nil?
@@ -165,9 +259,7 @@ module Cinch
       # @return [void]
       # @api private
       def __register_with_bot(bot, instance)
-        plugin_name = __plugin_name
-
-        (@__cinch_listeners || []).each do |listener|
+        (@listeners || []).each do |listener|
           bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
           bot.on(listener.event, [], instance) do |message, plugin, *args|
             if plugin.respond_to?(listener.method)
@@ -178,19 +270,19 @@ module Cinch
           end
         end
 
-        if (@__cinch_matches ||= []).empty?
-          @__cinch_matches << Match.new(plugin_name, true, true, :execute)
+        if (@matchers ||= []).empty?
+          @matchers << Match.new(plugin_name, true, true, :execute)
         end
 
-        prefix = @__cinch_prefix || bot.config.plugins.prefix
-        suffix = @__cinch_suffix || bot.config.plugins.suffix
+        prefix = @prefix || bot.config.plugins.prefix
+        suffix = @suffix || bot.config.plugins.suffix
 
-        @__cinch_matches.each do |pattern|
+        @matchers.each do |pattern|
           _prefix = pattern.use_prefix ? prefix : nil
           _suffix = pattern.use_suffix ? suffix : nil
 
           pattern_to_register = Pattern.new(_prefix, pattern.pattern, _suffix)
-          react_on = @__cinch_react_on || :message
+          react_on = @react_on || :message
 
           bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
@@ -210,7 +302,7 @@ module Cinch
           end
         end
 
-        (@__cinch_ctcps || []).each do |ctcp|
+        (@ctcps || []).each do |ctcp|
           bot.debug "[plugin] #{plugin_name}: Registering CTCP `#{ctcp}`"
           bot.on(:ctcp, ctcp, instance, ctcp) do |message, plugin, ctcp, *args|
             plugin.class.__hooks(:pre, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
@@ -219,9 +311,9 @@ module Cinch
           end
         end
 
-        (@__cinch_timers || []).each do |timer|
+        (@timers || []).each do |timer|
           # TODO move debug message to instance method
-          bot.debug "[plugin] #{__plugin_name}: Registering timer with interval `#{timer.interval}` for method `#{timer.method}`"
+          bot.debug "[plugin] #{plugin_name}: Registering timer with interval `#{timer.interval}` for method `#{timer.method}`"
           bot.on :connect do
             next if timer.registered
             instance.timer(timer.interval,
@@ -230,7 +322,7 @@ module Cinch
           end
         end
 
-        if @__cinch_help_message
+        if @help_message
           bot.debug "[plugin] #{plugin_name}: Registering help message"
           help_pattern = Pattern.new(prefix, "help #{plugin_name}", suffix)
           bot.on(:message, help_pattern, @__cinch_help_message) do |message, help_message|
@@ -278,6 +370,7 @@ module Cinch
       @bot.config.plugins.options[self.class] || {}
     end
 
+    # @api private
     def self.included(by)
       by.extend ClassMethods
     end
