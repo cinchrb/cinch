@@ -2,6 +2,8 @@ module Cinch
   module Plugin
     include Helpers
 
+    # @note All writeonly attributes can actually be read, but those
+    #   methods are provided by {ClassMethods}
     # @since 1.2.0
     module ClassAttributes
       # Note: The reason we are using a ClassAttributes module,
@@ -41,6 +43,7 @@ module Cinch
       attr_writer   :suffix
     end
 
+    # @see ClassAttributes ClassAttributes for information on available attributes
     module ClassMethods
       include ClassAttributes
 
