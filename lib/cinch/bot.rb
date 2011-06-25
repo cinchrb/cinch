@@ -48,7 +48,8 @@ module Cinch
   class Bot
     include Helpers
 
-    # @return [Config]
+
+    # @return [BotConfiguration]
     # @version 1.2.0
     attr_reader :config
 

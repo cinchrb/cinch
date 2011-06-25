@@ -56,7 +56,7 @@ module Cinch
       end
     end
 
-    # @return [Array<User>] all users in the channel
+    # @return [Hash<User => Array<String>>] all users in the channel
     # @version 1.1.0
     attr_reader :users
     synced_attr_reader :users
