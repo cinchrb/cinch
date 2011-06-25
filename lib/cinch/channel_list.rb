@@ -9,7 +9,7 @@ module Cinch
     #
     # @param [String] name name of a channel
     # @return [Channel]
-    # @see Bot#Channel
+    # @see Helpers#Channel
     def find_ensured(name)
       downcased_name = name.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
       @mutex.synchronize do

@@ -21,7 +21,7 @@ module Cinch
       # @param [String] name name of a channel
       # @param [Bot] bot a bot
       # @return [Channel]
-      # @see Bot#Channel
+      # @see Helpers#Channel
       # @deprecated See {Bot#channel_manager} and {ChannelManager#find_ensured} instead
       # @note This method does not work properly if running more than one bot
       # @note This method will be removed in Cinch 2.0.0
