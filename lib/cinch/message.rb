@@ -3,14 +3,20 @@ module Cinch
   class Message
     # @return [String]
     attr_accessor :raw
+
     # @return [String]
     attr_accessor :prefix
+
     # @return [String]
     attr_accessor :command
+
     # @return [Array<String>]
     attr_accessor :params
+
     attr_reader :events
+
     # @return [Bot]
+    # @since 1.1.0
     attr_reader :bot
     def initialize(msg, bot)
       @raw = msg
@@ -185,6 +191,7 @@ module Cinch
     end
 
     # @return [String]
+    # @since 1.1.0
     def to_s
       "#<Cinch::Message @raw=#{raw.chomp.inspect} @params=#{@params.inspect} channel=#{channel.inspect} user=#{user.inspect}>"
     end

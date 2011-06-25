@@ -8,6 +8,8 @@ module Cinch
   # @attr moderated
   # @attr invite_only
   # @attr key
+  #
+  # @version 1.2.0
   class Channel < Target
     include Syncable
     include Helpers
@@ -55,6 +57,7 @@ module Cinch
     end
 
     # @return [Array<User>] all users in the channel
+    # @version 1.1.0
     attr_reader :users
     synced_attr_reader :users
 
@@ -104,22 +107,26 @@ module Cinch
 
     # @param [User, String] user An {User}-object or a nickname
     # @return [Boolean] Check if a user is in the channel
+    # @since 1.1.0
+    # @version 1.1.2
     def has_user?(user)
       @users.has_key?(User(user))
     end
 
-
     # @return [Boolean] true if `user` is opped in the channel
+    # @since 1.1.0
     def opped?(user)
       @users[User(user)].include? "o"
     end
 
     # @return [Boolean] true if `user` is half-opped in the channel
+    # @since 1.1.0
     def half_opped?(user)
       @users[User(user)].include? "h"
     end
 
     # @return [Boolean] true if `user` is voiced in the channel
+    # @since 1.1.0
     def voiced?(user)
       @users[User(user)].include? "v"
     end
@@ -128,21 +135,25 @@ module Cinch
 
     # @group User groups
     # @return [Array<User>] All ops in the channel
+    # @since 1.2.0
     def ops
       @users.select {|user, modes| modes.include?("o")}.keys
     end
 
     # @return [Array<User>] All half-ops in the channel
+    # @since 1.2.0
     def half_ops
       @users.select {|user, modes| modes.include?("h")}.keys
     end
 
     # @return [Array<User>] All voiced users in the channel
+    # @since 1.2.0
     def voiced
       @users.select {|user, modes| modes.include?("v")}.keys
     end
 
     # @return [Array<User>] All admins in the channel
+    # @since 1.2.0
     def admins
       @users.select {|user, modes| modes.include?("o")}.keys
     end

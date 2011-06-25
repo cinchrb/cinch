@@ -44,45 +44,70 @@ require "cinch/timeouts_configuration"
 
 module Cinch
   # @attr nick
+  # @version 1.2.0
   class Bot
     include Helpers
 
     # @return [Config]
+    # @version 1.2.0
     attr_reader :config
+
     # @return [IRC]
     attr_reader :irc
+
     # @return [Logger]
     attr_accessor :logger
+
     # @return [Array<Channel>] All channels the bot currently is in
     attr_reader :channels
+
     # @return [String] the bot's hostname
     attr_reader :host
+
     # @return [Mask]
     attr_reader :mask
+
     # @return [String]
     attr_reader :user
+
     # @return [String]
     attr_reader :realname
+
     # @return [Time]
     attr_reader :signed_on_at
+
     # @return [PluginList] All registered plugins
+    # @version 1.2.0
     attr_reader :plugins
+
     # @return [Boolean] whether the bot is in the process of disconnecting
     attr_reader :quitting
+
     # @return [UserManager]
+    # @since 1.1.0
+    # @todo Rename to :user_list, provide :user_manager as a deprecated alias
     attr_reader :user_manager
+
     # @return [ChannelManager]
+    # @since 1.1.0
+    # @todo Rename to :channel_list, provide :channel_manager as a deprecated alias
     attr_reader :channel_manager
+
     # @return [PluginList] The plugin list. See {PluginList} for more
     #   information
+    # @version 1.2.0
     attr_reader :plugins
+
     # @return [Boolean]
     # @api private
     attr_accessor :last_connection_was_successful
+
     # @return [Callback]
     # @api private
     attr_reader :callback
+
     # @return [HandlerList]
+    # @since 1.2.0
     attr_reader :handlers
 
     # @group Helper methods
@@ -416,6 +441,7 @@ module Cinch
       end
     end
 
+    # @since 1.2.0
     def bot
       self
     end

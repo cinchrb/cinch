@@ -1,5 +1,6 @@
 require 'cinch/bot'
 
+# @since 1.0.0
 module Cinch
   VERSION = '1.1.3'
 
@@ -18,6 +19,7 @@ module Cinch
   end
 
   # @api private
+  # @since 1.1.0
   def self.encode_incoming(string, encoding)
     string = string.dup
     if encoding == :irc
@@ -40,6 +42,7 @@ module Cinch
   end
 
   # @api private
+  # @since 1.1.0
   def self.encode_outgoing(string, encoding)
     string = string.dup
     if encoding == :irc
@@ -67,6 +70,7 @@ module Cinch
   end
 
   # @api private
+  # @since 1.2.0
   def self.print_deprecation(version, method)
     $stderr.puts "Deprecation warning: Beginning with version #{version}, #{method} should not be used anymore."
     $stderr.puts caller

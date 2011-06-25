@@ -1,6 +1,7 @@
 require "cinch/configuration"
 
 module Cinch
+  # @since 1.2.0
   class BotConfiguration < Configuration
     KnownOptions = [:server, :port, :ssl, :password, :nick, :nicks,
                     :realname, :user, :verbose, :messages_per_second, :server_queue_size,

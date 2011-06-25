@@ -229,6 +229,7 @@ module Cinch
       @bot.user_manager.delete(user)
     end
 
+    # @version 1.1.0
     def on_mode(msg, events)
       if msg.channel?
         add_and_remove = @bot.irc.isupport["CHANMODES"]["A"] + @bot.irc.isupport["CHANMODES"]["B"] + @bot.irc.isupport["PREFIX"].keys
@@ -317,6 +318,7 @@ module Cinch
       @bot.user_manager.delete(msg.user)
     end
 
+    # @since 1.2.0
     def on_002(msg, events)
       if msg.params.last == "Your host is jtvchat"
         # the justin tv "IRC" server lacks support for WHOIS with more
@@ -347,6 +349,7 @@ module Cinch
       end
     end
 
+    # @since 1.1.0
     def on_307(msg, events)
       # RPL_WHOISREGNICK
       user = User(msg.params[1])
@@ -451,6 +454,7 @@ module Cinch
       msg.channel.mark_as_synced(:users)
     end
 
+    # @version 1.2.0
     def on_367(msg, events)
       # RPL_BANLIST
       unless @in_lists.include?(:bans)

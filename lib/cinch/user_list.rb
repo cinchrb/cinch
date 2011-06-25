@@ -1,6 +1,9 @@
 require "cinch/cached_list"
 
 module Cinch
+  # @since 1.2.0
+  # @version 1.1.0
+  # @note In prior versions, this class was called UserManager
   class UserList < CachedList
     # Finds or creates a user.
     # @overload find_ensured(nick)
