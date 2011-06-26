@@ -273,6 +273,7 @@
     CLOSED: [2011-03-02 Wed 16:01]
     :PROPERTIES:
     :Branch:   fix/globbing
+    :END:
 *** DONE fix !help                                                      :bug:
     CLOSED: [2011-03-02 Wed 16:01]
     :PROPERTIES:
