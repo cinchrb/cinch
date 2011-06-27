@@ -18,6 +18,7 @@ module Cinch
     end
 
     # @api private
+    # @return [void]
     # @since 1.2.0
     def setup
       @registration = []
@@ -27,6 +28,7 @@ module Cinch
     end
 
     # @api private
+    # @return [void]
     def connect
       tcp_socket = nil
       begin
@@ -74,6 +76,7 @@ module Cinch
     end
 
     # @api private
+    # @return [void]
     # @since 1.2.0
     def send_login
       message "PASS #{@bot.config.password}" if @bot.config.password
@@ -82,6 +85,7 @@ module Cinch
     end
 
     # @api private
+    # @return [Thread] the reading thread
     # @since 1.2.0
     def start_reading_thread
       Thread.new do
@@ -107,6 +111,7 @@ module Cinch
     end
 
     # @api private
+    # @return [Thread] the sending thread
     # @since 1.2.0
     def start_sending_thread
       Thread.new do
@@ -117,7 +122,7 @@ module Cinch
     end
 
     # @api private
-    # @since 1.2.0
+    # @return [Thread] The ping thread.
     # @since 1.2.0
     def start_ping_thread
       Thread.new do
