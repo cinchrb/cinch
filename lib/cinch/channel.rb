@@ -56,6 +56,9 @@ module Cinch
       end
     end
 
+    # Users are represented by a Hash, mapping individual users to an
+    # array of modes (e.g. "o" for opped).
+    #
     # @return [Hash<User => Array<String>>] all users in the channel
     # @version 1.1.0
     attr_reader :users
@@ -69,6 +72,11 @@ module Cinch
     attr_reader :bans
     synced_attr_reader :bans
 
+    # This attribute describes all modes set in the channel. They're
+    # represented as a Hash, mapping the mode (e.g. "i", "k", …) to
+    # either a value in the case of modes that take an option (e.g.
+    # "k" for the channel key) or true.
+    #
     # @return [Hash<String => Object>]
     attr_reader :modes
     synced_attr_reader :modes
@@ -187,8 +195,7 @@ module Cinch
       end
     end
 
-    # @return [Boolean] true if the channel is moderated (only users
-    #   with +o and +v are able to send messages)
+    # @return [Boolean] true if the channel is moderated
     def moderated
       @modes["m"]
     end
@@ -244,7 +251,7 @@ module Cinch
 
     # Bans someone from the channel.
     #
-    # @param [Ban, Mask, User, String] target the mask to ban
+    # @param [Ban, Mask, User, String] target the mask, or an object having a mask, to ban
     # @return [Mask] the mask used for banning
     def ban(target)
       mask = Mask.from(target)
@@ -264,24 +271,32 @@ module Cinch
       mask
     end
 
+    # Ops a user.
+    #
     # @param [String, User] user the user to op
     # @return [void]
     def op(user)
       @bot.raw "MODE #@name +o #{user}"
     end
 
+    # Deops a user.
+    #
     # @param [String, User] user the user to deop
     # @return [void]
     def deop(user)
       @bot.raw "MODE #@name -o #{user}"
     end
 
+    # Voices a user.
+    #
     # @param [String, User] user the user to voice
     # @return [void]
     def voice(user)
       @bot.raw "MODE #@name +v #{user}"
     end
 
+    # Devoices a user.
+    #
     # @param [String, User] user the user to devoice
     # @return [void]
     def devoice(user)
@@ -299,7 +314,8 @@ module Cinch
     # Sets the topic.
     #
     # @param [String] new_topic the new topic
-    # @raise [Exceptions::TopicTooLong]
+    # @raise [Exceptions::TopicTooLong] Raised if the bot is operating
+    #   in {Bot#strict? strict mode} and when the new topic is too long.
     def topic=(new_topic)
       if new_topic.size > @bot.irc.isupport["TOPICLEN"] && @bot.strict?
         raise Exceptions::TopicTooLong, new_topic
