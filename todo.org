@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [21/43]
+** TODO v1.2.0 [21/45]
 *** TODO Plugin improvements [0/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -463,7 +463,10 @@
     - [ ] check if user name is correct
       - no spaces (a single word)
 *** TODO Support SASL                                               :feature:
-*** TODO fair scheduler for outgoing messages                       :feature:
+*** DEV-BRANCH fair scheduler for outgoing messages                 :feature:
+    :PROPERTIES:
+    :Branch: feature/fair_throttling
+    :END:
 *** TODO Add helper for inserting mIRC color codes into strings     :feature:
 *** TODO filter colors from messages before passing them to regexen :improvement:
     - `:filter => false` to disable filtering
@@ -502,6 +505,8 @@
     - Phase 2 (Cinch v2.0.0): completly remove the checks and raise exceptions instead
     - Maybe consider printing nicely formatted errors (and quitting) instead of raw exceptions
 *** TODO Support setting user modes                                 :feature:
+*** TODO Support Rizon's stupid 263 "server load too high" code... :improvement:
+*** TODO Add an option to delay channel joins upon start            :feature:
 *** DONE Deprecate Bot#halt
     CLOSED: [2011-06-16 Thu 15:05]
     :PROPERTIES:
