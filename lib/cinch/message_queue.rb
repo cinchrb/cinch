@@ -6,7 +6,12 @@ module Cinch
   class MessageQueue
     def initialize(socket, bot)
       @socket               = socket
-      @queue                = OpenEndedQueue.new
+      @queues               = {:generic => OpenEndedQueue.new}
+
+      @queues_to_process    = Queue.new
+      @queued_queues        = Set.new
+
+      @mutex                = Mutex.new
       @time_since_last_send = nil
       @bot                  = bot
 
@@ -15,41 +20,49 @@ module Cinch
 
     # @return [void]
     def queue(message)
-      command = message.split(" ").first
+      command, *rest = message.split(" ")
 
-      if command == "PONG"
-        @queue.unshift(message)
+      queue = nil
+      case command
+      when "PRIVMSG", "NOTICE"
+        @mutex.synchronize do
+          # we are assuming that each message has only one target,
+          # which will be true as long as the user does not send raw
+          # messages.
+          #
+          # this assumption is also reflected in the computation of
+          # passed time and processed messages, since our score does
+          # not take weights into account.
+          queue = @queues[rest.first] ||= OpenEndedQueue.new
+        end
       else
-        @queue << message
+        queue = @queues[:generic]
+      end
+      queue << message
+
+      @mutex.synchronize do
+        unless @queued_queues.include?(queue)
+          @queued_queues << queue
+          @queues_to_process << queue
+        end
       end
     end
 
     # @return [void]
     def process!
       while true
-        mps            = @bot.config.messages_per_second
-        max_queue_size = @bot.config.server_queue_size
+        wait
 
-        if @log.size > 1
-          time_passed = 0
+        queue = @queues_to_process.pop
+        message = queue.pop.to_s.chomp
 
-          @log.each_with_index do |one, index|
-            second = @log[index+1]
-            time_passed += second - one
-            break if index == @log.size - 2
+        if queue.empty?
+          @mutex.synchronize do
+            @queued_queues.delete(queue)
           end
-
-          messages_processed = (time_passed * mps).floor
-          effective_size = @log.size - messages_processed
-
-          if effective_size <= 0
-            @log.clear
-          elsif effective_size >= max_queue_size
-            sleep 1.0/mps
-          end
+        else
+          @queues_to_process << queue
         end
-
-        message = @queue.pop.to_s.chomp
 
         begin
           @socket.writeline Cinch.encode_outgoing(message, @bot.config.encoding) + "\r\n"
@@ -59,6 +72,31 @@ module Cinch
           @time_since_last_send = Time.now
         rescue IOError
           @bot.debug "Could not send message (connectivity problems): #{message}"
+        end
+      end
+    end
+
+    private
+    def wait
+      mps            = @bot.config.messages_per_second
+      max_queue_size = @bot.config.server_queue_size
+
+      if @log.size > 1
+        time_passed = 0
+
+        @log.each_with_index do |one, index|
+          second = @log[index+1]
+          time_passed += second - one
+          break if index == @log.size - 2
+        end
+
+        messages_processed = (time_passed * mps).floor
+        effective_size = @log.size - messages_processed
+
+        if effective_size <= 0
+          @log.clear
+        elsif effective_size >= max_queue_size
+          sleep 1.0/mps
         end
       end
     end

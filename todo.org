@@ -311,7 +311,7 @@
 ***** TODO rename react_to to react_on
 **** TODO Support per-match help messages                           :feature:
      Example: https://gist.github.com/5543a93e31830199cbfb
-**** TODO Provide an API for acessing plugin infos (name, help, etc) :feature:
+**** TOPIC-BRANCH Provide an API for acessing plugin infos (name, help, etc) :feature:
 **** TODO Option to set the prefix of a specific plugin, from the bot's config :feature:
 **** DEV-BRANCH Introduce a PluginManager                          :refactor:
      :PROPERTIES:
