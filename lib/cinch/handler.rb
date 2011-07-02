@@ -14,7 +14,7 @@ module Cinch
     # @return [Array<Thread>]
     # @api private
     attr_reader :threads
-    def initialize(bot, event, pattern, args, block)
+    def initialize(bot, event, pattern, args = [], &block)
       @bot = bot
       @event = event
       @pattern = pattern
