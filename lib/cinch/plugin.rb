@@ -41,6 +41,9 @@ module Cinch
 
       # @return [String, Regexp, Proc] The suffix
       attr_writer   :suffix
+
+      # @return [Array<Symbol>] Required plugin options
+      attr_writer :required_options
     end
 
     # @see ClassAttributes ClassAttributes for information on available attributes
@@ -80,6 +83,7 @@ module Cinch
           @prefix    = nil
           @suffix    = nil
           @react_on  = :message
+          @required_options = []
         end
       end
 
@@ -269,6 +273,27 @@ module Cinch
       end
       alias_method :plugin, :plugin_name
 
+      # Set or query the required plugin options.
+      # @overload required_options()
+      #   @return [Array<Symbol>] The required plugin options
+      #   @since 1.2.0
+      #
+      # @overload required_options(options)
+      #   @param [Array<Symbol>] options The required options
+      #   @return [void]
+      #   @deprecated See {#set} or {ClassAttributes#required_options=} instead
+      def required_options(*args)
+        case args.size
+        when 0
+          return @required_options
+        when 1
+          # TODO deprecation warning
+          self.required_options = args.first
+        else
+          raise ArgumentError # TODO proper error message
+        end
+      end
+
       # @example
       #   timer 5, method: :some_method
       #   def some_method
@@ -327,9 +352,25 @@ module Cinch
         end
       end
 
+      # @param [Bot] bot
+      # @return [Array<Symbol>, nil]
+      # @since 1.2.0
+      def check_for_missing_options(bot)
+        @required_options.select { |option|
+          !bot.config.plugins.options[self].has_key?(option)
+        }
+      end
+      private :check_for_missing_options
+
       # @return [void]
       # @api private
       def __register_with_bot(bot, instance)
+        missing = check_for_missing_options(bot)
+        unless missing.empty?
+          bot.debug "[plugin] #{plugin_name}: Could not register plugin because the following options are not set: #{missing.join(", ")}"
+          return
+        end
+
         @listeners.each do |listener|
           bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
           bot.on(listener.event, [], instance) do |message, plugin, *args|
