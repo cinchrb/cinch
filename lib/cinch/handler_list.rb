@@ -8,9 +8,9 @@ module Cinch
       @mutex = Mutex.new
     end
 
-    def register(event, handler)
+    def register(handler)
       @mutex.synchronize do
-        @handlers[event] << handler
+        @handlers[handler.event] << handler
       end
     end
 

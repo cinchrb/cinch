@@ -255,7 +255,7 @@ module Cinch
         debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
         handler = Handler.new(self, event, pattern, args, &block)
         handlers << handler
-        @handlers.register(event, handler)
+        @handlers.register(handler)
       end
 
       return handlers
