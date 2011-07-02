@@ -188,6 +188,7 @@ module Cinch
         when 0
           return @help
         when 1
+          $stderr.puts "Deprecation warning: Beginning with version 1.2.0, help should not be used to set options anymore."
           self.help = args.first
         else
           raise ArgumentError # TODO proper error message
@@ -208,6 +209,7 @@ module Cinch
       # @return [String, Regexp, Proc, void]
       def prefix(prefix = nil, &block)
         return @prefix if prefix.nil? && block.nil?
+        $stderr.puts "Deprecation warning: Beginning with version 1.2.0, prefix should not be used to set options anymore."
         self.prefix = prefix || block
       end
 
@@ -225,6 +227,7 @@ module Cinch
       # @return [String, Regexp, Proc, void]
       def suffix(suffix = nil, &block)
         return @suffix if suffix.nil? && block.nil?
+        $stderr.puts "Deprecation warning: Beginning with version 1.2.0, suffix should not be used to set options anymore."
         self.suffix = suffix || block
       end
 
@@ -243,6 +246,7 @@ module Cinch
         when 0
           return @react_on
         when 1
+          $stderr.puts "Deprecation warning: Beginning with version 1.2.0, react_on should not be used to set options anymore."
           self.react_on = args.first
         else
           raise ArgumentError # TODO proper error message
@@ -266,6 +270,7 @@ module Cinch
         when 0
           return @plugin_name || self.name.split("::").last.downcase
         when 1
+          $stderr.puts "Deprecation warning: Beginning with version 1.2.0, plugin_name should not be used to set options anymore."
           self.plugin_name = args.first
         else
           raise ArgumentError # TODO proper error message
@@ -287,7 +292,7 @@ module Cinch
         when 0
           return @required_options
         when 1
-          # TODO deprecation warning
+          $stderr.puts "Deprecation warning: Beginning with version 1.2.0, required_options should not be used to set options anymore."
           self.required_options = args.first
         else
           raise ArgumentError # TODO proper error message
