@@ -321,14 +321,22 @@ module Cinch
 
       # @return [void]
       # @api private
+      def call_hooks(type, event, instance, args)
+        __hooks(type, event).each do |hook|
+          instance.__send__(hook.method, *args)
+        end
+      end
+
+      # @return [void]
+      # @api private
       def __register_with_bot(bot, instance)
         @listeners.each do |listener|
           bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
           bot.on(listener.event, [], instance) do |message, plugin, *args|
             if plugin.respond_to?(listener.method)
-              plugin.class.__hooks(:pre, :listen_to).each {|hook| plugin.__send__(hook.method, message)}
+              plugin.class.call_hooks(:pre, :listen_to, plugin, [message])
               plugin.__send__(listener.method, message, *args)
-              plugin.class.__hooks(:post, :listen_to).each {|hook| plugin.__send__(hook.method, message)}
+              plugin.class.call_hooks(:post, :listen_to, plugin, [message])
             end
           end
         end
