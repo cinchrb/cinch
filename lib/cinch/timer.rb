@@ -1,6 +1,9 @@
+require "cinch/helpers"
+
 module Cinch
   # @since 1.2.0
   class Timer
+    include Helpers
     # @return [Bot]
     attr_reader :bot
     # @return [Number] The interval (in seconds) of the timer
