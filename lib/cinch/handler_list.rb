@@ -3,6 +3,8 @@ require "cinch/cached_list"
 
 module Cinch
   class HandlerList
+    include Enumerable
+
     def initialize
       @handlers = Hash.new {|h,k| h[k] = []}
       @mutex = Mutex.new
@@ -57,6 +59,13 @@ module Cinch
           handler.call(msg, captures, arguments)
         end
       end
+    end
+
+    # @yield [handler] Yields all registered handlers
+    # @yieldparam [Handler] handler
+    # @return [void]
+    def each(&block)
+      @handlers.values.flatten.each(&block)
     end
   end
 end
