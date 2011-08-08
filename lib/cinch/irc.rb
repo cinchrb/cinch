@@ -102,7 +102,9 @@ module Cinch
 
         @socket.close
         @bot.dispatch(:disconnect)
-        @bot.handlers.values.flatten.each { |h| h.stop  }
+        @bot.handlers.each do |handler|
+          handler.stop
+        end
       end
     end
 
