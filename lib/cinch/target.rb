@@ -14,7 +14,7 @@ module Cinch
     # @param [String] text the message to send
     # @return [void]
     # @see #safe_notice
-    def notice
+    def notice(text)
       msg(text, true)
     end
 
