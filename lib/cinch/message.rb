@@ -85,6 +85,17 @@ module Cinch
       !!(params.last =~ /\001.+\001/)
     end
 
+    # @return [Boolean] true if the message is an action (/me)
+    def action?
+      ctcp_command == "ACTION"
+    end
+
+    # @return [String, nil] The action message
+    def action_message
+      return nil unless action?
+      ctcp_message.split(" ", 2).last
+    end
+
     # @return [String, nil] the command part of an CTCP message
     def ctcp_command
       return unless ctcp?

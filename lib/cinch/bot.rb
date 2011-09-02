@@ -221,6 +221,7 @@ module Cinch
     #     - :message (both channel and private messages)
     #     - :error   (handling errors, use a numeric error code as `match`)
     #     - :ctcp    (ctcp requests, use a ctcp command as `match`)
+    #     - :action  (actions, aka /me)
     #
     # @param [Regexp, String, Integer] match every message of the
     #   right event will be checked against this argument and the event

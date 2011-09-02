@@ -151,6 +151,7 @@ module Cinch
       #       - :message (both channel and private messages)
       #       - :error   (IRC errors)
       #       - :ctcp    (ctcp requests)
+      #       - :action  (actions, aka /me)
       #
       #   @param [Hash] options
       #   @option options [Symbol] :method (:listen) The method to

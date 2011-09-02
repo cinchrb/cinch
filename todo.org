@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [22/45]
+** TODO v1.2.0 [23/45]
 *** TODO Plugin improvements [2/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -494,10 +494,11 @@
     - Problem: while for part, quit and kill m.user actually is the
       leaving user, it will be the kicker for kick
 *** TODO Add an option to message splitting for prefixing each part with the nick :feature:
-*** TODO Add support for an :action event-type [0/3]                :feature:
-    - [ ] Add the event-type :action
-    - [ ] Add Message#action?
-    - [ ] Provide a proper Message#message, which filters away \001ACTION
+*** DONE Add support for an :action event-type [3/3]                :feature:
+    CLOSED: [2011-09-02 Fri 14:11]
+    - [X] Add the event-type :action
+    - [X] Add Message#action?
+    - [X] Provide a proper Message#message, which filters away \001ACTION
           (Strictly speaking, this breaks backwards compatiblity, but we will take the risk...)
 *** TODO Rejoin dynamically joined channels after a reconnect       :feature:
     - Make this configurable

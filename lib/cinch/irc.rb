@@ -185,6 +185,10 @@ module Cinch
         else
           events << [:notice]
         end
+
+        if msg.action?
+          events << [:action]
+        end
       else
         meth = "on_#{msg.command.downcase}"
         __send__(meth, msg, events) if respond_to?(meth, true)
