@@ -11,6 +11,8 @@ module Cinch
         :green => "\e[32m",
         :yellow => "\e[33m",
         :blue => "\e[34m",
+        :black => "\e[30m",
+        :bg_white => "\e[47m",
       }
 
       # @param [IO] output An IO to log to.
@@ -31,6 +33,11 @@ module Cinch
           messages.each do |msg|
             next if msg.empty?
             message = Time.now.strftime("[%Y/%m/%d %H:%M:%S.%L] ")
+
+            msg.gsub!(/[^[:print:]]/) do |m|
+              colorize(m.inspect[1..-2], :bg_white, :black)
+            end
+
             if kind == :debug
               prefix = colorize("!! ", :yellow)
               message << prefix + msg
@@ -67,7 +74,9 @@ module Cinch
       # @return [String] colorized string
       def colorize(text, *codes)
         return text unless @output.tty?
-        COLORS.values_at(*codes).join + text + COLORS[:reset]
+        codes = COLORS.values_at(*codes).join
+        text = text.gsub(/#{Regexp.escape(COLORS[:reset])}/, COLORS[:reset] + codes)
+        codes + text + COLORS[:reset]
       end
 
       # (see Logger::Logger#log_exception)
