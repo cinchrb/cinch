@@ -384,6 +384,8 @@ module Cinch
               plugin.class.call_hooks(:pre, :listen_to, plugin, [message])
               plugin.__send__(listener.method, message, *args)
               plugin.class.call_hooks(:post, :listen_to, plugin, [message])
+            else
+              $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{listener.method}'. Beginning with version 1.2.0, this will cause an exception."
             end
           end
         end
@@ -416,6 +418,8 @@ module Cinch
               plugin.class.__hooks(:pre, :match).each {|hook| plugin.__send__(hook.method, message)}
               method.call(message, *args)
               plugin.class.__hooks(:post, :match).each {|hook| plugin.__send__(hook.method, message)}
+            else
+              $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{pattern.method}'. Beginning with version 1.2.0, this will cause an exception."
             end
           end
         end
@@ -470,6 +474,7 @@ module Cinch
     # @return [void]
     # @see Plugin::ClassMethods#listen_to
     def listen(*args)
+      $stderr.puts "Warning: The plugin '#{self.class.plugin_name}' is missing the method 'listen'. Beginning with version 1.2.0, this will cause an exception."
     end
 
     # This method will be executed whenever a message matches the
@@ -479,6 +484,7 @@ module Cinch
     # @return [void]
     # @see Plugin::ClassMethods#match
     def execute(*args)
+      $stderr.puts "Warning: The plugin '#{self.class.plugin_name}' is missing the method 'execute'. Beginning with version 1.2.0, this will cause an exception."
     end
 
     # Provides access to plugin-specific options.

@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [23/45]
+** TODO v1.2.0 [24/45]
 *** TODO Plugin improvements [2/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -504,7 +504,8 @@
     - Make this configurable
     - Clear @bot.channels after the reconnect to get rid of not rejoined channels
     - Be sure to store passwords for channels
-*** TODO Get rid of all useless checks (do methods for matchers/timers/executor/listener exist, etc) :refactor:
+*** DONE Get rid of all useless checks (do methods for matchers/timers/executor/listener exist, etc) :refactor:
+    CLOSED: [2011-09-02 Fri 15:03]
     - Phase 1: Print warnings if methods are missing
     - Phase 2 (Cinch v2.0.0): completly remove the checks and raise exceptions instead
     - Maybe consider printing nicely formatted errors (and quitting) instead of raw exceptions
