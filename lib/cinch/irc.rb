@@ -27,6 +27,7 @@ module Cinch
     end
 
     # @api private
+    # @return [Boolean] True if the connection could be established
     def connect
       tcp_socket = nil
       begin
@@ -35,11 +36,15 @@ module Cinch
         end
       rescue Timeout::Error
         @bot.logger.debug("Timed out while connecting")
-        return
+        return false
+      rescue SocketError
+        @bot.logger.debug("Could not connect to the IRC server. Please check your network.")
+        return false
       rescue => e
         @bot.logger.log_exception(e)
-        return
+        return false
       end
+
       if @bot.config.ssl == true || @bot.config.ssl == false
         @bot.logger.debug "Deprecation warning: Beginning from version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
       end
@@ -71,6 +76,8 @@ module Cinch
       @socket = Net::BufferedIO.new(@socket)
       @socket.read_timeout = @bot.config.timeouts.read
       @queue = MessageQueue.new(@socket, @bot)
+
+      return true
     end
 
     # @api private
@@ -137,15 +144,16 @@ module Cinch
     # @since 1.2.0
     def start
       setup
-      connect
-      send_login
-      reading_thread = start_reading_thread
-      sending_thread = start_sending_thread
-      ping_thread = start_ping_thread
+      if connect
+        send_login
+        reading_thread = start_reading_thread
+        sending_thread = start_sending_thread
+        ping_thread = start_ping_thread
 
-      reading_thread.join
-      sending_thread.kill
-      ping_thread.kill
+        reading_thread.join
+        sending_thread.kill
+        ping_thread.kill
+      end
     end
 
     # @api private
