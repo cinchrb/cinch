@@ -494,11 +494,11 @@
     - Problem: while for part, quit and kill m.user actually is the
       leaving user, it will be the kicker for kick
 *** TODO Add an option to message splitting for prefixing each part with the nick :feature:
-*** DONE Add support for an :action event-type [3/3]                :feature:
+*** DONE Add support for an :action event-type [2/3]                :feature:
     CLOSED: [2011-09-02 Fri 14:11]
     - [X] Add the event-type :action
     - [X] Add Message#action?
-    - [X] Provide a proper Message#message, which filters away \001ACTION
+    - [ ] Provide a proper Message#message, which filters away \001ACTION
           (Strictly speaking, this breaks backwards compatiblity, but we will take the risk...)
 *** TODO Rejoin dynamically joined channels after a reconnect       :feature:
     - Make this configurable
@@ -511,6 +511,9 @@
 *** TODO Support setting user modes                                 :feature:
 *** TODO Support Rizon's stupid 263 "server load too high" code... :improvement:
 *** TODO Add an option to delay channel joins upon start            :feature:
+    :PROPERTIES:
+    :Depends: improve/one_shot_timer
+    :END:
 *** DONE Deprecate Bot#halt
     CLOSED: [2011-06-16 Thu 15:05]
     :PROPERTIES:
@@ -519,6 +522,7 @@
     Useless method, people should use next or break instead
 *** TODO One-shot option for timer                              :improvement:
     :PROPERTIES:
+    :Branch: improve/one_shot_timer
     :Depends: feature/unload
     :END:
 *** DONE Channel#ops and an equivalent for voiced people (how do you call those, anyway?), halfops, admins :feature:
