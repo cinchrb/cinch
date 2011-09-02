@@ -34,7 +34,7 @@ module Cinch
             next if msg.empty?
             message = Time.now.strftime("[%Y/%m/%d %H:%M:%S.%L] ")
 
-            msg.gsub!(/[^[:print:]]/) do |m|
+            msg.gsub!(/[^[:print:][:space:]]/) do |m|
               colorize(m.inspect[1..-2], :bg_white, :black)
             end
 
