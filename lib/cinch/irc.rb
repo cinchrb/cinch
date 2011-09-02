@@ -108,7 +108,7 @@ module Cinch
         end
 
         @socket.close
-        @bot.dispatch(:disconnect)
+        @bot.handlers.dispatch(:disconnect)
         @bot.handlers.each do |handler|
           handler.stop
         end
