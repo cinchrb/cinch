@@ -65,7 +65,7 @@ module Cinch
         end
 
         begin
-          @socket.writeline Cinch.encode_outgoing(message, @bot.config.encoding) + "\r\n"
+          @socket.writeline Cinch::Utilities::Encoding.encode_outgoing(message, @bot.config.encoding) + "\r\n"
           @log << Time.now
           @bot.logger.log(message, :outgoing) if @bot.config.verbose
 

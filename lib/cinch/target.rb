@@ -70,7 +70,7 @@ module Cinch
     # @see #msg
     # @todo Handle mIRC color codes more gracefully.
     def safe_msg(text, notice = false)
-      msg(Cinch.filter_string(text), notice)
+      msg(Cinch::Utilities::String.filter_string(text), notice)
     end
     alias_method :safe_privmsg, :safe_msg
     alias_method :safe_send, :safe_msg
@@ -107,7 +107,7 @@ module Cinch
     # @see #action
     # @todo Handle mIRC color codes more gracefully.
     def safe_action(text)
-      action(Cinch.filter_string(text))
+      action(Cinch::Utilities::String.filter_string(text))
     end
 
     # Send a CTCP to the target.

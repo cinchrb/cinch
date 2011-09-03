@@ -95,7 +95,7 @@ module Cinch
         begin
           while line = @socket.readline
             rescue_exception do
-              line = Cinch.encode_incoming(line, @bot.config.encoding)
+              line = Cinch::Utilities::Encoding.encode_incoming(line, @bot.config.encoding)
               parse line
             end
           end

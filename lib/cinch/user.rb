@@ -35,7 +35,7 @@ module Cinch
       # @note This method does not work properly if running more than one bot
       # @note This method will be removed in Cinch 2.0.0
       def find_ensured(*args)
-        Cinch.print_deprecation("1.1.0", "User.find_ensured")
+        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.find_ensured")
 
         case args.size
         when 2
@@ -64,7 +64,7 @@ module Cinch
       # @note This method does not work properly if running more than one bot
       # @note This method will be removed in Cinch 2.0.0
       def find(nick)
-        Cinch.print_deprecation("1.1.0", "User.find")
+        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.find")
 
         @users[downcased_nick]
       end
@@ -74,7 +74,7 @@ module Cinch
       # @note This method does not work properly if running more than one bot
       # @note This method will be removed in Cinch 2.0.0
       def all
-        Cinch.print_deprecation("1.1.0", "User.all")
+        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.all")
 
         @users.values
       end

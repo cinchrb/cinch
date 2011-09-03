@@ -18,11 +18,11 @@ module Cinch
       new_config.each do |option, value|
         case option
         when :plugins
-          _new_config[option] = value.map{|v| Cinch.string_to_const(v)}
+          _new_config[option] = value.map{|v| Cinch::Utilities::Kernel.string_to_const(v)}
         when :options
           _value = self[:options]
           value.each do |k, v|
-            k = Cinch.string_to_const(k)
+            k = Cinch::Utilities::Kernel.string_to_const(k)
             v = self[:options][k].merge(v)
             _value[k] = v
           end
