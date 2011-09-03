@@ -5,7 +5,7 @@ module Cinch
     KnownOptions = [:server, :port, :ssl, :password, :nick, :nicks,
                     :realname, :user, :verbose, :messages_per_second, :server_queue_size,
                     :strictness, :message_split_start, :message_split_end,
-                    :max_messages, :plugins, :channels, :encoding, :reconnect,
+                    :max_messages, :plugins, :channels, :encoding, :reconnect, :max_reconnect_delay,
                     :local_host, :timeouts, :ping_interval]
 
     def self.default_config
@@ -29,6 +29,7 @@ module Cinch
           :channels => [],
           :encoding => :irc,
           :reconnect => true,
+          :max_reconnect_delay => 300,
           :local_host => nil,
           :timeouts => TimeoutsConfiguration.new,
           :ping_interval => 120,
