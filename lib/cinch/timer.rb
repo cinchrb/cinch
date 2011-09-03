@@ -30,7 +30,7 @@ module Cinch
     def initialize(options, &block)
       options = {:treaded => true, :shots => Infinity}.merge(options)
 
-      @interval   = options[:interval]
+      @interval   = options[:interval].to_f
       @threaded   = options[:threaded]
       @orig_shots = options[:shots]
       # Setting @shots here so the attr_reader won't return nil
