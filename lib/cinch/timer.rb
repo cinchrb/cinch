@@ -19,9 +19,11 @@ module Cinch
 
     # @option options [Number] :interval The interval (in seconds) of
     #   the timer
-    # @option options [Boolean] :threaded If true, each invocation will be
+    # @option options [Boolean] :threaded (true) If true, each invocation will be
     #   executed in a thread of its own.
     def initialize(options, &block)
+      options = {:treaded => true}.merge(options)
+
       @interval = options[:interval]
       @threaded = options[:threaded]
       @block    = block
