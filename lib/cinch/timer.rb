@@ -20,13 +20,14 @@ module Cinch
 
     # @param [Bot] bot The instance of {Bot} the timer is associated
     #   with
-    # @param [Number] interval The interval (in seconds) of the timer
-    # @param [Boolean] threaded If true, each invocation will be
+    # @option options [Number] :interval The interval (in seconds) of
+    #   the timer
+    # @option options [Boolean] :threaded If true, each invocation will be
     #   executed in a thread of its own.
-    def initialize(bot, interval, threaded = true, &block)
+    def initialize(bot, options, &block)
       @bot      = bot
-      @interval = interval
-      @threaded = threaded
+      @interval = options[:interval]
+      @threaded = options[:threaded]
       @block    = block
 
       @started = false
