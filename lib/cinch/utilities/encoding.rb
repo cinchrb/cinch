@@ -1,7 +1,8 @@
 module Cinch
+  # @since 1.2.0
+  # @api private
   module Utilities
     module Encoding
-      # @api private
       def self.encode_incoming(string, encoding)
         string = string.dup
         if encoding == :irc
@@ -23,7 +24,6 @@ module Cinch
         return string
       end
 
-      # @api private
       def self.encode_outgoing(string, encoding)
         string = string.dup
         if encoding == :irc
