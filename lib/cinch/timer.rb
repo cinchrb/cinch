@@ -14,19 +14,28 @@ module Cinch
     attr_reader :block
     # @return [Boolean]
     attr_reader :started
+    # @return [Number] The remaining number of shots before this timer
+    #   will stop. This value will automatically reset after
+    #   restarting the timer.
+    attr_accessor :shots
     alias_method :threaded?, :threaded
     alias_method :started?, :started
 
     # @option options [Number] :interval The interval (in seconds) of
     #   the timer
+    # @option options [Number] :shots (Infinity) How often should the
+    #   timer fire?
     # @option options [Boolean] :threaded (true) If true, each invocation will be
     #   executed in a thread of its own.
     def initialize(options, &block)
-      options = {:treaded => true}.merge(options)
+      options = {:treaded => true, :shots => Infinity}.merge(options)
 
-      @interval = options[:interval]
-      @threaded = options[:threaded]
-      @block    = block
+      @interval   = options[:interval]
+      @threaded   = options[:threaded]
+      @orig_shots = options[:shots]
+      # Setting @shots here so the attr_reader won't return nil
+      @shots      = @orig_shots
+      @block      = block
 
       @started = false
       @thread  = nil
@@ -41,8 +50,10 @@ module Cinch
     #
     # @return [void]
     def start
+      @shots = @orig_shots
+
       @thread = Thread.new do
-        loop do
+        while @shots > 0 do
           sleep @interval
           if threaded?
             Thread.new do
@@ -55,6 +66,8 @@ module Cinch
               @block.call
             end
           end
+
+          @shots -= 1
         end
       end
 

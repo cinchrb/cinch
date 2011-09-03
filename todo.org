@@ -294,7 +294,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [24/45]
+** TODO v1.2.0 [25/45]
 *** TODO Plugin improvements [2/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -521,11 +521,8 @@
     :Branch: deprecate/halt
     :END:
     Useless method, people should use next or break instead
-*** TODO One-shot option for timer                              :improvement:
-    :PROPERTIES:
-    :Branch: improve/one_shot_timer
-    :Depends: feature/unload
-    :END:
+*** DONE One-shot option for timer                              :improvement:
+    CLOSED: [2011-09-03 Sat 15:14]
 *** DONE Channel#ops and an equivalent for voiced people (how do you call those, anyway?), halfops, admins :feature:
     CLOSED: [2011-06-16 Thu 18:02]
     :PROPERTIES:
