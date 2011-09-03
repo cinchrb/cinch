@@ -4,8 +4,7 @@ module Cinch
   # @since 1.2.0
   class Timer
     include Helpers
-    # @return [Bot]
-    attr_reader :bot
+
     # @return [Number] The interval (in seconds) of the timer
     attr_accessor :interval
     # @return [Boolean] If true, each invocation will be
@@ -18,14 +17,11 @@ module Cinch
     alias_method :threaded?, :threaded
     alias_method :started?, :started
 
-    # @param [Bot] bot The instance of {Bot} the timer is associated
-    #   with
     # @option options [Number] :interval The interval (in seconds) of
     #   the timer
     # @option options [Boolean] :threaded If true, each invocation will be
     #   executed in a thread of its own.
-    def initialize(bot, options, &block)
-      @bot      = bot
+    def initialize(options, &block)
       @interval = options[:interval]
       @threaded = options[:threaded]
       @block    = block
