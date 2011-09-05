@@ -1,7 +1,7 @@
 #+TODO: TODO TOPIC-BRANCH DEV-BRANCH | DONE(d)
-* Demo Plugins [3/8]
+* Demo Plugins [4/8]
   - [X] Last seen
-  - [ ] Dice
+  - [X] Dice
   - [ ] Memo
   - [ ] Alarm clock
   - [X] identify [2/2]
