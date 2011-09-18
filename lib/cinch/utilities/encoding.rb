@@ -41,7 +41,7 @@ module Cinch
           # (from http://xchat.org/encoding/#hybrid)
           begin
             string.encode!("CP1252")
-          rescue Encoding::UndefinedConversionError
+          rescue ::Encoding::UndefinedConversionError
           end
         else
           string.encode!(encoding, {:invalid => :replace, :undef => :replace})
