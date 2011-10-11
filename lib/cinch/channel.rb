@@ -183,7 +183,7 @@ module Cinch
     end
     alias_method :moderated?, :moderated
 
-    def moderated=(val)
+    def moderated=(bool)
       if bool
         mode "+m"
       else
