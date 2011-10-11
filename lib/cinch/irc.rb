@@ -289,7 +289,7 @@ module Cinch
           else
             # channel options
             if direction == :add
-              msg.channel.modes_unsynced[mode] = param
+              msg.channel.modes_unsynced[mode] = param.nil? ? true : param
             else
               msg.channel.modes_unsynced.delete(mode)
             end
