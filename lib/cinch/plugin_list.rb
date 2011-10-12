@@ -1,4 +1,5 @@
 module Cinch
+  # @since 1.2.0
   class PluginList < Array
     def initialize(bot)
       @bot     = bot

@@ -10,6 +10,8 @@ module Cinch
   #   This is a snapshot of the last WHOIS.
   # @attr_reader [Time] signed_on_at
   # @attr_reader [Array<Channel>] channels All channels the user is in.
+  #
+  # @version 1.2.0
   class User < Target
     include Syncable
 
@@ -81,12 +83,17 @@ module Cinch
     end
 
     alias_method :nick, :name
+
     # @return [String]
+    # @since 1.1.0
     attr_reader :last_nick
+
     # @return [Boolean]
     attr_reader :synced
+
     # @return [Boolean]
     attr_reader :in_whois
+
     # @api private
     attr_writer :in_whois
 
@@ -161,6 +168,7 @@ module Cinch
     # Quakenet and Freenode.
     #
     # @return [Boolean] true if the user is identified
+    # @version 1.1.0
     def authed?
       !attr(:authname).nil?
     end
@@ -318,6 +326,7 @@ module Cinch
       end
     end
 
+    # @since 1.1.2
     def respond_to?(m)
       if m.to_s =~ /^(.+)_unsynced$/
         m = $1.to_sym

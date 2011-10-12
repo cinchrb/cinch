@@ -44,45 +44,77 @@ require "cinch/timeouts_configuration"
 
 module Cinch
   # @attr nick
+  # @version 1.2.0
   class Bot
     include Helpers
 
-    # @return [Config]
+
+    # @return [BotConfiguration]
+    # @version 1.2.0
     attr_reader :config
+
+    # The underlying IRC connection
+    #
     # @return [IRC]
     attr_reader :irc
+
+    # The logger instance used for logging debugging messages
+    #
     # @return [Logger]
     attr_accessor :logger
+
     # @return [Array<Channel>] All channels the bot currently is in
     attr_reader :channels
+
     # @return [String] the bot's hostname
     attr_reader :host
+
     # @return [Mask]
     attr_reader :mask
+
     # @return [String]
     attr_reader :user
+
     # @return [String]
     attr_reader :realname
+
     # @return [Time]
     attr_reader :signed_on_at
+
     # @return [PluginList] All registered plugins
+    # @version 1.2.0
     attr_reader :plugins
+
     # @return [Boolean] whether the bot is in the process of disconnecting
     attr_reader :quitting
-    # @return [UserManager]
+
+    # @return [UserList] All {User users} the bot knows about.
+    # @since 1.1.0
+    # @todo Rename to :user_list, provide :user_manager as a deprecated alias
     attr_reader :user_manager
-    # @return [ChannelManager]
+
+    # @return [ChannelList] All {Channel channels} the bot knows about.
+    # @since 1.1.0
+    # @todo Rename to :channel_list, provide :channel_manager as a deprecated alias
     attr_reader :channel_manager
-    # @return [PluginList] The plugin list. See {PluginList} for more
-    #   information
+
+    # @return [PluginList] All loaded plugins.
+    # @version 1.2.0
     attr_reader :plugins
+
     # @return [Boolean]
     # @api private
     attr_accessor :last_connection_was_successful
+
     # @return [Callback]
     # @api private
     attr_reader :callback
+
+    # All registered handlers.
+    #
     # @return [HandlerList]
+    # @see HandlerList
+    # @since 1.2.0
     attr_reader :handlers
 
     # @group Helper methods
@@ -383,7 +415,6 @@ module Cinch
     # @endgroup
 
     # (see Logger::Logger#debug)
-    # @see Logger::Logger#debug
     def debug(msg)
       @logger.debug(msg)
     end
@@ -418,6 +449,7 @@ module Cinch
       end
     end
 
+    # @since 1.2.0
     def bot
       self
     end
@@ -482,7 +514,7 @@ module Cinch
       @config[:ssl] == true || (@config[:ssl].is_a?(Hash) && @config[:ssl][:use])
     end
 
-    # This method is only provided in order to give Bot and User a
+    # This method is only provided in order to give {Bot} and {User} a
     # common interface.
     #
     # @return [false] Always returns `false`.
@@ -497,6 +529,9 @@ module Cinch
       end
     end
 
+    # @return [User] The {User} object describing the bot on the IRC
+    #   server.
+    # @since 1.2.0
     def to_user
       User(nick)
     end

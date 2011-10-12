@@ -1,12 +1,15 @@
 require "cinch/cached_list"
 
 module Cinch
+  # @since 1.2.0
+  # @version 1.1.0
+  # @note In prior versions, this class was called ChannelManager
   class ChannelList < CachedList
     # Finds or creates a channel.
     #
     # @param [String] name name of a channel
     # @return [Channel]
-    # @see Bot#Channel
+    # @see Helpers#Channel
     def find_ensured(name)
       downcased_name = name.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
       @mutex.synchronize do

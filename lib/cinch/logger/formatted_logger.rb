@@ -3,6 +3,7 @@ module Cinch
   module Logger
     # A formatted logger that will colorize individual parts of IRC
     # messages.
+    # @version 1.1.0
     class FormattedLogger < Cinch::Logger::Logger
       COLORS = {
         :reset => "\e[0m",
@@ -27,6 +28,7 @@ module Cinch
       end
 
       # (see Logger::Logger#log)
+      # @version 1.1.0
       def log(messages, kind = :generic)
         @mutex.synchronize do
           messages = [messages].flatten.map {|s| s.to_s.chomp}

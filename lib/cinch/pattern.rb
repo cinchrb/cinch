@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 module Cinch
   # @api private
+  # @since 1.1.0
   class Pattern
     # @param [String, Regexp, NilClass, Proc, #to_s] obj The object to
     #   convert to a regexp

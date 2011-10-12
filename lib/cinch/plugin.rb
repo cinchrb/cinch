@@ -168,6 +168,7 @@ module Cinch
         end
       end
 
+      # @version 1.1.1
       def ctcp(command)
         @ctcps << command.to_s.upcase
       end
@@ -310,6 +311,7 @@ module Cinch
       # @option options [Symbol] :method (:timer) Method to call (only if no proc is provided)
       # @option options [Boolean] :threaded (true) Call method in a thread?
       # @return [void]
+      # @since 1.1.0
       def timer(interval, options = {})
         options = {:method => :timer, :threaded => true}.merge(options)
         @timers << Timer.new(interval, options, false)
@@ -324,6 +326,7 @@ module Cinch
       #   Which kinds of events to run the hook for.
       # @option options [Symbol] :method (true) The method to execute.
       # @return [void]
+      # @since 1.1.0
       def hook(type, options = {})
         options = {:for => [:match, :listen_to, :ctcp], :method => :hook}.merge(options)
         __hooks(type) << Hook.new(type, options[:for], options[:method])

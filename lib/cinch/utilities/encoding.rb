@@ -34,7 +34,7 @@ module Cinch
           # UTF-8 validation and will be assumed to be CP1252, even by older
           # XChat versions.
           #
-          # If the text doesn't fit inside the CP1252 code page, (for eaxmple if you
+          # If the text doesn't fit inside the CP1252 code page, (for example if you
           # type Eastern European characters, or Russian) it will be sent as UTF-8. Only
           # UTF-8 capable clients will be able to see these characters correctly
           #

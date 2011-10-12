@@ -18,6 +18,7 @@ module Cinch
     end
 
     # @api private
+    # @return [void]
     # @since 1.2.0
     def setup
       @registration = []
@@ -81,6 +82,7 @@ module Cinch
     end
 
     # @api private
+    # @return [void]
     # @since 1.2.0
     def send_login
       message "PASS #{@bot.config.password}" if @bot.config.password
@@ -89,6 +91,7 @@ module Cinch
     end
 
     # @api private
+    # @return [Thread] the reading thread
     # @since 1.2.0
     def start_reading_thread
       Thread.new do
@@ -116,6 +119,7 @@ module Cinch
     end
 
     # @api private
+    # @return [Thread] the sending thread
     # @since 1.2.0
     def start_sending_thread
       Thread.new do
@@ -126,7 +130,7 @@ module Cinch
     end
 
     # @api private
-    # @since 1.2.0
+    # @return [Thread] The ping thread.
     # @since 1.2.0
     def start_ping_thread
       Thread.new do
@@ -252,6 +256,7 @@ module Cinch
       set_leaving_user(msg, user, events)
     end
 
+    # @version 1.1.0
     def on_mode(msg, events)
       if msg.channel?
         add_and_remove = @bot.irc.isupport["CHANMODES"]["A"] + @bot.irc.isupport["CHANMODES"]["B"] + @bot.irc.isupport["PREFIX"].keys
@@ -352,6 +357,7 @@ module Cinch
       end
     end
 
+    # @since 1.2.0
     def on_002(msg, events)
       if msg.params.last == "Your host is jtvchat"
         # the justin tv "IRC" server lacks support for WHOIS with more
@@ -382,6 +388,7 @@ module Cinch
       end
     end
 
+    # @since 1.1.0
     def on_307(msg, events)
       # RPL_WHOISREGNICK
       user = User(msg.params[1])
@@ -486,6 +493,7 @@ module Cinch
       msg.channel.mark_as_synced(:users)
     end
 
+    # @version 1.2.0
     def on_367(msg, events)
       # RPL_BANLIST
       unless @in_lists.include?(:bans)

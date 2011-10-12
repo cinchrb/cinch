@@ -8,6 +8,8 @@ module Cinch
     attr_reader :host
     # @return [String]
     attr_reader :mask
+
+    # @version 1.1.2
     def initialize(mask)
       @mask = mask
       @nick, @user, @host = mask.match(/(.+)!(.+)@(.+)/)[1..-1]
@@ -15,11 +17,13 @@ module Cinch
     end
 
     # @return [Boolean]
+    # @since 1.1.0
     def ==(other)
       other.respond_to?(:mask) && other.mask == @mask
     end
 
     # @return [Boolean]
+    # @since 1.1.0
     def eql?(other)
       other.is_a?(self.class) && self == other
     end
@@ -30,6 +34,7 @@ module Cinch
 
     # @param [Ban, Mask, User, String] target
     # @return [Boolean]
+    # @version 1.1.2
     def match(target)
       return self.class.from(target).mask =~ @regexp
 

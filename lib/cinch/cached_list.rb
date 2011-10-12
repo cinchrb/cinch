@@ -1,5 +1,8 @@
 module Cinch
   # @api private
+  # @since 1.2.0
+  # @version 1.1.0
+  # @note In prior versions, this class was called CacheManager
   class CachedList
     include Enumerable
 
@@ -13,5 +16,6 @@ module Cinch
       @cache.each_value(&block)
     end
   end
+  # @since 1.1.0
   CacheManager = CachedList
 end
