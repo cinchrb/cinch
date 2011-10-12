@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
 module Cinch
+  # @attr_reader user
+  # @attr_reader error
+  # @attr_reader message
+  # @attr_reader server
+  # @attr_reader target
+  # @attr_reader channel
+  # @attr_reader action_message
+  # @attr_reader ctcp_args
+  # @attr_reader ctcp_command
+  # @attr_reader ctcp_message
   class Message
     # @return [String]
     attr_accessor :raw
@@ -13,6 +23,7 @@ module Cinch
     # @return [Array<String>]
     attr_accessor :params
 
+    # @return [Array<Symbol>]
     attr_reader :events
 
     # @return [Bot]
@@ -32,12 +43,6 @@ module Cinch
       @matches = {:ctcp => {}, :other => {}}
       @events = []
       parse if msg
-    end
-
-    # @return [Boolean] true if the message is an numeric reply (as
-    #   opposed to a command)
-    def numeric_reply?
-      !!(@numeric_reply ||= @command.match(/^\d{3}$/))
     end
 
     # @api private
@@ -79,14 +84,22 @@ module Cinch
       @server ||= @prefix[/^(\S+)/, 1]
     end
 
-    # @return [Boolean] true if the message describes an error
-    def error?
-      !!error
-    end
-
     # @return [Number, nil] the numeric error code, if any
     def error
       @error ||= (command.to_i if numeric_reply? && command[/[45]\d\d/])
+    end
+
+    # @group Type checking
+
+    # @return [Boolean] true if the message is an numeric reply (as
+    #   opposed to a command)
+    def numeric_reply?
+      !!(@numeric_reply ||= @command.match(/^\d{3}$/))
+    end
+
+    # @return [Boolean] true if the message describes an error
+    def error?
+      !!error
     end
 
     # @return [Boolean] true if this message was sent in a channel
@@ -100,11 +113,15 @@ module Cinch
     end
 
     # @return [Boolean] true if the message is an action (/me)
+    # @since 1.2.0
     def action?
       ctcp_command == "ACTION"
     end
 
+    # @endgroup
+
     # @return [String, nil] The action message
+    # @since 1.2.0
     def action_message
       return nil unless action?
       ctcp_message.split(" ", 2).last
@@ -134,6 +151,7 @@ module Cinch
                    end
     end
 
+    # @return [Target]
     def target
       channel || user
     end
@@ -172,6 +190,8 @@ module Cinch
                    end
     end
 
+    # @group Replying
+
     # Replies to a message, automatically determining if it was a
     # channel or a private message.
     #
@@ -208,6 +228,8 @@ module Cinch
       return unless ctcp?
       user.notice "\001#{ctcp_command} #{answer}\001"
     end
+
+    # @endgroup
 
     # @return [String]
     # @since 1.1.0
