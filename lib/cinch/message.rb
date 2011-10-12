@@ -12,6 +12,14 @@ module Cinch
     attr_reader :events
     # @return [Bot]
     attr_reader :bot
+
+    # @return [User, nil] If the type of message is a leaving event
+    #   (KICK, KILL, PART or QUIT), then this attribute will return
+    #   the user who left
+    attr_reader :leaving_user
+    # @api private
+    attr_writer :leaving_user
+
     def initialize(msg, bot)
       @raw = msg
       @bot = bot

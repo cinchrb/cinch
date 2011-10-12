@@ -218,6 +218,11 @@ module Cinch
     end
 
     private
+    def set_leaving_user(message, user, events)
+      events << [:leaving]
+      message.leaving_user = user
+    end
+
     def on_join(msg, events)
       if msg.user == @bot
         @bot.channels << msg.channel
@@ -232,6 +237,8 @@ module Cinch
         @bot.channels.delete(msg.channel)
       end
       msg.channel.remove_user(target)
+
+      set_leaving_user(msg, target, events)
     end
 
     def on_kill(msg, events)
@@ -241,6 +248,8 @@ module Cinch
       end
       user.unsync_all
       @bot.user_manager.delete(user)
+
+      set_leaving_user(msg, user, events)
     end
 
     def on_mode(msg, events)
@@ -313,6 +322,8 @@ module Cinch
       if msg.user == @bot
         @bot.channels.delete(msg.channel)
       end
+
+      set_leaving_user(msg, msg.user, events)
     end
 
     def on_ping(msg, events)
@@ -329,6 +340,8 @@ module Cinch
       end
       msg.user.unsync_all
       @bot.user_manager.delete(msg.user)
+
+      set_leaving_user(msg, msg.user, events)
 
       if msg.message.downcase == "excess flood" && msg.user == @bot
         @bot.debug ["Looks like your bot has been kicked because of excess flood.",
