@@ -171,3 +171,4 @@ to check it out.
   discussing design decisions etc)
 - Emil Loer (http://github.com/thedjinn) for improving the handling of
   unexpected disconnects and reconnects.
+- Check the list of authors for smaller contributions
