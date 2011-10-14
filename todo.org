@@ -295,7 +295,7 @@
     :PROPERTIES:
     :Branch:   fix/respond_to
     :END:
-** TODO v1.2.0 [25/45]
+** TODO v1.2.0 [26/45]
 *** TODO Plugin improvements [2/7]
 **** TODO Add version requirements to plugins                       :feature:
 **** TODO When registering a plugin, check if it actually is a plugin :improvement:
@@ -491,9 +491,15 @@
     :END:
     - Have to keep track of registered handlers
     - #unload hook
-*** TODO Add a :leaving signal that captures :part, :quit, :kick and :kill :feature:
+*** DONE Add a :leaving signal that captures :part, :quit, :kick and :kill :feature:
+    CLOSED: [2011-10-14 Fri 14:48]
+    :PROPERTIES:
+    :Branch: feature/leaving
+    :END:
     - Problem: while for part, quit and kill m.user actually is the
       leaving user, it will be the kicker for kick
+    - Introduces new signal :leaving
+    - Introduces new method: Message#leaving_user
 *** TODO Add an option to message splitting for prefixing each part with the nick :feature:
 *** DONE Add support for an :action event-type [2/3]                :feature:
     CLOSED: [2011-09-02 Fri 14:11]
