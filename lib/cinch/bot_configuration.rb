@@ -19,6 +19,7 @@ module Cinch
         :nicks  => nil,
         :realname => "cinch",
         :user => "cinch",
+        :modes => [],
         :verbose => true,
         :messages_per_second => 0.5,
         :server_queue_size => 10,

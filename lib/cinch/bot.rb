@@ -44,6 +44,7 @@ require "cinch/timeouts_configuration"
 
 module Cinch
   # @attr nick
+  # @attr modes
   # @version 1.2.0
   class Bot
     include Helpers
@@ -116,6 +117,12 @@ module Cinch
     # @see HandlerList
     # @since 1.2.0
     attr_reader :handlers
+
+    # All modes set for the bot.
+    #
+    # @return [Array<String>]
+    # @since 1.2.0
+    attr_reader :modes
 
     # @group Helper methods
 
@@ -435,6 +442,7 @@ module Cinch
       @callback = Callback.new(self)
       @channels = []
       @quitting = false
+      @modes    = []
 
       @user_manager = UserManager.new(self)
       @channel_manager = ChannelManager.new(self)
@@ -446,12 +454,45 @@ module Cinch
         bot.config.channels.each do |channel|
           bot.join channel
         end
+
+        bot.modes = bot.config.modes
       end
     end
 
     # @since 1.2.0
     def bot
       self
+    end
+
+    # Sets a mode on the bot.
+    #
+    # @param [String] mode
+    # @return [void]
+    # @since 1.2.0
+    # @see Bot#modes
+    # @see Bot#unset_mode
+    def set_mode(mode)
+      raw "MODE #{nick} +#{mode}"
+    end
+
+    # Unsets a mode on the bot.
+    #
+    # @param [String] mode
+    # @return [void]
+    # @since 1.2.0
+    def unset_mode(mode)
+      raw "MODE #{nick} -#{mode}"
+    end
+
+    # @since 1.2.0
+    def modes=(modes)
+      @modes.each do |mode|
+        unset_mode(mode)
+      end
+
+      modes.each do |mode|
+        set_mode(mode)
+      end
     end
 
     # The bot's nickname.
