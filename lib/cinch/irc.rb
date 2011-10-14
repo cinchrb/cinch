@@ -311,6 +311,15 @@ module Cinch
         end
 
         events << [:mode_change, modes]
+      elsif msg.params.first == bot.nick
+        modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1])
+        modes.each do |direction, mode, _|
+          if direction == :add
+            @bot.modes << mode
+          else
+            @bot.modes.delete(mode)
+          end
+        end
       end
     end
 
