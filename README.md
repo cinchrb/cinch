@@ -147,7 +147,7 @@ messages:
 Authors
 -------
 
-* [Dominik Honnef](http://fork-bomb.org)
+* [Dominik Honnef](http://dominik.honnef.co)
 * [Lee Jarvis](http://injekt.net)
 
 Contribute
