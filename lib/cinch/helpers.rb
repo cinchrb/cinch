@@ -90,5 +90,10 @@ module Cinch
         bot.logger.log_exception(e)
       end
     end
+
+    def Format(*args)
+      Formatting.format(*args)
+    end
+    alias_method :Color, :Format
   end
 end

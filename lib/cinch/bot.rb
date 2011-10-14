@@ -34,6 +34,7 @@ require "cinch/channel_list"
 require "cinch/user_list"
 require "cinch/plugin_list"
 require "cinch/timer"
+require "cinch/formatting"
 
 require "cinch/configuration"
 require "cinch/bot_configuration"
