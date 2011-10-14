@@ -60,7 +60,7 @@ Features
 ### Documentation
 
 Cinch provides a documented API, which is online for your viewing pleasure
-[here](http://rubydoc.info/github/cinchrb/cinch/master/).
+[here](http://rubydoc.info/gems/cinch/frames).
 
 ### Object Oriented
 
