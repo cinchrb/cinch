@@ -35,7 +35,7 @@ module Cinch
           count = 0
         else
           param = nil
-          if param_modes[direction].include?(ch)
+          if param_modes.has_key?(direction) && param_modes[direction].include?(ch)
             if params.size > 0
               param = params.shift
             else
