@@ -23,14 +23,16 @@ module Cinch
     Attributes = {
       :bold       => 2.chr,
       :underlined => 31.chr,
+      :underline  => 31.chr,
       :reversed   => 22.chr,
+      :reverse    => 22.chr,
       :italic     => 22.chr,
       :reset      => 15.chr,
     }
 
     def self.format(*args)
       settings = args[0..-2]
-      string     = args.last
+      string     = args.last.dup
 
       attributes = settings.select {|k| Attributes.has_key?(k)}.map {|k| Attributes[k]}
       colors = settings.select {|k| Colors.has_key?(k)}.map {|k| Colors[k]}
@@ -48,7 +50,14 @@ module Cinch
       prepend = attribute_string + color_string
       append  = Attributes[:reset]
 
-      string = string.gsub(/#{Attributes[:reset]}/, Attributes[:reset] + prepend)
+      # attributes act as toggles, so e.g. underline+underline = no
+      # underline. We thus have to delete all duplicate attributes
+      # from nested strings.
+      string.delete!(attribute_string)
+
+      # Replace the reset code of nested strings to continue the
+      # formattings of the outer string.
+      string.gsub!(/#{Attributes[:reset]}/, Attributes[:reset] + prepend)
       return prepend + string + append
     end
   end
