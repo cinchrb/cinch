@@ -25,6 +25,8 @@ module Cinch
 
     # @return [Array<Symbol>]
     attr_reader :events
+    # @api private
+    attr_writer :events
 
     # @return [Bot]
     # @since 1.1.0

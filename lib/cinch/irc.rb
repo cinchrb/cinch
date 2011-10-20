@@ -204,7 +204,7 @@ module Cinch
         end
       end
 
-      msg.instance_variable_set(:@events, events.map(&:first))
+      msg.events = events.map(&:first)
       events.each do |event, *args|
         @bot.handlers.dispatch(event, msg, *args)
       end
