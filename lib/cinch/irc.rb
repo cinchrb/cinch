@@ -47,7 +47,7 @@ module Cinch
       end
 
       if @bot.config.ssl == true || @bot.config.ssl == false
-        @bot.logger.debug "Deprecation warning: Beginning from version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
+        @bot.logger.debug "Deprecation warning: Beginning with version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
       end
 
       if @bot.config.ssl == true || (@bot.config.ssl.is_a?(SSLConfiguration) && @bot.config.ssl.use)
