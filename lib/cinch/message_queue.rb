@@ -67,11 +67,11 @@ module Cinch
         begin
           @socket.writeline Cinch::Utilities::Encoding.encode_outgoing(message, @bot.config.encoding) + "\r\n"
           @log << Time.now
-          @bot.logger.log(message, :outgoing) if @bot.config.verbose
+          @bot.loggers.outgoing(message)
 
           @time_since_last_send = Time.now
         rescue IOError
-          @bot.debug "Could not send message (connectivity problems): #{message}"
+          @bot.loggers.error "Could not send message (connectivity problems): #{message}"
         end
       end
     end

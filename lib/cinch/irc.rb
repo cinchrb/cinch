@@ -36,18 +36,18 @@ module Cinch
           tcp_socket = TCPSocket.new(@bot.config.server, @bot.config.port, @bot.config.local_host)
         end
       rescue Timeout::Error
-        @bot.logger.debug("Timed out while connecting")
+        @bot.loggers.warn("Timed out while connecting")
         return false
       rescue SocketError
-        @bot.logger.debug("Could not connect to the IRC server. Please check your network.")
+        @bot.loggers.warn("Could not connect to the IRC server. Please check your network.")
         return false
       rescue => e
-        @bot.logger.log_exception(e)
+        @bot.loggers.exception(e)
         return false
       end
 
       if @bot.config.ssl == true || @bot.config.ssl == false
-        @bot.logger.debug "Deprecation warning: Beginning with version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
+        @bot.loggers.warn "Deprecation warning: Beginning with version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
       end
 
       if @bot.config.ssl == true || (@bot.config.ssl.is_a?(SSLConfiguration) && @bot.config.ssl.use)
@@ -81,7 +81,7 @@ module Cinch
       else
         ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
-      @bot.logger.debug "Using SSL with #{@bot.config.server}:#{@bot.config.port}"
+      @bot.loggers.info "Using SSL with #{@bot.config.server}:#{@bot.config.port}"
 
       @socket = OpenSSL::SSL::SSLSocket.new(tcp_socket, ssl_context)
       @socket.sync = true
@@ -110,11 +110,11 @@ module Cinch
             end
           end
         rescue Timeout::Error
-          @bot.logger.debug "Connection timed out."
+          @bot.loggers.warn "Connection timed out."
         rescue EOFError
-          @bot.logger.debug "Lost connection."
+          @bot.loggers.warn "Lost connection."
         rescue => e
-          @bot.logger.log_exception(e)
+          @bot.loggers.exception(e)
         end
 
         @socket.close
@@ -171,7 +171,7 @@ module Cinch
     # @return [void]
     def parse(input)
       return if input.chomp.empty?
-      @bot.logger.log(input, :incoming) if @bot.config.verbose
+      @bot.loggers.incoming(input)
       msg          = Message.new(input, @bot)
       events       = [[:catchall]]
 
@@ -365,7 +365,7 @@ module Cinch
       set_leaving_user(msg, msg.user, events)
 
       if msg.message.downcase == "excess flood" && msg.user == @bot
-        @bot.debug ["Looks like your bot has been kicked because of excess flood.",
+        @bot.warn ["Looks like your bot has been kicked because of excess flood.",
                     "If you haven't modified the throttling options manually, please file a bug report at https://github.com/cinchrb/cinch/issues and include the following information:",
                     "- Server: #{@bot.config.server}",
                     "- Messages per second: #{@bot.config.messages_per_second}",

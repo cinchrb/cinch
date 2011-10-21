@@ -20,7 +20,7 @@ module Cinch
         :realname => "cinch",
         :user => "cinch",
         :modes => [],
-        :verbose => true,
+        :verbose => nil,
         :messages_per_second => 0.5,
         :server_queue_size => 10,
         :strictness => :forgiving,

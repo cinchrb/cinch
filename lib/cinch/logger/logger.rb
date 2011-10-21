@@ -1,43 +1,173 @@
 module Cinch
   module Logger
-    # This is an abstract class describing the logger interface. All
-    # loggers should inherit from this class and provide all necessary
-    # methods.
+    # This is the base logger class from which all loggers have to
+    # inherit.
     #
-    # Note: You cannot initialize this class directly.
-    #
-    # @abstract
+    # @version 1.2.0
     class Logger
+      LevelOrder = [:debug, :log, :info, :warn, :error, :fatal]
+
+      # @return [Array<:debug, :log, :info, :warn, :error, :fatal>]
+      #   The minimum level of events to log
+      attr_accessor :level
+
+      # @return [Mutex]
+      # @api private
+      attr_reader :mutex
+
+      # @return [IO]
+      # @api private
+      attr_reader :output
+
+      # @param [IO] output The I/O object to write log data to
       def initialize(output)
-        raise
+        @output = output
+        @mutex  = Mutex.new
+        @level  = :debug
       end
 
-      # This method can be used by plugins to log custom messages.
+      # Logs a debugging message.
       #
-      # @param [String] message The message to log
+      # @param [String] message
       # @return [void]
+      # @version 1.2.0
       def debug(message)
-        raise
+        log(message, :debug)
       end
 
-      # This method is used by {#debug} and {#log_exception} to log
-      # messages, and also by the IRC parser to log incoming and
-      # outgoing messages. You should not have to call this.
+      # Logs an error message.
       #
-      # @param [String] message The message to log
-      # @param [Symbol<:debug, :generic, :incoming, :outgoing>] kind
-      #   The kind of message to log
+      # @param [String] message
       # @return [void]
-      def log(message, kind = :generic)
-        raise
+      # @since 1.2.0
+      def error(message)
+        log(message, :error)
       end
 
-      # This method is used for logging messages.
+      # Logs a fatal message.
       #
-      # @param [Exception] e The exception to log
+      # @param [String] message
       # @return [void]
+      # @since 1.2.0
+      def fatal(message)
+        log(message, :fatal)
+      end
+
+      # Logs an info message.
+      #
+      # @param [String] message
+      # @return [void]
+      # @since 1.2.0
+      def info(message)
+        log(message, :info)
+      end
+
+      # Logs a warning message.
+      #
+      # @param [String] message
+      # @return [void]
+      # @since 1.2.0
+      def warn(message)
+        log(message, :warn)
+      end
+
+      # Logs an incoming IRC message.
+      #
+      # @param [String] message
+      # @return [void]
+      # @since 1.2.0
+      def incoming(message)
+        log(message, :incoming, :log)
+      end
+
+      # Logs an outgoing IRC message.
+      #
+      # @param [String] message
+      # @return [void]
+      # @since 1.2.0
+      def outgoing(message)
+        log(message, :outgoing, :log)
+      end
+
+      # Logs an exception.
+      #
+      # @param [Exception] e
+      # @return [void]
+      # @since 1.2.0
+      def exception(e)
+        log(e.message, :exception, :error)
+      end
+
+      # @deprecated See {#exception} instead
       def log_exception(e)
-        raise
+        warn "Deprecation warning: Beginning with version 1.2.0, Logger#log_exception should not be used anymore."
+      end
+
+      # Logs a message.
+      #
+      # @param [String, Array] messages The message(s) to log
+      # @param [Symbol<:debug, :incoming, :outgoing, :info, :warn,
+      #   :exception, :error, :fatal>] event The kind of event that
+      #   triggered the message
+      # @param [Symbol<:debug, :info, :warn, :error, :fatal>] level The level of the message
+      # @return [void]
+      # @version 1.2.0
+      def log(messages, event, level = event)
+        return unless will_log?(level)
+        @mutex.synchronize do
+          Array(messages).each do |message|
+            message = format_general(message)
+            message = format_message(message, event)
+
+            next if message.nil?
+            @output.puts message.encode("locale", {:invalid => :replace, :undef => :replace})
+          end
+        end
+      end
+
+      # @param [Symbol<:debug, :info, :warn, :error, :fatal>] level
+      # @return [Boolean] Whether the currently set logging level will
+      #   allow the passed in level to be logged
+      # @since 1.2.0
+      def will_log?(level)
+        LevelOrder.index(level) >= LevelOrder.index(@level)
+      end
+
+      private
+      def format_message(message, level)
+        __send__ "format_#{level}", message
+      end
+
+      def format_general(message)
+        message
+      end
+
+      def format_debug(message)
+        message
+      end
+
+      def format_error(message)
+        message
+      end
+
+      def format_info(message)
+        message
+      end
+
+      def format_warn(message)
+        message
+      end
+
+      def format_incoming(message)
+        message
+      end
+
+      def format_outgoing(message)
+        message
+      end
+
+      def format_exception(message)
+        message
       end
     end
   end
