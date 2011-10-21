@@ -29,15 +29,21 @@ module Cinch
     end
 
     def stop
+      @bot.logger.debug "[Stopping handler] Stopping all threads of handler #{self}: #{@threads.size} threads..."
       @threads.each do |thread|
+        @bot.logger.debug "[Ending thread] Waiting 10 seconds for #{thread} to finish..."
         thread.join(10)
+        @bot.logger.debug "[Killing thread] Killing #{thread}"
         thread.kill
       end
     end
 
     def call(message, captures, arguments)
       bargs = captures + arguments
+
       @threads << Thread.new do
+        @bot.logger.debug "[New thread] For #{self}: #{Thread.current}"
+
         begin
           catch(:halt) do
             @bot.callback.instance_exec(message, *@args, *bargs, &@block)
@@ -46,6 +52,7 @@ module Cinch
           @bot.logger.exception(e)
         ensure
           @threads.delete Thread.current
+          @bot.logger.debug "[Thread done] For #{self}: #{Thread.current} -- #{@threads.size} remaining."
         end
       end
     end
