@@ -87,7 +87,7 @@ module Cinch
       begin
         yield
       rescue => e
-        bot.logger.exception(e)
+        bot.loggers.exception(e)
       end
     end
 

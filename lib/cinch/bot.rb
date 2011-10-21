@@ -10,6 +10,7 @@ require "cinch/exceptions"
 
 require "cinch/handler"
 require "cinch/helpers"
+require "cinch/logger_list"
 require "cinch/logger/logger"
 require "cinch/logger/null_logger"
 require "cinch/logger/formatted_logger"
@@ -42,10 +43,10 @@ require "cinch/plugins_configuration"
 require "cinch/ssl_configuration"
 require "cinch/timeouts_configuration"
 
-
 module Cinch
   # @attr nick
   # @attr modes
+  # @attr logger
   # @version 1.2.0
   class Bot
     include Helpers
@@ -60,10 +61,11 @@ module Cinch
     # @return [IRC]
     attr_reader :irc
 
-    # The logger instance used for logging debugging messages
+    # The logger list containing all loggers
     #
-    # @return [Logger]
-    attr_accessor :logger
+    # @return [LoggerList]
+    # @since 1.2.0
+    attr_accessor :loggers
 
     # @return [Array<Channel>] All channels the bot currently is in
     attr_reader :channels
@@ -293,7 +295,7 @@ module Cinch
                      Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
                    end
                  end
-        debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
+        @loggers.debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
         handler = Handler.new(self, event, pattern, args, &block)
         handlers << handler
         @handlers.register(handler)
@@ -374,7 +376,7 @@ module Cinch
           channel.unsync_all
         end # reset state of all channels
 
-        @logger.info "Connecting to #{@config.server}:#{@config.port}"
+        @loggers.info "Connecting to #{@config.server}:#{@config.port}"
         @irc = IRC.new(self)
         @irc.start
 
@@ -391,7 +393,7 @@ module Cinch
           # throttled by the IRC server
           wait = 2**@reconnects
           wait = @config.max_reconnect_delay if wait > @config.max_reconnect_delay
-          @logger.info "Waiting #{wait} seconds before reconnecting"
+          @loggers.info "Waiting #{wait} seconds before reconnecting"
           sleep wait
         end
       end while @config.reconnect and not @quitting
@@ -422,9 +424,24 @@ module Cinch
 
     # @endgroup
 
+    # @deprecated See {Bot#loggers} instead
+    def logger
+      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#logger")
+      @loggers.first
+    end
+
+    # @deprecated See {Bot#loggers} instead
+    def logger=(logger)
+      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#logger=")
+      @loggers.clear
+      @loggers << logger
+    end
+
     # (see Logger::Logger#debug)
+    # @deprecated See {LoggerList#debug} instead
     def debug(msg)
-      @logger.debug(msg)
+      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#debug")
+      @loggers.debug(msg)
     end
 
     # @return [Boolean] True if the bot reports ISUPPORT violations as
@@ -435,7 +452,8 @@ module Cinch
 
     # @yield
     def initialize(&b)
-      @logger = Logger::FormattedLogger.new($stderr)
+      @loggers = LoggerList.new
+      @loggers << Logger::FormattedLogger.new($stderr)
       @config = BotConfiguration.new
       @handlers = HandlerList.new
       @semaphores_mutex = Mutex.new
@@ -452,10 +470,10 @@ module Cinch
       instance_eval(&b) if block_given?
 
       if @config.verbose.nil?
-        @logger.level = :debug
+        @loggers.level = :debug
       else
-        @logger.warn "Deprecation warning: Beginning with version 1.2.0, @config.verbose should not be used anymore. See Logger#level= instead"
-        @logger.level = @config.verbose ? :debug : :info
+        @loggers.warn "Deprecation warning: Beginning with version 1.2.0, @config.verbose should not be used anymore. See Logger#level= instead"
+        @loggers.level = @config.verbose ? :debug : :info
       end
 
       on :connect do

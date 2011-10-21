@@ -375,12 +375,12 @@ module Cinch
       def __register_with_bot(bot, instance)
         missing = check_for_missing_options(bot)
         unless missing.empty?
-          bot.debug "[plugin] #{plugin_name}: Could not register plugin because the following options are not set: #{missing.join(", ")}"
+          bot.loggers.debug "[plugin] #{plugin_name}: Could not register plugin because the following options are not set: #{missing.join(", ")}"
           return
         end
 
         @listeners.each do |listener|
-          bot.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
+          bot.loggers.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
           bot.on(listener.event, [], instance) do |message, plugin, *args|
             if plugin.respond_to?(listener.method)
               plugin.class.call_hooks(:pre, :listen_to, plugin, [message])
@@ -406,7 +406,7 @@ module Cinch
           pattern_to_register = Pattern.new(_prefix, pattern.pattern, _suffix)
           react_on = @react_on || :message
 
-          bot.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
+          bot.loggers.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
           bot.on(react_on, pattern_to_register, instance, pattern) do |message, plugin, pattern, *args|
             if plugin.respond_to?(pattern.method)
@@ -427,7 +427,7 @@ module Cinch
         end
 
         @ctcps.each do |ctcp|
-          bot.debug "[plugin] #{plugin_name}: Registering CTCP `#{ctcp}`"
+          bot.loggers.debug "[plugin] #{plugin_name}: Registering CTCP `#{ctcp}`"
           bot.on(:ctcp, ctcp, instance, ctcp) do |message, plugin, ctcp, *args|
             plugin.class.__hooks(:pre, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
             plugin.__send__("ctcp_#{ctcp.downcase}", message, *args)
@@ -437,7 +437,7 @@ module Cinch
 
         @timers.each do |timer|
           # TODO move debug message to instance method
-          bot.debug "[plugin] #{plugin_name}: Registering timer with interval `#{timer.interval}` for method `#{timer.options[:method]}`"
+          bot.loggers.debug "[plugin] #{plugin_name}: Registering timer with interval `#{timer.interval}` for method `#{timer.options[:method]}`"
           bot.on :connect do
             next if timer.registered
             instance.timer(timer.interval, timer.options)
@@ -446,7 +446,7 @@ module Cinch
         end
 
         if @help
-          bot.debug "[plugin] #{plugin_name}: Registering help message"
+          bot.loggers.debug "[plugin] #{plugin_name}: Registering help message"
           help_pattern = Pattern.new(prefix, "help #{plugin_name}", suffix)
           bot.on(:message, help_pattern, @help) do |message, help_message|
             message.reply(help_message)
