@@ -49,5 +49,9 @@ module Cinch
         end
       end
     end
+
+    def to_s
+      "#<Cinch::Handler @event=#{@event.inspect} pattern=#{@pattern.inspect}>"
+    end
   end
 end
