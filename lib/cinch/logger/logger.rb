@@ -112,7 +112,7 @@ module Cinch
       # @param [Symbol<:debug, :info, :warn, :error, :fatal>] level The level of the message
       # @return [void]
       # @version 1.2.0
-      def log(messages, event, level = event)
+      def log(messages, event = :debug, level = event)
         return unless will_log?(level)
         @mutex.synchronize do
           Array(messages).each do |message|
