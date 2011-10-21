@@ -43,7 +43,7 @@ module Cinch
             @bot.callback.instance_exec(message, *@args, *bargs, &@block)
           end
         rescue => e
-          @bot.logger.log_exception(e)
+          @bot.logger.exception(e)
         ensure
           @threads.delete Thread.current
         end

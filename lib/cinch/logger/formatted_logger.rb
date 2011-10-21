@@ -1,11 +1,11 @@
 require "cinch/logger/logger"
+
 module Cinch
   module Logger
-    # A formatted logger that will colorize individual parts of IRC
-    # messages.
-    # @version 1.1.0
-    class FormattedLogger < Cinch::Logger::Logger
-      COLORS = {
+    # @version 1.2.0
+    class FormattedLogger < Logger
+      # @private
+      Colors = {
         :reset => "\e[0m",
         :bold => "\e[1m",
         :red => "\e[31m",
@@ -16,58 +16,16 @@ module Cinch
         :bg_white => "\e[47m",
       }
 
-      # @param [IO] output An IO to log to.
-      def initialize(output = STDERR)
-        @output = output
-        @mutex = Mutex.new
+      # (see Logger#exception)
+      def exception(e)
+        lines = ["#{e.backtrace.first}: #{e.message} (#{e.class})"]
+        lines.concat e.backtrace[1..-1].map {|s| "\t" + s}
+        log(lines, :exception, :error)
       end
 
-      # (see Logger::Logger#debug)
-      def debug(messages)
-        log(messages, :debug)
-      end
-
-      # (see Logger::Logger#log)
-      # @version 1.1.0
-      def log(messages, kind = :generic)
-        @mutex.synchronize do
-          messages = [messages].flatten.map {|s| s.to_s.chomp}
-          messages.each do |msg|
-            next if msg.empty?
-            message = Time.now.strftime("[%Y/%m/%d %H:%M:%S.%L] ")
-
-            msg.gsub!(/[^[:print:][:space:]]/) do |m|
-              colorize(m.inspect[1..-2], :bg_white, :black)
-            end
-
-            if kind == :debug
-              prefix = colorize("!! ", :yellow)
-              message << prefix + msg
-            else
-              pre, msg = msg.split(" :", 2)
-              pre_parts = pre.split(" ")
-
-              if kind == :incoming
-                prefix = colorize(">> ", :green)
-
-                if pre_parts.size == 1
-                  pre_parts[0] = colorize(pre_parts[0], :bold)
-                else
-                  pre_parts[0] = colorize(pre_parts[0], :blue)
-                  pre_parts[1] = colorize(pre_parts[1], :bold)
-                end
-
-              elsif kind == :outgoing
-                prefix = colorize("<< ", :red)
-                pre_parts[0] = colorize(pre_parts[0], :bold)
-              end
-
-              message << prefix + pre_parts.join(" ")
-              message << colorize(" :#{msg}", :yellow) if msg
-            end
-            @output.puts message.encode("locale", {:invalid => :replace, :undef => :replace})
-          end
-        end
+      private
+      def timestamp
+        Time.now.strftime("[%Y/%m/%d %H:%M:%S.%L]")
       end
 
       # @api private
@@ -76,16 +34,63 @@ module Cinch
       # @return [String] colorized string
       def colorize(text, *codes)
         return text unless @output.tty?
-        codes = COLORS.values_at(*codes).join
-        text = text.gsub(/#{Regexp.escape(COLORS[:reset])}/, COLORS[:reset] + codes)
-        codes + text + COLORS[:reset]
+        codes = Colors.values_at(*codes).join
+        text = text.gsub(/#{Regexp.escape(Colors[:reset])}/, Colors[:reset] + codes)
+        codes + text + Colors[:reset]
       end
 
-      # (see Logger::Logger#log_exception)
-      def log_exception(e)
-        lines = ["#{e.backtrace.first}: #{e.message} (#{e.class})"]
-        lines.concat e.backtrace[1..-1].map {|s| "\t" + s}
-        debug(lines)
+      def format_general(message)
+        message.gsub(/[^[:print:][:space:]]/) do |m|
+          colorize(m.inspect[1..-2], :bg_white, :black)
+        end
+      end
+
+      def format_debug(message)
+        "%s %s %s" % [timestamp, colorize("!!", :yellow), message]
+      end
+
+      def format_warn(message)
+        format_debug(message)
+      end
+
+      def format_info(message)
+        "%s %s %s" % [timestamp, "II", message]
+      end
+
+      def format_incoming(message)
+        pre, msg = message.split(" :", 2)
+        pre_parts = pre.split(" ")
+
+        prefix = colorize(">>", :green)
+
+        if pre_parts.size == 1
+          pre_parts[0] = colorize(pre_parts[0], :bold)
+        else
+          pre_parts[0] = colorize(pre_parts[0], :blue)
+          pre_parts[1] = colorize(pre_parts[1], :bold)
+        end
+
+        "%s %s %s %s" % [timestamp,
+                          prefix,
+                          pre_parts.join(" "),
+                          msg ? colorize(":#{msg}", :yellow) : ""]
+      end
+
+      def format_outgoing(message)
+        pre, msg = message.split(" :", 2)
+        pre_parts = pre.split(" ")
+
+        prefix = colorize("<<", :red)
+        pre_parts[0] = colorize(pre_parts[0], :bold)
+
+        "%s %s %s %s" % [timestamp,
+                         prefix,
+                         pre_parts.join(" "),
+                         msg ? colorize(":#{msg}", :yellow) : ""]
+      end
+
+      def format_exception(message)
+        "%s %s %s" % [timestamp, colorize("!!", :red), message]
       end
     end
   end
