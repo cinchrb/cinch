@@ -374,7 +374,7 @@ module Cinch
           channel.unsync_all
         end # reset state of all channels
 
-        @logger.debug "Connecting to #{@config.server}:#{@config.port}"
+        @logger.info "Connecting to #{@config.server}:#{@config.port}"
         @irc = IRC.new(self)
         @irc.start
 
@@ -391,7 +391,7 @@ module Cinch
           # throttled by the IRC server
           wait = 2**@reconnects
           wait = @config.max_reconnect_delay if wait > @config.max_reconnect_delay
-          @logger.debug "Waiting #{wait} seconds before reconnecting"
+          @logger.info "Waiting #{wait} seconds before reconnecting"
           sleep wait
         end
       end while @config.reconnect and not @quitting
@@ -450,6 +450,13 @@ module Cinch
       @plugins = PluginList.new(self)
 
       instance_eval(&b) if block_given?
+
+      if @config.verbose.nil?
+        @logger.level = :debug
+      else
+        @logger.warn "Deprecation warning: Beginning with version 1.2.0, @config.verbose should not be used anymore. See Logger#level= instead"
+        @logger.level = @config.verbose ? :debug : :info
+      end
 
       on :connect do
         bot.config.channels.each do |channel|

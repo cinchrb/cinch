@@ -67,7 +67,7 @@ module Cinch
         begin
           @socket.writeline Cinch::Utilities::Encoding.encode_outgoing(message, @bot.config.encoding) + "\r\n"
           @log << Time.now
-          @bot.logger.log(message, :outgoing) if @bot.config.verbose
+          @bot.logger.outgoing(message)
 
           @time_since_last_send = Time.now
         rescue IOError
