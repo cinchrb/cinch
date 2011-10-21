@@ -375,7 +375,7 @@ module Cinch
       def __register_with_bot(bot, instance)
         missing = check_for_missing_options(bot)
         unless missing.empty?
-          bot.loggers.debug "[plugin] #{plugin_name}: Could not register plugin because the following options are not set: #{missing.join(", ")}"
+          bot.loggers.warn "[plugin] #{plugin_name}: Could not register plugin because the following options are not set: #{missing.join(", ")}"
           return
         end
 
