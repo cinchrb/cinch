@@ -51,25 +51,7 @@ module Cinch
       end
 
       if @bot.config.ssl == true || (@bot.config.ssl.is_a?(SSLConfiguration) && @bot.config.ssl.use)
-        require 'openssl'
-
-        ssl_context = OpenSSL::SSL::SSLContext.new
-
-        if @bot.config.ssl.is_a?(SSLConfiguration)
-          if @bot.config.ssl.client_cert
-            ssl_context.cert = OpenSSL::X509::Certificate.new(File.read(@bot.config.ssl.client_cert))
-            ssl_context.key = OpenSSL::PKey::RSA.new(File.read(@bot.config.ssl.client_cert))
-          end
-          ssl_context.ca_path = @bot.config.ssl.ca_path
-          ssl_context.verify_mode = @bot.config.ssl.verify ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
-        else
-          ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        end
-        @bot.logger.debug "Using SSL with #{@bot.config.server}:#{@bot.config.port}"
-
-        @socket = OpenSSL::SSL::SSLSocket.new(tcp_socket, ssl_context)
-        @socket.sync = true
-        @socket.connect
+        setup_ssl
       else
         @socket = tcp_socket
       end
@@ -79,6 +61,31 @@ module Cinch
       @queue = MessageQueue.new(@socket, @bot)
 
       return true
+    end
+
+    # @api private
+    # @return [void]
+    # @since 1.2.0
+    def setup_ssl
+      require 'openssl'
+
+      ssl_context = OpenSSL::SSL::SSLContext.new
+
+      if @bot.config.ssl.is_a?(SSLConfiguration)
+        if @bot.config.ssl.client_cert
+          ssl_context.cert = OpenSSL::X509::Certificate.new(File.read(@bot.config.ssl.client_cert))
+          ssl_context.key = OpenSSL::PKey::RSA.new(File.read(@bot.config.ssl.client_cert))
+        end
+        ssl_context.ca_path = @bot.config.ssl.ca_path
+        ssl_context.verify_mode = @bot.config.ssl.verify ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
+      else
+        ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
+      @bot.logger.debug "Using SSL with #{@bot.config.server}:#{@bot.config.port}"
+
+      @socket = OpenSSL::SSL::SSLSocket.new(tcp_socket, ssl_context)
+      @socket.sync = true
+      @socket.connect
     end
 
     # @api private
