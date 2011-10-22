@@ -23,6 +23,9 @@ module Cinch
     alias_method :threaded?, :threaded
     alias_method :started?, :started
 
+    # @api private
+    attr_reader :thread_group
+
     # @param [Bot] bot The instance of {Bot} the timer is associated
     #   with
     # @option options [Number] :interval The interval (in seconds) of
@@ -43,7 +46,7 @@ module Cinch
       @block      = block
 
       @started = false
-      @thread  = nil
+      @thread_group = ThreadGroup.new
     end
 
     # @return [Boolean]
@@ -57,7 +60,7 @@ module Cinch
     def start
       @shots = @orig_shots
 
-      @thread = Thread.new do
+      @thread_group.add Thread.new {
         while @shots > 0 do
           sleep @interval
           if threaded?
@@ -74,7 +77,7 @@ module Cinch
 
           @shots -= 1
         end
-      end
+      }
 
       @started = true
     end
@@ -83,7 +86,7 @@ module Cinch
     #
     # @return [void]
     def stop
-      @thread.kill
+      @thread_group.list.each { |thread| thread.kill }
       @started = false
     end
   end
