@@ -89,5 +89,9 @@ module Cinch
       @thread_group.list.each { |thread| thread.kill }
       @started = false
     end
+
+    def to_s
+      "<Cinch::Timer %s/%s shots, %ds interval, %sthreaded, %sstarted, block: %s>" % [@orig_shots - @shots, @orig_shots, @interval, @threaded ? "" : "not ", @started ? "" : "not ", @block]
+    end
   end
 end
