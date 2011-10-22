@@ -403,6 +403,26 @@ module Cinch
       end
     end
 
+    # @api private
+    def __register_timers
+      @timers = self.class.timers.map {|timer_struct|
+        @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering timer with interval `#{timer_struct.interval}` for method `#{timer_struct.options[:method]}`"
+
+        block = self.method(timer_struct.options[:method])
+        options = timer_struct.options.merge(interval: timer_struct.interval)
+        Cinch::Timer.new(@bot, options, &block)
+      }
+
+      # note: do not check if we have any timers because that might change during runtime
+      @handlers.concat @bot.on(:connect, [], self) { |m, plugin|
+        plugin.timers.each { |timer| timer.start }
+      }
+
+      @handlers.concat @bot.on(:disconnect, [], self) { |m, plugin|
+        plugin.timers.each { |timer| timer.stop }
+      }
+    end
+
     # @return [void]
     # @api private
     def __register
@@ -450,17 +470,7 @@ module Cinch
 
       end
       __register_ctcps
-
-      self.class.timers.each do |timer|
-        @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering timer with interval `#{timer.interval}` for method `#{timer.options[:method]}`"
-        new_handlers = @bot.on :connect do
-          next if timer.registered
-          self.timer(timer.interval, timer.options)
-          timer.registered = true
-        end
-
-        @handlers.concat new_handlers
-      end
+      __register_timers
 
       if self.class.help
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering help message"
@@ -479,10 +489,13 @@ module Cinch
     # @return [Array<Handler>] handlers
     attr_reader :handlers
 
+    # @return [Array<Cinch::Timer>]
+    attr_reader :timers
     # @api private
     def initialize(bot)
       @bot = bot
       @handlers = []
+      @timers   = []
       __register
     end
 
