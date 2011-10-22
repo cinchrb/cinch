@@ -223,9 +223,18 @@ module Cinch
       (("001".."004").to_a - @registration).empty?
     end
 
-    # Send a message.
+    # Send a message to the server.
+    # @param [String] msg
     # @return [void]
+    def send(msg)
+      @queue.queue(msg)
+    end
+
+    # Send a message to the server.
+    # @return [void]
+    # @deprecated See {IRC#send} instead
     def message(msg)
+      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "IRC#message")
       @queue.queue(msg)
     end
 

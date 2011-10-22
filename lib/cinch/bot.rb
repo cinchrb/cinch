@@ -192,9 +192,9 @@ module Cinch
     #
     # @param [String] command The message to send.
     # @return [void]
-    # @see IRC#message
+    # @see IRC#send
     def raw(command)
-      @irc.message(command)
+      @irc.send(command)
     end
 
     # @deprecated See {Target#msg} instead
