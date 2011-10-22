@@ -363,104 +363,137 @@ module Cinch
       # @param [Bot] bot
       # @return [Array<Symbol>, nil]
       # @since 1.2.0
+      # @api private
       def check_for_missing_options(bot)
         @required_options.select { |option|
           !bot.config.plugins.options[self].has_key?(option)
         }
       end
-      private :check_for_missing_options
+    end
 
-      # @return [void]
-      # @api private
-      def __register_with_bot(bot, instance)
-        missing = check_for_missing_options(bot)
-        unless missing.empty?
-          bot.loggers.warn "[plugin] #{plugin_name}: Could not register plugin because the following options are not set: #{missing.join(", ")}"
-          return
+    # @api private
+    def __register_listeners
+      self.class.listeners.each do |listener|
+        @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering listener for type `#{listener.event}`"
+        new_handlers = @bot.on(listener.event, [], self) do |message, plugin, *args|
+          if plugin.respond_to?(listener.method)
+            plugin.class.call_hooks(:pre, :listen_to, plugin, [message])
+            plugin.__send__(listener.method, message, *args)
+            plugin.class.call_hooks(:post, :listen_to, plugin, [message])
+          else
+            $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{listener.method}'. Beginning with version 2.0.0, this will cause an exception."
+          end
         end
 
-        @listeners.each do |listener|
-          bot.loggers.debug "[plugin] #{plugin_name}: Registering listener for type `#{listener.event}`"
-          bot.on(listener.event, [], instance) do |message, plugin, *args|
-            if plugin.respond_to?(listener.method)
-              plugin.class.call_hooks(:pre, :listen_to, plugin, [message])
-              plugin.__send__(listener.method, message, *args)
-              plugin.class.call_hooks(:post, :listen_to, plugin, [message])
-            else
-              $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{listener.method}'. Beginning with version 2.0.0, this will cause an exception."
+        @handlers.concat new_handlers
+      end
+    end
+
+    # @api private
+    def __register_ctcps
+      self.class.ctcps.each do |ctcp|
+        @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering CTCP `#{ctcp}`"
+        new_handlers = @bot.on(:ctcp, ctcp, self, ctcp) do |message, plugin, ctcp, *args|
+          plugin.class.__hooks(:pre, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
+          plugin.__send__("ctcp_#{ctcp.downcase}", message, *args)
+          plugin.class.__hooks(:post, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
+        end
+
+        @handlers.concat new_handlers
+      end
+    end
+
+    # @return [void]
+    # @api private
+    def __register
+      missing = self.class.check_for_missing_options(@bot)
+      unless missing.empty?
+        @bot.loggers.warn "[plugin] #{self.class.plugin_name}: Could not register plugin because the following options are not set: #{missing.join(", ")}"
+        return
+      end
+
+      __register_listeners
+
+      if self.class.matchers.empty?
+        self.class.matchers << Match.new(self.class.plugin_name, true, true, :execute)
+      end
+
+      prefix = self.class.prefix || @bot.config.plugins.prefix
+      suffix = self.class.suffix || @bot.config.plugins.suffix
+
+      self.class.matchers.each do |pattern|
+        _prefix = pattern.use_prefix ? prefix : nil
+        _suffix = pattern.use_suffix ? suffix : nil
+
+        pattern_to_register = Pattern.new(_prefix, pattern.pattern, _suffix)
+        react_on = self.class.react_on || :message
+
+        @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
+
+        new_handlers = @bot.on(react_on, pattern_to_register, self, pattern) do |message, plugin, pattern, *args|
+          if plugin.respond_to?(pattern.method)
+            method = plugin.method(pattern.method)
+            arity = method.arity - 1
+            if arity > 0
+              args = args[0..arity - 1]
+            elsif arity == 0
+              args = []
             end
+            plugin.class.__hooks(:pre, :match).each {|hook| plugin.__send__(hook.method, message)}
+            method.call(message, *args)
+            plugin.class.__hooks(:post, :match).each {|hook| plugin.__send__(hook.method, message)}
+          else
+            $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{pattern.method}'. Beginning with version 2.0.0, this will cause an exception."
           end
         end
+        p new_handlers
+        @handlers.concat new_handlers
 
-        if @matchers.empty?
-          @matchers << Match.new(plugin_name, true, true, :execute)
+      end
+      __register_ctcps
+
+      self.class.timers.each do |timer|
+        @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering timer with interval `#{timer.interval}` for method `#{timer.options[:method]}`"
+        new_handlers = @bot.on :connect do
+          next if timer.registered
+          self.timer(timer.interval, timer.options)
+          timer.registered = true
         end
 
-        prefix = @prefix || bot.config.plugins.prefix
-        suffix = @suffix || bot.config.plugins.suffix
+        @handlers.concat new_handlers
+      end
 
-        @matchers.each do |pattern|
-          _prefix = pattern.use_prefix ? prefix : nil
-          _suffix = pattern.use_suffix ? suffix : nil
-
-          pattern_to_register = Pattern.new(_prefix, pattern.pattern, _suffix)
-          react_on = @react_on || :message
-
-          bot.loggers.debug "[plugin] #{plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
-
-          bot.on(react_on, pattern_to_register, instance, pattern) do |message, plugin, pattern, *args|
-            if plugin.respond_to?(pattern.method)
-              method = plugin.method(pattern.method)
-              arity = method.arity - 1
-              if arity > 0
-                args = args[0..arity - 1]
-              elsif arity == 0
-                args = []
-              end
-              plugin.class.__hooks(:pre, :match).each {|hook| plugin.__send__(hook.method, message)}
-              method.call(message, *args)
-              plugin.class.__hooks(:post, :match).each {|hook| plugin.__send__(hook.method, message)}
-            else
-              $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{pattern.method}'. Beginning with version 2.0.0, this will cause an exception."
-            end
-          end
+      if self.class.help
+        @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering help message"
+        help_pattern = Pattern.new(prefix, "help #{self.class.plugin_name}", suffix)
+        new_handlers = @bot.on(:message, help_pattern, @help) do |message, help_message|
+          message.reply(help_message)
         end
 
-        @ctcps.each do |ctcp|
-          bot.loggers.debug "[plugin] #{plugin_name}: Registering CTCP `#{ctcp}`"
-          bot.on(:ctcp, ctcp, instance, ctcp) do |message, plugin, ctcp, *args|
-            plugin.class.__hooks(:pre, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
-            plugin.__send__("ctcp_#{ctcp.downcase}", message, *args)
-            plugin.class.__hooks(:post, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
-          end
-        end
-
-        @timers.each do |timer|
-          # TODO move debug message to instance method
-          bot.loggers.debug "[plugin] #{plugin_name}: Registering timer with interval `#{timer.interval}` for method `#{timer.options[:method]}`"
-          bot.on :connect do
-            next if timer.registered
-            instance.timer(timer.interval, timer.options)
-            timer.registered = true
-          end
-        end
-
-        if @help
-          bot.loggers.debug "[plugin] #{plugin_name}: Registering help message"
-          help_pattern = Pattern.new(prefix, "help #{plugin_name}", suffix)
-          bot.on(:message, help_pattern, @help) do |message, help_message|
-            message.reply(help_message)
-          end
-        end
+        @handlers.concat new_handlers
       end
     end
 
     # @return [Bot]
     attr_reader :bot
+
+    # @return [Array<Handler>] handlers
+    attr_reader :handlers
+
     # @api private
     def initialize(bot)
       @bot = bot
-      self.class.__register_with_bot(bot, self)
+      @handlers = []
+      __register
+    end
+
+    # @since 1.2.0
+    def unregister
+      @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Unloading plugin"
+      handlers.each do |handler|
+        handler.stop
+        handler.unregister
+      end
     end
 
     # (see Bot#synchronize)

@@ -15,5 +15,21 @@ module Cinch
     def register_plugins(plugins)
       plugins.each { |plugin| register_plugin(plugin) }
     end
+
+    # @since 1.2.0
+    def unregister_plugin(plugin)
+      plugin.unregister
+      delete(plugin)
+    end
+
+    # @since 1.2.0
+    def unregister_plugins(plugins)
+      plugins.each { |plugin| unregister_plugin(plugin) }
+    end
+
+    # @since 1.2.0
+    def unregister_all
+      unregister_plugins(self)
+    end
   end
 end
