@@ -60,6 +60,8 @@ module Cinch
     def start
       return if @started
 
+      @bot.loggers.debug "[timer] Starting timer #{self}"
+
       @shots = @orig_shots
 
       @thread_group.add Thread.new {
@@ -89,6 +91,8 @@ module Cinch
     # @return [void]
     def stop
       return unless @started
+
+      @bot.loggers.debug "[timer] Stopping timer #{self}"
 
       @thread_group.list.each { |thread| thread.kill }
       @started = false
