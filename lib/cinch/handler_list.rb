@@ -68,5 +68,10 @@ module Cinch
     def each(&block)
       @handlers.values.flatten.each(&block)
     end
+
+    # @api private
+    def stop_all
+      each { |h| h.stop }
+    end
   end
 end

@@ -119,9 +119,10 @@ module Cinch
 
         @socket.close
         @bot.handlers.dispatch(:disconnect)
-        @bot.handlers.each do |handler|
-          handler.stop
-        end
+        # FIXME won't we kill all :disconnect handlers here? prolly
+        # not, as they have 10 seconds to finish. that should be
+        # plenty of time
+        @bot.handlers.stop_all
       end
     end
 
