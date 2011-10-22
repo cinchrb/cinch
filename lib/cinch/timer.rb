@@ -34,8 +34,13 @@ module Cinch
     #   timer fire?
     # @option options [Boolean] :threaded (true) If true, each invocation will be
     #   executed in a thread of its own.
+    # @option options [Boolean] :start_automatically (true) If true,
+    #   the timer will automatically start after the bot finished
+    #   connecting.
+    # @option options [Boolean] :stop_automaticall (true) If true, the
+    #   timer will automatically stop when the bot disconnects.
     def initialize(bot, options, &block)
-      options = {:treaded => true, :shots => Infinity}.merge(options)
+      options = {:treaded => true, :shots => Infinity, :start_automatically => true, :stop_automatically => true}.merge(options)
 
       @bot        = bot
       @interval   = options[:interval].to_f
@@ -47,6 +52,18 @@ module Cinch
 
       @started = false
       @thread_group = ThreadGroup.new
+
+      if options[:start_automatically]
+        @bot.on :connect, [], self do |m, timer|
+          timer.start
+        end
+      end
+
+      if options[:stop_automatically]
+        @bot.on :disconnect, [], self do |m, timer|
+          timer.stop
+        end
+      end
     end
 
     # @return [Boolean]

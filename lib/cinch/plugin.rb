@@ -412,15 +412,6 @@ module Cinch
         options = timer_struct.options.merge(interval: timer_struct.interval)
         Cinch::Timer.new(@bot, options, &block)
       }
-
-      # note: do not check if we have any timers because that might change during runtime
-      @handlers.concat @bot.on(:connect, [], self) { |m, plugin|
-        plugin.timers.each { |timer| timer.start }
-      }
-
-      @handlers.concat @bot.on(:disconnect, [], self) { |m, plugin|
-        plugin.timers.each { |timer| timer.stop }
-      }
     end
 
     # @return [void]
