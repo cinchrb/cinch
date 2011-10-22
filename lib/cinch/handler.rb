@@ -31,10 +31,12 @@ module Cinch
     def stop
       @bot.loggers.debug "[Stopping handler] Stopping all threads of handler #{self}: #{@thread_group.list.size} threads..."
       @thread_group.list.each do |thread|
-        @bot.loggers.debug "[Ending thread] Waiting 10 seconds for #{thread} to finish..."
-        thread.join(10)
-        @bot.loggers.debug "[Killing thread] Killing #{thread}"
-        thread.kill
+        Thread.new do
+          @bot.loggers.debug "[Ending thread] Waiting 10 seconds for #{thread} to finish..."
+          thread.join(10)
+          @bot.loggers.debug "[Killing thread] Killing #{thread}"
+          thread.kill
+        end
       end
     end
 
