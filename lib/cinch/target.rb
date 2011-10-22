@@ -49,10 +49,10 @@ module Cinch
           splitted << line
           splitted[0, (@bot.config.max_messages || splitted.size)].each do |string|
             string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
-            @bot.raw("#{command} #@name :#{string}")
+            @bot.irc.send("#{command} #@name :#{string}")
           end
         else
-          @bot.raw("#{command} #@name :#{line}")
+          @bot.irc.send("#{command} #@name :#{line}")
         end
       end
     end
@@ -93,7 +93,7 @@ module Cinch
     # @return [void]
     # @see #safe_action
     def action(text)
-      @bot.raw("PRIVMSG #@name :\001ACTION #{text}\001")
+      @bot.irc.send("PRIVMSG #@name :\001ACTION #{text}\001")
     end
 
     # Like {#action}, but remove any non-printable characters from

@@ -99,13 +99,13 @@ module Cinch
           unsync(attr)
           case attr
           when :users
-            @bot.raw "NAMES #@name"
+            @bot.irc.send "NAMES #@name"
           when :topic
-            @bot.raw "TOPIC #@name"
+            @bot.irc.send "TOPIC #@name"
           when :bans
-            @bot.raw "MODE #@name +b"
+            @bot.irc.send "MODE #@name +b"
           when :modes
-            @bot.raw "MODE #@name"
+            @bot.irc.send "MODE #@name"
           end
         end
       }
@@ -242,9 +242,9 @@ module Cinch
       unsync :users
       unsync :bans
       unsync :modes
-      @bot.raw "NAMES #@name" if all
-      @bot.raw "MODE #@name +b" # bans
-      @bot.raw "MODE #@name"
+      @bot.irc.send "NAMES #@name" if all
+      @bot.irc.send "MODE #@name +b" # bans
+      @bot.irc.send "MODE #@name"
     end
 
     # @group Channel Manipulation
@@ -256,7 +256,7 @@ module Cinch
     def ban(target)
       mask = Mask.from(target)
 
-      @bot.raw "MODE #@name +b #{mask}"
+      @bot.irc.send "MODE #@name +b #{mask}"
       mask
     end
 
@@ -267,7 +267,7 @@ module Cinch
     def unban(target)
       mask = Mask.from(target)
 
-      @bot.raw "MODE #@name -b #{mask}"
+      @bot.irc.send "MODE #@name -b #{mask}"
       mask
     end
 
@@ -276,7 +276,7 @@ module Cinch
     # @param [String, User] user the user to op
     # @return [void]
     def op(user)
-      @bot.raw "MODE #@name +o #{user}"
+      @bot.irc.send "MODE #@name +o #{user}"
     end
 
     # Deops a user.
@@ -284,7 +284,7 @@ module Cinch
     # @param [String, User] user the user to deop
     # @return [void]
     def deop(user)
-      @bot.raw "MODE #@name -o #{user}"
+      @bot.irc.send "MODE #@name -o #{user}"
     end
 
     # Voices a user.
@@ -292,7 +292,7 @@ module Cinch
     # @param [String, User] user the user to voice
     # @return [void]
     def voice(user)
-      @bot.raw "MODE #@name +v #{user}"
+      @bot.irc.send "MODE #@name +v #{user}"
     end
 
     # Devoices a user.
@@ -300,7 +300,7 @@ module Cinch
     # @param [String, User] user the user to devoice
     # @return [void]
     def devoice(user)
-      @bot.raw "MODE #@name -v #{user}"
+      @bot.irc.send "MODE #@name -v #{user}"
     end
 
     # Invites a user to the channel.
@@ -308,7 +308,7 @@ module Cinch
     # @param [String, User] user the user to invite
     # @return [void]
     def invite(user)
-      @bot.raw("INVITE #{user} #@name")
+      @bot.irc.send("INVITE #{user} #@name")
     end
 
     # Sets the topic.
@@ -321,7 +321,7 @@ module Cinch
         raise Exceptions::TopicTooLong, new_topic
       end
 
-      @bot.raw "TOPIC #@name :#{new_topic}"
+      @bot.irc.send "TOPIC #@name :#{new_topic}"
     end
 
     # Kicks a user from the channel.
@@ -335,7 +335,7 @@ module Cinch
         raise Exceptions::KickReasonTooLong, reason
       end
 
-      @bot.raw("KICK #@name #{user} :#{reason}")
+      @bot.irc.send("KICK #@name #{user} :#{reason}")
     end
 
     # Sets or unsets modes. Most of the time you won't need this but
@@ -346,7 +346,7 @@ module Cinch
     # @example
     #   channel.mode "+n"
     def mode(s)
-      @bot.raw "MODE #@name #{s}"
+      @bot.irc.send "MODE #@name #{s}"
     end
 
     # Causes the bot to part from the channel.
@@ -354,7 +354,7 @@ module Cinch
     # @param [String] message the part message.
     # @return [void]
     def part(message = nil)
-      @bot.raw "PART #@name :#{message}"
+      @bot.irc.send "PART #@name :#{message}"
     end
 
     # Joins the channel
@@ -366,7 +366,7 @@ module Cinch
       if key.nil? and self.key != true
         key = self.key
       end
-      @bot.raw "JOIN #{[@name, key].compact.join(" ")}"
+      @bot.irc.send "JOIN #{[@name, key].compact.join(" ")}"
     end
 
     # @endgroup

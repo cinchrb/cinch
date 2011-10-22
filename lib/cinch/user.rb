@@ -194,9 +194,9 @@ module Cinch
       if @bot.irc.network == "jtv"
         # the justin tv "IRC" network does not support WHOIS with two
         # arguments
-        @bot.raw "WHOIS #@name"
+        @bot.irc.send "WHOIS #@name"
       else
-        @bot.raw "WHOIS #@name #@name"
+        @bot.irc.send "WHOIS #@name #@name"
       end
     end
     alias_method :refresh, :whois

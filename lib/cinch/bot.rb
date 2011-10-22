@@ -192,6 +192,7 @@ module Cinch
     #
     # @param [String] command The message to send.
     # @return [void]
+    # @deprecated See {IRC#send} instead
     # @see IRC#send
     def raw(command)
       @irc.send(command)
@@ -354,7 +355,7 @@ module Cinch
     def quit(message = nil)
       @quitting = true
       command = message ? "QUIT :#{message}" : "QUIT"
-      raw command
+      @irc.send command
     end
 
     # Connects the bot to a server.
@@ -498,7 +499,7 @@ module Cinch
     # @see Bot#modes
     # @see Bot#unset_mode
     def set_mode(mode)
-      raw "MODE #{nick} +#{mode}"
+      @irc.send "MODE #{nick} +#{mode}"
     end
 
     # Unsets a mode on the bot.
@@ -507,7 +508,7 @@ module Cinch
     # @return [void]
     # @since 1.2.0
     def unset_mode(mode)
-      raw "MODE #{nick} -#{mode}"
+      @irc.send "MODE #{nick} -#{mode}"
     end
 
     # @since 1.2.0
@@ -539,7 +540,7 @@ module Cinch
         raise Exceptions::NickTooLong, new_nick
       end
       @config.nick = new_nick
-      raw "NICK #{new_nick}"
+      @irc.send "NICK #{new_nick}"
     end
 
     # Try to create a free nick, first by cycling through all
