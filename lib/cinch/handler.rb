@@ -11,9 +11,9 @@ module Cinch
     attr_reader :args
     # @return [Proc]
     attr_reader :block
-    # @return [Array<Thread>]
+    # @return [ThreadGroup]
     # @api private
-    attr_reader :threads
+    attr_reader :thread_group
     def initialize(bot, event, pattern, args = [], &block)
       @bot = bot
       @event = event
@@ -21,7 +21,7 @@ module Cinch
       @args = args
       @block = block
 
-      @threads = []
+      @thread_group = ThreadGroup.new
     end
 
     def unregister
@@ -29,8 +29,8 @@ module Cinch
     end
 
     def stop
-      @bot.loggers.debug "[Stopping handler] Stopping all threads of handler #{self}: #{@threads.size} threads..."
-      @threads.each do |thread|
+      @bot.loggers.debug "[Stopping handler] Stopping all threads of handler #{self}: #{@thread_group.list.size} threads..."
+      @thread_group.list.each do |thread|
         @bot.loggers.debug "[Ending thread] Waiting 10 seconds for #{thread} to finish..."
         thread.join(10)
         @bot.loggers.debug "[Killing thread] Killing #{thread}"
@@ -41,8 +41,8 @@ module Cinch
     def call(message, captures, arguments)
       bargs = captures + arguments
 
-      @threads << Thread.new do
-        @bot.loggers.debug "[New thread] For #{self}: #{Thread.current}"
+      @thread_group.add Thread.new {
+        @bot.loggers.debug "[New thread] For #{self}: #{Thread.current} -- #{@thread_group.list.size} in total."
 
         begin
           catch(:halt) do
@@ -51,10 +51,9 @@ module Cinch
         rescue => e
           @bot.loggers.exception(e)
         ensure
-          @threads.delete Thread.current
-          @bot.loggers.debug "[Thread done] For #{self}: #{Thread.current} -- #{@threads.size} remaining."
+          @bot.loggers.debug "[Thread done] For #{self}: #{Thread.current} -- #{@thread_group.list.size - 1} remaining."
         end
-      end
+      }
     end
 
     def to_s
