@@ -502,6 +502,10 @@ module Cinch
     # @since 1.2.0
     def unregister
       @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Unloading plugin"
+      @timers.each do |timer|
+        timer.stop
+      end
+
       handlers.each do |handler|
         handler.stop
         handler.unregister
