@@ -446,7 +446,6 @@ module Cinch
             $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{pattern.method}'. Beginning with version 2.0.0, this will cause an exception."
           end
         end
-        p new_handlers
         @handlers.concat new_handlers
 
       end
