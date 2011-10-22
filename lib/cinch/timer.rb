@@ -58,6 +58,8 @@ module Cinch
     #
     # @return [void]
     def start
+      return if @started
+
       @shots = @orig_shots
 
       @thread_group.add Thread.new {
@@ -86,6 +88,8 @@ module Cinch
     #
     # @return [void]
     def stop
+      return unless @started
+
       @thread_group.list.each { |thread| thread.kill }
       @started = false
     end
