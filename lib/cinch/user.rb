@@ -320,7 +320,7 @@ module Cinch
       end
 
       if @data.has_key?(m)
-        attr(m, true, unsync = false)
+        attr(m, true, unsync)
       else
         super
       end
