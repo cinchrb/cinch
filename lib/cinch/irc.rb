@@ -240,8 +240,7 @@ module Cinch
 
     private
     def set_leaving_user(message, user, events)
-      events << [:leaving]
-      message.leaving_user = user
+      events << [:leaving, user]
     end
 
     def on_join(msg, events)
