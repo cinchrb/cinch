@@ -92,9 +92,9 @@ module Cinch
     # @return [void]
     # @since 1.2.0
     def send_login
-      message "PASS #{@bot.config.password}" if @bot.config.password
-      message "NICK #{@bot.generate_next_nick!}"
-      message "USER #{@bot.config.user} 0 * :#{@bot.config.realname}"
+      send "PASS #{@bot.config.password}" if @bot.config.password
+      send "NICK #{@bot.generate_next_nick!}"
+      send "USER #{@bot.config.user} 0 * :#{@bot.config.realname}"
     end
 
     # @api private
@@ -144,7 +144,7 @@ module Cinch
       Thread.new do
         while true
           sleep @bot.config.ping_interval
-          message("PING 0") # PING requires a single argument. In our
+          send("PING 0") # PING requires a single argument. In our
                             # case the value doesn't matter though.
         end
       end
@@ -358,7 +358,7 @@ module Cinch
     end
 
     def on_ping(msg, events)
-      message "PONG :#{msg.params.first}"
+      send "PONG :#{msg.params.first}"
     end
 
     def on_topic(msg, events)
