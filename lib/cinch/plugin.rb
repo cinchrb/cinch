@@ -2,6 +2,7 @@ module Cinch
   module Plugin
     include Helpers
 
+    # @attr plugin_name
     module ClassMethods
       # @return [Hash<Symbol<:pre, :post> => Array<Hook>>] All hooks
       attr_reader :hooks
@@ -10,7 +11,15 @@ module Cinch
       attr_accessor :reacting_on
 
       # @return [String, nil] The name of the plugin
-      attr_accessor :plugin_name
+      attr_reader :plugin_name
+
+      def plugin_name=(new_name)
+        if new_name.nil? && self.name
+          @plugin_name = self.name.split("::").last.downcase
+        else
+          @plugin_name = new_name
+        end
+      end
 
       # @return [Array<Match>] All matchers
       attr_reader   :matchers
@@ -70,6 +79,7 @@ module Cinch
           @suffix    = nil
           @reacting_on  = :message
           @required_options = []
+          self.plugin_name = nil
         end
       end
 
