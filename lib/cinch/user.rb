@@ -306,7 +306,7 @@ module Cinch
     # @return [void]
     # @api private
     def online=(bool)
-      notify = self.__send__("online?_unsynced") != bool
+      notify = self.__send__("online?_unsynced") != bool && @monitored
       sync(:online?, bool, true)
 
       return unless notify
