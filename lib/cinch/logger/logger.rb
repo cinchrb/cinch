@@ -98,11 +98,6 @@ module Cinch
         log(e.message, :exception, :error)
       end
 
-      # @deprecated See {#exception} instead
-      def log_exception(e)
-        warn "Deprecation warning: Beginning with version 1.2.0, Logger#log_exception should not be used anymore."
-      end
-
       # Logs a message.
       #
       # @param [String, Array] messages The message(s) to log

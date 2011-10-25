@@ -15,73 +15,6 @@ module Cinch
   class User < Target
     include Syncable
 
-    @users = {} # this will be removed with version 2.0.0
-    class << self
-
-      # @overload find_ensured(nick, bot)
-      #   Finds or creates a user based on his nick.
-      #
-      #   @param [String] nick The user's nickname
-      #   @param [Bot]    bot  An instance of Bot
-      # @overload find_ensured(user, nick, host, bot)
-      #   Finds or creates a user based on his nick but already
-      #   setting user and host.
-      #
-      #   @param [String] user The username
-      #   @param [String] nick The nickname
-      #   @param [String] host The user's hostname
-      #   @param [Bot]    bot  An instance of bot
-      #
-      # @return [User]
-      # @deprecated See {Bot#user_manager} and {UserManager#find_ensured} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def find_ensured(*args)
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.find_ensured")
-
-        case args.size
-        when 2
-          nick = args.first
-          bot  = args.last
-          bargs = [nick]
-        when 4
-          nick = args[1]
-          bot  = args.pop
-          bargs = args
-        else
-          raise ArgumentError
-        end
-        downcased_nick = nick.irc_downcase(bot.irc.isupport["CASEMAPPING"])
-        @users[downcased_nick] = args.last.user_manager.find_ensured(*args[0..-2])
-        # note: the complete case statement and the assignment to
-        #   @users is only for keeping compatibility with older
-        #   versions, which still use User.find and User.all.
-      end
-
-      # Finds a user.
-      #
-      # @param [String] nick nick of a user
-      # @return [User, nil]
-      # @deprecated See {Bot#user_manager} and {UserManager#find} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def find(nick)
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.find")
-
-        @users[downcased_nick]
-      end
-
-      # @return [Array<User>] Returns all users
-      # @deprecated See {Bot#user_manager} and {CacheManager#each} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def all
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.all")
-
-        @users.values
-      end
-    end
-
     alias_method :nick, :name
 
     # @return [String]
@@ -387,7 +320,7 @@ module Cinch
     # @api private
     def update_nick(new_nick)
       @last_nick, @name = @name, new_nick
-      @bot.user_manager.update_nick(self)
+      @bot.user_list.update_nick(self)
     end
 
     # Provides synced access to user attributes.

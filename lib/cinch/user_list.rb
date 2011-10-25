@@ -60,5 +60,4 @@ module Cinch
       @cache.delete_if {|n, u| u == user }
     end
   end
-  UserManager = UserList
 end

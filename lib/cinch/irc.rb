@@ -46,11 +46,7 @@ module Cinch
         return false
       end
 
-      if @bot.config.ssl == true || @bot.config.ssl == false
-        @bot.loggers.warn "Deprecation warning: Beginning with version 1.1.0, @config.ssl should be a set of options, not a boolean value!"
-      end
-
-      if @bot.config.ssl == true || (@bot.config.ssl.is_a?(SSLConfiguration) && @bot.config.ssl.use)
+      if @bot.config.ssl.use
         setup_ssl
       else
         @socket = tcp_socket
@@ -230,14 +226,6 @@ module Cinch
       @queue.queue(msg)
     end
 
-    # Send a message to the server.
-    # @return [void]
-    # @deprecated See {IRC#send} instead
-    def message(msg)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "IRC#message")
-      @queue.queue(msg)
-    end
-
     private
     def set_leaving_user(message, user, events)
       events << [:leaving, user]
@@ -264,7 +252,7 @@ module Cinch
 
     def on_kill(msg, events)
       user = User(msg.params[1])
-      @bot.channel_manager.each do |channel|
+      @bot.channel_list.each do |channel|
         channel.remove_user(user)
       end
       user.unsync_all
@@ -368,7 +356,7 @@ module Cinch
     end
 
     def on_quit(msg, events)
-      @bot.channel_manager.each do |channel|
+      @bot.channel_list.each do |channel|
         channel.remove_user(msg.user)
       end
       msg.user.unsync_all
@@ -588,7 +576,7 @@ module Cinch
     def on_402(msg, events)
       # ERR_NOSUCHSERVER
 
-      if user = @bot.user_manager.find(msg.params[1]) # not _ensured, we only want a user that already exists
+      if user = @bot.user_list.find(msg.params[1]) # not _ensured, we only want a user that already exists
         user.end_of_whois(nil, true)
         @whois_updates.delete user
         # TODO freenode specific, test on other IRCd

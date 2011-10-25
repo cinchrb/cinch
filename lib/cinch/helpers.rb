@@ -23,7 +23,7 @@ module Cinch
     #   end
     def Channel(channel)
       return channel if channel.is_a?(Channel)
-      bot.channel_manager.find_ensured(channel)
+      bot.channel_list.find_ensured(channel)
     end
 
     # Helper method for turning a String into an {User} object.
@@ -37,7 +37,7 @@ module Cinch
     #   end
     def User(user)
       return user if user.is_a?(User)
-      bot.user_manager.find_ensured(user)
+      bot.user_list.find_ensured(user)
     end
 
     # @example Used as a class method in a plugin

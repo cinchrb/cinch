@@ -17,5 +17,4 @@ module Cinch
     end
   end
   # @since 1.1.0
-  CacheManager = CachedList
 end

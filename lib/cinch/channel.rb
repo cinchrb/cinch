@@ -15,47 +15,6 @@ module Cinch
     include Helpers
     @channels = {}
 
-    class << self
-      # Finds or creates a channel.
-      #
-      # @param [String] name name of a channel
-      # @param [Bot] bot a bot
-      # @return [Channel]
-      # @see Helpers#Channel
-      # @deprecated See {Bot#channel_manager} and {ChannelManager#find_ensured} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def find_ensured(name, bot)
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "Channel.find_ensured")
-
-        downcased_name = name.irc_downcase(bot.irc.isupport["CASEMAPPING"])
-        @channels[downcased_name] ||= bot.channel_manager.find_ensured(name)
-      end
-
-      # Finds a channel.
-      #
-      # @param [String] name name of a channel
-      # @return [Channel, nil]
-      # @deprecated See {Bot#channel_manager} and {ChannelManager#find} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def find(name)
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "Channel.find")
-
-        @channels[name]
-      end
-
-      # @return [Array<Channel>] Returns all channels
-      # @deprecated See {Bot#channel_manager} and {CacheManager#each} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def all
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.all")
-
-        @channels.values
-      end
-    end
-
     # Users are represented by a Hash, mapping individual users to an
     # array of modes (e.g. "o" for opped).
     #

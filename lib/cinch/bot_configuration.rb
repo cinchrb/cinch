@@ -4,7 +4,7 @@ module Cinch
   # @since 1.2.0
   class BotConfiguration < Configuration
     KnownOptions = [:server, :port, :ssl, :password, :nick, :nicks,
-                    :realname, :user, :verbose, :messages_per_second, :server_queue_size,
+                    :realname, :user, :messages_per_second, :server_queue_size,
                     :strictness, :message_split_start, :message_split_end,
                     :max_messages, :plugins, :channels, :encoding, :reconnect, :max_reconnect_delay,
                     :local_host, :timeouts, :ping_interval]
@@ -20,7 +20,6 @@ module Cinch
         :realname => "cinch",
         :user => "cinch",
         :modes => [],
-        :verbose => nil,
         :messages_per_second => 0.5,
         :server_queue_size => 10,
         :strictness => :forgiving,

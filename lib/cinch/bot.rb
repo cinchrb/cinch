@@ -94,13 +94,13 @@ module Cinch
 
     # @return [UserList] All {User users} the bot knows about.
     # @since 1.1.0
-    # @todo Rename to :user_list, provide :user_manager as a deprecated alias
-    attr_reader :user_manager
+    # TODO maybe call this :users?
+    attr_reader :user_list
 
     # @return [ChannelList] All {Channel channels} the bot knows about.
     # @since 1.1.0
-    # @todo Rename to :channel_list, provide :channel_manager as a deprecated alias
-    attr_reader :channel_manager
+    #TODO maybe call this :channels?
+    attr_reader :channel_list
 
     # @return [PluginList] All loaded plugins.
     # @version 1.2.0
@@ -175,82 +175,8 @@ module Cinch
       semaphore.synchronize(&block)
     end
 
-    # Stop execution of the current {#on} handler.
-    #
-    # @return [void]
-    # @deprecated Use `next` or `break` instead
-    # @note This method will be removed in Cinch 2.0.0
-    def halt
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#halt")
-      throw :halt
-    end
-
     # @endgroup
-    # @group Sending messages
 
-    # Sends a raw message to the server.
-    #
-    # @param [String] command The message to send.
-    # @return [void]
-    # @deprecated See {IRC#send} instead
-    # @see IRC#send
-    def raw(command)
-      @irc.send(command)
-    end
-
-    # @deprecated See {Target#msg} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def msg(recipient, text, notice = false)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#msg")
-
-      Target(recipient).msg(text, notice)
-    end
-    alias_method :privmsg, :msg
-    alias_method :send, :msg
-
-    # @deprecated See {Target#notice} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def notice(recipient, text)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#notice")
-
-      Target(recipient).msg(text, true)
-    end
-
-    # @deprecated See {Target#safe_msg} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def safe_msg(recipient, text)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#safe_msg")
-
-      Target(recipient).safe_msg(text)
-    end
-    alias_method :safe_privmsg, :safe_msg
-    alias_method :safe_send, :safe_msg
-
-    # @deprecated See {Target#safe_notice} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def safe_notice(recipient, text)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#safe_notice")
-
-      Target(recipient).safe_msg(text, true)
-    end
-
-    # @deprecated See {Target#action} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def action(recipient, text)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#action")
-
-      Target(recipient).action(text)
-    end
-
-    # @deprecated See {Target#safe_action} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def safe_action(recipient, text)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#safe_action")
-
-      Target(recipient).safe_action(text)
-    end
-
-    # @endgroup
     # @group Events &amp; Plugins
 
     # Registers a handler.
@@ -305,37 +231,6 @@ module Cinch
       return handlers
     end
 
-    # @deprecated See {HandlerList#dispatch} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def dispatch(event, msg = nil, *arguments)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#dispatch")
-
-      @handlers.dispatch(event, msg, *arguments)
-    end
-
-    # Register all plugins from `@config.plugins.plugins`.
-    #
-    # @return [void]
-    # @deprecated See {Bot#plugins} and {PluginList#register_plugins} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def register_plugins
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#register_plugins")
-
-      @plugins.register_plugins(@config.plugins.plugins)
-    end
-
-    # Registers a plugin.
-    #
-    # @param [Class<Plugin>] plugin The plugin class to register
-    # @return [void]
-    # @deprecated See {Bot#plugins} and {PluginList#register_plugin} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def register_plugin(plugin)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#register_plugin")
-
-      @plugins.register_plugin(plugin)
-    end
-
     # @endgroup
     # @group Bot Control
 
@@ -368,12 +263,12 @@ module Cinch
       @plugins.register_plugins(@config.plugins.plugins) if plugins
 
       begin
-        @user_manager.each do |user|
+        @user_list.each do |user|
           user.in_whois = false
           user.unsync_all
         end # reset state of all users
 
-        @channel_manager.each do |channel|
+        @channel_list.each do |channel|
           channel.unsync_all
         end # reset state of all channels
 
@@ -425,26 +320,6 @@ module Cinch
 
     # @endgroup
 
-    # @deprecated See {Bot#loggers} instead
-    def logger
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#logger")
-      @loggers.first
-    end
-
-    # @deprecated See {Bot#loggers} instead
-    def logger=(logger)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#logger=")
-      @loggers.clear
-      @loggers << logger
-    end
-
-    # (see Logger::Logger#debug)
-    # @deprecated See {LoggerList#debug} instead
-    def debug(msg)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#debug")
-      @loggers.debug(msg)
-    end
-
     # @return [Boolean] True if the bot reports ISUPPORT violations as
     #   exceptions.
     def strict?
@@ -464,18 +339,11 @@ module Cinch
       @quitting = false
       @modes    = []
 
-      @user_manager = UserManager.new(self)
-      @channel_manager = ChannelManager.new(self)
+      @user_list = UserList.new(self)
+      @channel_list = ChannelList.new(self)
       @plugins = PluginList.new(self)
 
       instance_eval(&b) if block_given?
-
-      if @config.verbose.nil?
-        @loggers.level = :debug
-      else
-        @loggers.warn "Deprecation warning: Beginning with version 1.2.0, @config.verbose should not be used anymore. See Logger#level= instead"
-        @loggers.level = @config.verbose ? :debug : :info
-      end
 
       on :connect do
         bot.config.channels.each do |channel|

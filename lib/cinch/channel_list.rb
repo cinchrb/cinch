@@ -26,5 +26,4 @@ module Cinch
       @cache[downcased_name]
     end
   end
-  ChannelManager = ChannelList
 end
