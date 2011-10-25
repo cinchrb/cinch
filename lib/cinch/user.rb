@@ -107,6 +107,18 @@ module Cinch
       self.unknown?
     end
 
+    # @return [Boolean] True if the user is online.
+    # @note This attribute will be updated by various events, but
+    # unless {#monitor} is being used, this information cannot be
+    # ensured to be always correct.
+    attr_reader :online
+    alias_method :online?, :online
+    undef_method "online?"
+    undef_method "online"
+    def online
+      self.online?
+    end
+
     # @return [Boolean] True if the user is using a secure connection, i.e. SSL.
     attr_reader :secure
     alias_method :secure?, :secure
@@ -130,6 +142,16 @@ module Cinch
     #   end
     # @return [Hash]
     attr_reader :data
+
+    # @return [Boolean] True if the user is being monitored
+    # @see #monitor
+    # @see #unmonitor
+    attr_reader :monitored
+
+    # @api private
+    attr_writer :monitored
+
+
     def initialize(*args)
       @data = {
         :user         => nil,
@@ -139,6 +161,7 @@ module Cinch
         :idle         => 0,
         :signed_on_at => nil,
         :unknown?     => false,
+        :online?      => false,
         :channels     => [],
         :secure?      => false,
       }
@@ -162,6 +185,8 @@ module Cinch
           whois
         end
       }
+
+      @monitored = false
     end
 
     # Checks if the user is identified. Currently officially supports
@@ -212,6 +237,7 @@ module Cinch
       @in_whois = false
       if not_found
         sync(:unknown?, true, true)
+        self.online = false
         sync(:idle, 0, true)
         sync(:channels, [], true)
 
@@ -245,6 +271,7 @@ module Cinch
       end
 
       sync(:unknown?, false, true)
+      self.online = true
       @synced = true
     end
 
@@ -305,6 +332,57 @@ module Cinch
       Mask.from(other) =~ Mask.from(self)
     end
     alias_method :=~, :match
+
+    # Starts monitoring a user's online state by either using MONITOR
+    # or periodically running WHOIS.
+    #
+    # @since 1.2.0
+    # @return [void]
+    # @see #unmonitor
+    def monitor
+      if @bot.irc.isupport["MONITOR"] > 0
+        @bot.irc.send "MONITOR + #@name"
+      else
+        refresh
+        @monitored_timer = Timer.new(@bot, interval: 30) {
+          refresh
+        }.start
+      end
+
+      @monitored = true
+    end
+
+    # Stops monitoring a user's online state.
+    #
+    # @since 1.2.0
+    # @return [void]
+    # @see #monitor
+    def unmonitor
+      if @bot.irc.isupport["MONITOR"] > 0
+        @bot.irc.send "MONITOR - #@name"
+      else
+        @monitored_timer.stop
+      end
+
+      @monitored = false
+    end
+
+    # Updates the user's online state and dispatch the correct event.
+    #
+    # @since 1.2.0
+    # @return [void]
+    # @api private
+    def online=(bool)
+      notify = self.__send__("online?_unsynced") != bool
+      sync(:online?, bool, true)
+
+      return unless notify
+      if bool
+        @bot.handlers.dispatch(:online, nil, self)
+      else
+        @bot.handlers.dispatch(:offline, nil, self)
+      end
+    end
 
     # @api private
     def update_nick(new_nick)

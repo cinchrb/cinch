@@ -19,7 +19,7 @@ module Cinch
 
       %w[MODES MAXCHANNELS NICKLEN MAXBANS TOPICLEN
        KICKLEN CHANNELLEN CHIDLEN SILENCE AWAYLEN
-       MAXTARGETS WATCH] => lambda {|v| v.to_i},
+       MAXTARGETS WATCH MONITOR] => lambda {|v| v.to_i},
 
       %w[CHANLIMIT MAXLIST IDCHAN] => lambda {|v|
         h = {}
@@ -77,6 +77,7 @@ module Cinch
       self["STATUSMSG"]   = ["@", "+"]
       self["CASEMAPPING"] = :rfc1459
       self["ELIST"]       = []
+      self["MONITOR"]     = 0
     end
 
     # @api private

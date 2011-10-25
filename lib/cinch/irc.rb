@@ -249,6 +249,7 @@ module Cinch
         msg.channel.sync_modes
       end
       msg.channel.add_user(msg.user)
+      msg.user.online = true
     end
 
     def on_kick(msg, events)
@@ -267,7 +268,7 @@ module Cinch
         channel.remove_user(user)
       end
       user.unsync_all
-      @bot.user_manager.delete(user)
+      user.online = false
 
       set_leaving_user(msg, user, events)
     end
@@ -345,10 +346,12 @@ module Cinch
       end
 
       msg.user.update_nick(msg.params.last)
+      msg.user.online = true
     end
 
     def on_part(msg, events)
       msg.channel.remove_user(msg.user)
+      msg.user.channels_unsynced.delete msg.channel
       if msg.user == @bot
         @bot.channels.delete(msg.channel)
       end
@@ -369,7 +372,7 @@ module Cinch
         channel.remove_user(msg.user)
       end
       msg.user.unsync_all
-      @bot.user_manager.delete(msg.user)
+      msg.user.online = true
 
       set_leaving_user(msg, msg.user, events)
 
@@ -379,6 +382,13 @@ module Cinch
                     "- Server: #{@bot.config.server}",
                     "- Messages per second: #{@bot.config.messages_per_second}",
                     "- Server queue size: #{@bot.config.server_queue_size}"]
+      end
+    end
+
+    # @since 1.2.0
+    def on_privmsg(msg, events)
+      if msg.user
+        msg.user.online = true
       end
     end
 
@@ -508,7 +518,9 @@ module Cinch
           prefixes = []
         end
         user = User(nick)
+        msg.user.online = true
         msg.channel.add_user(user, prefixes)
+        user.channels_unsynced << msg.channel unless user.channels_unsynced.include?(msg.channel)
       end
     end
 
@@ -566,6 +578,7 @@ module Cinch
       # ERR_NOSUCHNICK
       user = User(msg.params[1])
       user.sync(:unknown?, true, true)
+      msg.user.online = false
       if @whois_updates.key?(user)
         user.end_of_whois(nil, true)
         @whois_updates.delete user
@@ -590,6 +603,33 @@ module Cinch
     def on_671(msg, events)
       user = User(msg.params[1])
       @whois_updates[user].merge!({:secure? => true})
+    end
+
+    # @since 1.2.0
+    def on_730(msg, events)
+      # RPL_MONONLINE
+      msg.params.last.split(",").each do |mask|
+        user = User(Mask.new(mask).nick)
+        # User is responsible for emitting an event
+        user.online = true
+      end
+    end
+
+    # @since 1.2.0
+    def on_731(msg, events)
+      # RPL_MONOFFLINE
+      msg.params.last.split(",").each do |nick|
+        user = User(nick)
+        # User is responsible for emitting an event
+        user.online = false
+      end
+    end
+
+    # @since 1.2.0
+    def on_734(msg, events)
+      # ERR_MONLISTFULL
+      user = User(msg.params[2])
+      user.monitored = false
     end
   end
 end

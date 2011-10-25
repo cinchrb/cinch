@@ -368,4 +368,10 @@ module Cinch
   # administrative contact for the server (an email address here is
   # required) in RPL_ADMINEMAIL.
   RPL_ADMINEMAIL = 259
+
+  RPL_MONONLINE    = 730
+  RPL_MONOFFLINE   = 731
+  RPL_MONLIST      = 732
+  RPL_ENDOFMONLIST = 733
+  ERR_MONLISTFULL  = 734
 end
