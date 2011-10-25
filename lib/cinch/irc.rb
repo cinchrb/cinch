@@ -518,7 +518,7 @@ module Cinch
           prefixes = []
         end
         user = User(nick)
-        msg.user.online = true
+        user.online = true
         msg.channel.add_user(user, prefixes)
         user.channels_unsynced << msg.channel unless user.channels_unsynced.include?(msg.channel)
       end
