@@ -1,5 +1,5 @@
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
   module Formatting
     Colors = {
       :white  => "00",

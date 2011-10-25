@@ -1,7 +1,7 @@
 require "cinch/configuration"
 
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
   class PluginsConfiguration < Configuration
     KnownOptions = [:plugins, :prefix, :suffix, :options]
 

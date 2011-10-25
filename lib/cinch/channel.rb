@@ -102,25 +102,25 @@ module Cinch
 
     # @group User groups
     # @return [Array<User>] All ops in the channel
-    # @since 1.2.0
+    # @since 2.0.0
     def ops
       @users.select {|user, modes| modes.include?("o")}.keys
     end
 
     # @return [Array<User>] All half-ops in the channel
-    # @since 1.2.0
+    # @since 2.0.0
     def half_ops
       @users.select {|user, modes| modes.include?("h")}.keys
     end
 
     # @return [Array<User>] All voiced users in the channel
-    # @since 1.2.0
+    # @since 2.0.0
     def voiced
       @users.select {|user, modes| modes.include?("v")}.keys
     end
 
     # @return [Array<User>] All admins in the channel
-    # @since 1.2.0
+    # @since 2.0.0
     def admins
       @users.select {|user, modes| modes.include?("o")}.keys
     end

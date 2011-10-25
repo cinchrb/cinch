@@ -105,7 +105,7 @@ module Cinch
       #     set(:help   => "the help message",
       #         :prefix => "^")
       # @return [void]
-      # @since 1.2.0
+      # @since 2.0.0
       def set(*args)
         case args.size
         when 1
@@ -239,7 +239,7 @@ module Cinch
 
       # @param [Bot] bot
       # @return [Array<Symbol>, nil]
-      # @since 1.2.0
+      # @since 2.0.0
       # @api private
       def check_for_missing_options(bot)
         @required_options.select { |option|
@@ -367,7 +367,7 @@ module Cinch
       __register
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def unregister
       @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Unloading plugin"
       @timers.each do |timer|

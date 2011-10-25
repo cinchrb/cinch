@@ -269,7 +269,7 @@ module Cinch
     # Starts monitoring a user's online state by either using MONITOR
     # or periodically running WHOIS.
     #
-    # @since 1.2.0
+    # @since 2.0.0
     # @return [void]
     # @see #unmonitor
     def monitor
@@ -287,7 +287,7 @@ module Cinch
 
     # Stops monitoring a user's online state.
     #
-    # @since 1.2.0
+    # @since 2.0.0
     # @return [void]
     # @see #monitor
     def unmonitor
@@ -302,7 +302,7 @@ module Cinch
 
     # Updates the user's online state and dispatch the correct event.
     #
-    # @since 1.2.0
+    # @since 2.0.0
     # @return [void]
     # @api private
     def online=(bool)

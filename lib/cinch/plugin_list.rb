@@ -1,5 +1,5 @@
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
   class PluginList < Array
     def initialize(bot)
       @bot     = bot
@@ -16,18 +16,18 @@ module Cinch
       plugins.each { |plugin| register_plugin(plugin) }
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def unregister_plugin(plugin)
       plugin.unregister
       delete(plugin)
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def unregister_plugins(plugins)
       plugins.each { |plugin| unregister_plugin(plugin) }
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def unregister_all
       unregister_plugins(self)
     end

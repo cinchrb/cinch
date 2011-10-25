@@ -2,7 +2,7 @@ require "thread"
 require "cinch/cached_list"
 
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
   class HandlerList
     include Enumerable
 

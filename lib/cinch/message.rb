@@ -108,7 +108,7 @@ module Cinch
     end
 
     # @return [Boolean] true if the message is an action (/me)
-    # @since 1.2.0
+    # @since 2.0.0
     def action?
       ctcp_command == "ACTION"
     end
@@ -116,7 +116,7 @@ module Cinch
     # @endgroup
 
     # @return [String, nil] The action message
-    # @since 1.2.0
+    # @since 2.0.0
     def action_message
       return nil unless action?
       ctcp_message.split(" ", 2).last

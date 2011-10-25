@@ -1,7 +1,7 @@
 require "cinch/configuration"
 
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
   class SSLConfiguration < Configuration
     KnownOptions = [:use, :verify, :client_cert, :ca_path]
 

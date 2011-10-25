@@ -39,7 +39,7 @@ module Cinch
       #
       # @param [String] message
       # @return [void]
-      # @since 1.2.0
+      # @since 2.0.0
       def error(message)
         log(message, :error)
       end
@@ -48,7 +48,7 @@ module Cinch
       #
       # @param [String] message
       # @return [void]
-      # @since 1.2.0
+      # @since 2.0.0
       def fatal(message)
         log(message, :fatal)
       end
@@ -57,7 +57,7 @@ module Cinch
       #
       # @param [String] message
       # @return [void]
-      # @since 1.2.0
+      # @since 2.0.0
       def info(message)
         log(message, :info)
       end
@@ -66,7 +66,7 @@ module Cinch
       #
       # @param [String] message
       # @return [void]
-      # @since 1.2.0
+      # @since 2.0.0
       def warn(message)
         log(message, :warn)
       end
@@ -75,7 +75,7 @@ module Cinch
       #
       # @param [String] message
       # @return [void]
-      # @since 1.2.0
+      # @since 2.0.0
       def incoming(message)
         log(message, :incoming, :log)
       end
@@ -84,7 +84,7 @@ module Cinch
       #
       # @param [String] message
       # @return [void]
-      # @since 1.2.0
+      # @since 2.0.0
       def outgoing(message)
         log(message, :outgoing, :log)
       end
@@ -93,7 +93,7 @@ module Cinch
       #
       # @param [Exception] e
       # @return [void]
-      # @since 1.2.0
+      # @since 2.0.0
       def exception(e)
         log(e.message, :exception, :error)
       end
@@ -123,7 +123,7 @@ module Cinch
       # @param [Symbol<:debug, :info, :warn, :error, :fatal>] level
       # @return [Boolean] Whether the currently set logging level will
       #   allow the passed in level to be logged
-      # @since 1.2.0
+      # @since 2.0.0
       def will_log?(level)
         LevelOrder.index(level) >= LevelOrder.index(@level)
       end

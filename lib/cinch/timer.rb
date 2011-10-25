@@ -1,7 +1,7 @@
 require "cinch/helpers"
 
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
   class Timer
     include Helpers
 

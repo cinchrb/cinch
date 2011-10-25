@@ -5,7 +5,7 @@ module Cinch
   #
   # It inherits directly from Array, so adding new loggers is as easy
   # as calling LoggerList#push.
-  # @since 1.2.0
+  # @since 2.0.0
   class LoggerList < Array
     # (see Logger#level=)
     def level=(level)

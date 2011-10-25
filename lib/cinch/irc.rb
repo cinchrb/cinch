@@ -19,7 +19,7 @@ module Cinch
 
     # @api private
     # @return [void]
-    # @since 1.2.0
+    # @since 2.0.0
     def setup
       @registration = []
       @network = :other
@@ -61,7 +61,7 @@ module Cinch
 
     # @api private
     # @return [void]
-    # @since 1.2.0
+    # @since 2.0.0
     def setup_ssl
       require 'openssl'
 
@@ -86,7 +86,7 @@ module Cinch
 
     # @api private
     # @return [void]
-    # @since 1.2.0
+    # @since 2.0.0
     def send_login
       send "PASS #{@bot.config.password}" if @bot.config.password
       send "NICK #{@bot.generate_next_nick!}"
@@ -95,7 +95,7 @@ module Cinch
 
     # @api private
     # @return [Thread] the reading thread
-    # @since 1.2.0
+    # @since 2.0.0
     def start_reading_thread
       Thread.new do
         begin
@@ -124,7 +124,7 @@ module Cinch
 
     # @api private
     # @return [Thread] the sending thread
-    # @since 1.2.0
+    # @since 2.0.0
     def start_sending_thread
       Thread.new do
         rescue_exception do
@@ -135,7 +135,7 @@ module Cinch
 
     # @api private
     # @return [Thread] The ping thread.
-    # @since 1.2.0
+    # @since 2.0.0
     def start_ping_thread
       Thread.new do
         while true
@@ -149,7 +149,7 @@ module Cinch
     # Establish a connection.
     #
     # @return [void]
-    # @since 1.2.0
+    # @since 2.0.0
     def start
       setup
       if connect
@@ -373,14 +373,14 @@ module Cinch
       end
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def on_privmsg(msg, events)
       if msg.user
         msg.user.online = true
       end
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def on_002(msg, events)
       if msg.params.last == "Your host is jtvchat"
         # the justin tv "IRC" server lacks support for WHOIS with more
@@ -593,7 +593,7 @@ module Cinch
       @whois_updates[user].merge!({:secure? => true})
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def on_730(msg, events)
       # RPL_MONONLINE
       msg.params.last.split(",").each do |mask|
@@ -603,7 +603,7 @@ module Cinch
       end
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def on_731(msg, events)
       # RPL_MONOFFLINE
       msg.params.last.split(",").each do |nick|
@@ -613,7 +613,7 @@ module Cinch
       end
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def on_734(msg, events)
       # ERR_MONLISTFULL
       user = User(msg.params[2])

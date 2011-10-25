@@ -64,7 +64,7 @@ module Cinch
     # The logger list containing all loggers
     #
     # @return [LoggerList]
-    # @since 1.2.0
+    # @since 2.0.0
     attr_accessor :loggers
 
     # @return [Array<Channel>] All channels the bot currently is in
@@ -118,13 +118,13 @@ module Cinch
     #
     # @return [HandlerList]
     # @see HandlerList
-    # @since 1.2.0
+    # @since 2.0.0
     attr_reader :handlers
 
     # All modes set for the bot.
     #
     # @return [Array<String>]
-    # @since 1.2.0
+    # @since 2.0.0
     attr_reader :modes
 
     # @group Helper methods
@@ -354,7 +354,7 @@ module Cinch
       end
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def bot
       self
     end
@@ -363,7 +363,7 @@ module Cinch
     #
     # @param [String] mode
     # @return [void]
-    # @since 1.2.0
+    # @since 2.0.0
     # @see Bot#modes
     # @see Bot#unset_mode
     def set_mode(mode)
@@ -374,12 +374,12 @@ module Cinch
     #
     # @param [String] mode
     # @return [void]
-    # @since 1.2.0
+    # @since 2.0.0
     def unset_mode(mode)
       @irc.send "MODE #{nick} -#{mode}"
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def modes=(modes)
       @modes.each do |mode|
         unset_mode(mode)
@@ -417,7 +417,7 @@ module Cinch
     # @param [String] base The base nick to start trying from
     # @api private
     # @return String
-    # @since 1.2.0
+    # @since 2.0.0
     def generate_next_nick!(base = nil)
       nicks = @config.nicks || []
 
@@ -467,7 +467,7 @@ module Cinch
 
     # @return [User] The {User} object describing the bot on the IRC
     #   server.
-    # @since 1.2.0
+    # @since 2.0.0
     def to_user
       User(nick)
     end
