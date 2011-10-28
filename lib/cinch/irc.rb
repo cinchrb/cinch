@@ -47,7 +47,7 @@ module Cinch
       end
 
       if @bot.config.ssl.use
-        setup_ssl
+        setup_ssl(tcp_socket)
       else
         @socket = tcp_socket
       end
@@ -62,7 +62,7 @@ module Cinch
     # @api private
     # @return [void]
     # @since 2.0.0
-    def setup_ssl
+    def setup_ssl(socket)
       require 'openssl'
 
       ssl_context = OpenSSL::SSL::SSLContext.new
@@ -79,7 +79,7 @@ module Cinch
       end
       @bot.loggers.info "Using SSL with #{@bot.config.server}:#{@bot.config.port}"
 
-      @socket = OpenSSL::SSL::SSLSocket.new(tcp_socket, ssl_context)
+      @socket = OpenSSL::SSL::SSLSocket.new(socket, ssl_context)
       @socket.sync = true
       @socket.connect
     end
