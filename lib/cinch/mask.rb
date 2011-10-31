@@ -32,7 +32,7 @@ module Cinch
       @mask.hash
     end
 
-    # @param [Ban, Mask, User, String] target
+    # @param [Mask, String, #mask] target
     # @return [Boolean]
     # @version 1.1.2
     def match(target)
@@ -47,21 +47,19 @@ module Cinch
       @mask.dup
     end
 
-    # @param [Ban, Mask, User, String]
+    # @param [String, #mask]
+    # @return [target] if already a Mask
     # @return [Mask]
     def self.from(target)
-      case target
-      when User, Ban
-        target.mask
-      when Bot
-        target.to_user.mask
-      when String
-        Mask.new(target)
-      when Mask
-        target
+      return target if target.is_a?(self)
+
+      if target.respond_to?(:mask)
+        mask = target.mask
       else
-        raise ArgumentError
+        mask = Mask.new(target.to_s)
       end
+
+      return mask
     end
   end
 end

@@ -471,5 +471,10 @@ module Cinch
     def to_user
       User(nick)
     end
+
+    # (see User#mask)
+    def mask(*args)
+      to_user.mask(*args)
+    end
   end
 end
