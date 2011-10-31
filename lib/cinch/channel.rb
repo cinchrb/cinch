@@ -210,7 +210,7 @@ module Cinch
 
     # Bans someone from the channel.
     #
-    # @param [Ban, Mask, User, String] target the mask, or an object having a mask, to ban
+    # @param [Mask, String, #mask] target the mask, or an object having a mask, to ban
     # @return [Mask] the mask used for banning
     def ban(target)
       mask = Mask.from(target)
@@ -221,7 +221,7 @@ module Cinch
 
     # Unbans someone from the channel.
     #
-    # @param [Ban, Mask, User, String] target the mask to unban
+    # @param [Mask, String, #mask] target the mask to unban
     # @return [Mask] the mask used for unbanning
     def unban(target)
       mask = Mask.from(target)
