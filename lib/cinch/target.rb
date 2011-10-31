@@ -12,7 +12,7 @@ module Cinch
 
     # Sends a NOTICE to the target.
     #
-    # @param [String] text the message to send
+    # @param [#to_s] text the message to send
     # @return [void]
     # @see #safe_notice
     def notice(text)
@@ -21,7 +21,7 @@ module Cinch
 
     # Sends a PRIVMSG to the target.
     #
-    # @param [String] text the message to send
+    # @param [#to_s] text the message to send
     # @param [Boolean] notice Use NOTICE instead of PRIVMSG?
     # @return [void]
     # @see #safe_msg
@@ -89,7 +89,7 @@ module Cinch
 
     # Invoke an action (/me) in/to the target.
     #
-    # @param [String] text the message to send
+    # @param [#to_s] text the message to send
     # @return [void]
     # @see #safe_action
     def action(text)
@@ -113,7 +113,7 @@ module Cinch
 
     # Send a CTCP to the target.
     #
-    # @param [String] message the ctcp message
+    # @param [#to_s] message the ctcp message
     # @return [void]
     def ctcp(message)
       send "\001#{message}\001"
