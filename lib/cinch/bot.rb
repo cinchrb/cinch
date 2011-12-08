@@ -347,9 +347,10 @@ module Cinch
 
       join_lambda = lambda { @config.channels.each { |channel| Channel(channel).join }}
       if @config.delay_joins.is_a?(Symbol)
-        on @config.delay_joins do
+        handlers = on(@config.delay_joins) {
+          handlers.each { |handler| handler.unregister }
           join_lambda.call
-        end
+        }
       else
         Timer.new(self, interval: @config.delay_joins, shots: 1) do
           join_lambda.call
