@@ -40,7 +40,7 @@ module Cinch
     # @option options [Boolean] :stop_automaticall (true) If true, the
     #   timer will automatically stop when the bot disconnects.
     def initialize(bot, options, &block)
-      options = {:treaded => true, :shots => Infinity, :start_automatically => true, :stop_automatically => true}.merge(options)
+      options = {:threaded => true, :shots => Infinity, :start_automatically => true, :stop_automatically => true}.merge(options)
 
       @bot        = bot
       @interval   = options[:interval].to_f
