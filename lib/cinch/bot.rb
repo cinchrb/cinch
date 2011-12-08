@@ -268,6 +268,21 @@ module Cinch
           user.unsync_all
         end # reset state of all users
 
+        join_lambda = lambda { @config.channels.each { |channel| Channel(channel).join }}
+        @join_handler.unregister if @join_handler
+        @join_timer.stop if @join_timer
+
+        if @config.delay_joins.is_a?(Symbol)
+          @join_handler = join_handler = on(@config.delay_joins) {
+            join_handler.unregister
+            join_lambda.call
+          }.first
+        else
+          @join_timer = Timer.new(self, interval: @config.delay_joins, shots: 1) {
+            join_lambda.call
+          }
+        end
+
         @channel_list.each do |channel|
           channel.unsync_all
         end # reset state of all channels
@@ -344,18 +359,6 @@ module Cinch
       @plugins = PluginList.new(self)
 
       instance_eval(&b) if block_given?
-
-      join_lambda = lambda { @config.channels.each { |channel| Channel(channel).join }}
-      if @config.delay_joins.is_a?(Symbol)
-        handlers = on(@config.delay_joins) {
-          handlers.each { |handler| handler.unregister }
-          join_lambda.call
-        }
-      else
-        Timer.new(self, interval: @config.delay_joins, shots: 1) do
-          join_lambda.call
-        end
-      end
     end
 
     # @since 2.0.0
