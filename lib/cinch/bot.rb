@@ -345,12 +345,15 @@ module Cinch
 
       instance_eval(&b) if block_given?
 
-      on :connect do
-        bot.config.channels.each do |channel|
-          bot.join channel
+      join_lambda = lambda { @config.channels.each { |channel| Channel(channel).join }}
+      if @config.delay_joins.is_a?(Symbol)
+        on @config.delay_joins do
+          join_lambda.call
         end
-
-        bot.modes = bot.config.modes
+      else
+        Timer.new(self, interval: @config.delay_joins, shots: 1) do
+          join_lambda.call
+        end
       end
     end
 

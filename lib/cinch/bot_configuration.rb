@@ -34,6 +34,7 @@ module Cinch
         :local_host => nil,
         :timeouts => TimeoutsConfiguration.new,
         :ping_interval => 120,
+        :delay_joins => 0,
       }
     end
   end
