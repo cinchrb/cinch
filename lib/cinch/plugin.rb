@@ -343,7 +343,7 @@ module Cinch
       if self.class.help
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering help message"
         help_pattern = Pattern.new(prefix, "help #{self.class.plugin_name}", suffix)
-        new_handlers = @bot.on(:message, help_pattern, @help) do |message, help_message|
+        new_handlers = @bot.on(:message, help_pattern, self.class.help) do |message, help_message|
           message.reply(help_message)
         end
 
