@@ -50,6 +50,7 @@ module Cinch
     # @param [String, #mask]
     # @return [target] if already a Mask
     # @return [Mask]
+    # @version 2.0.0
     def self.from(target)
       return target if target.is_a?(self)
 
