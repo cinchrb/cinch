@@ -211,17 +211,17 @@ module Cinch
 
       regexps.each do |regexp|
         pattern = case regexp
-                 when Pattern
-                   regexp
-                 when Regexp
-                   Pattern.new(nil, regexp, nil)
-                 else
-                   if event == :ctcp
-                     Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/, nil)
-                   else
-                     Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
-                   end
-                 end
+                  when Pattern
+                    regexp
+                  when Regexp
+                    Pattern.new(nil, regexp, nil)
+                  else
+                    if event == :ctcp
+                      Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/, nil)
+                    else
+                      Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
+                    end
+                  end
         @loggers.debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
         handler = Handler.new(self, event, pattern, args, &block)
         handlers << handler
