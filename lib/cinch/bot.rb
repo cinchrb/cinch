@@ -47,8 +47,8 @@ module Cinch
   # @attr nick
   # @attr modes
   # @attr logger
-  # @version 1.2.0
-  class Bot
+  # @version 2.0.0
+  class Bot < User
     include Helpers
 
 
@@ -449,32 +449,17 @@ module Cinch
     def secure?
       @config[:ssl] == true || (@config[:ssl].is_a?(Hash) && @config[:ssl][:use])
     end
+    alias_method :secure, :secure?
 
-    # This method is only provided in order to give {Bot} and {User} a
-    # common interface.
-    #
     # @return [false] Always returns `false`.
-    # @see User#unknown? See User#unknown? for the method's real use.
     def unknown?
       false
     end
+    alias_method :unknown, :unknown?
 
-    [:host, :mask, :user, :realname, :signed_on_at, :secure?].each do |attr|
-      define_method(attr) do
-        User(nick).__send__(attr)
-      end
+    def online?
+      true
     end
-
-    # @return [User] The {User} object describing the bot on the IRC
-    #   server.
-    # @since 2.0.0
-    def to_user
-      User(nick)
-    end
-
-    # (see User#mask)
-    def mask(*args)
-      to_user.mask(*args)
-    end
+    alias_method :online, :online?
   end
 end
