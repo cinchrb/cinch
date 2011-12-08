@@ -30,9 +30,9 @@ module Cinch
       :reset      => 15.chr,
     }
 
-    def self.format(*args)
-      settings = args[0..-2]
-      string     = args.last.dup
+    def self.format(*settings, string)
+      settings = args
+      string   = string.dup
 
       attributes = settings.select {|k| Attributes.has_key?(k)}.map {|k| Attributes[k]}
       colors = settings.select {|k| Colors.has_key?(k)}.map {|k| Colors[k]}
