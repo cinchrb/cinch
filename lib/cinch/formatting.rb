@@ -30,6 +30,13 @@ module Cinch
       :reset      => 15.chr,
     }
 
+    # @param [Symbol] *settings The colors and attributes to apply.
+    #   When supplying two colors, the first will be used for the
+    #   foreground and the second for the background.
+    # @param [String] string The string to format.
+    # @return [String] The formatted string
+    # @since 2.0.0
+    # @raise [ArgumentError] When passing more than two colors as arguments.
     def self.format(*settings, string)
       settings = args
       string   = string.dup

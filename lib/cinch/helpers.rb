@@ -91,6 +91,7 @@ module Cinch
       end
     end
 
+    # (see Formatting.format)
     def Format(*args)
       Formatting.format(*args)
     end
