@@ -390,6 +390,15 @@ module Cinch
       end
     end
 
+    # Used for updating the bot's nick from within the IRC parser.
+    #
+    # @param [String] nick
+    # @api private
+    # @return [void]
+    def set_nick(nick)
+      @nick = nick
+    end
+
     # The bot's nickname.
     # @overload nick=(new_nick)
     #   @raise [Exceptions::NickTooLong] Raised if the bot is
@@ -400,7 +409,7 @@ module Cinch
     #   @return [String]
     # @return [String]
     def nick
-      @config.nick
+      @nick
     end
 
     def nick=(new_nick)

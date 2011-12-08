@@ -330,7 +330,7 @@ module Cinch
 
     def on_nick(msg, events)
       if msg.user == @bot
-        @bot.config.nick = msg.params.last
+        @bot.set_nick msg.params.last
       end
 
       msg.user.update_nick(msg.params.last)
