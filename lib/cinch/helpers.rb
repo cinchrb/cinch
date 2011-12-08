@@ -49,12 +49,12 @@ module Cinch
     # @example Used as an instance method in a plugin
     #   match "start timer"
     #   def execute(m)
-    #     timer(5) { puts "timer fired" }
+    #     Timer(5) { puts "timer fired" }
     #   end
     #
     # @example Used as an instance method in a traditional `on` handler
     #   on :message, "start timer" do
-    #     timer(5) { puts "timer fired" }
+    #     Timer(5) { puts "timer fired" }
     #   end
     #
     # @param [Number] interval Interval in seconds
@@ -64,7 +64,7 @@ module Cinch
     # @option options [Number] :shots (Infinity) How often should the timer fire?
     # @return [Timer]
     # @since 2.0.0
-    def timer(interval, options = {}, &block)
+    def Timer(interval, options = {}, &block)
       options = {:method => :timer, :threaded => true, :interval => interval}.merge(options)
       block ||= self.method(options[:method])
       timer = Cinch::Timer.new(bot, options, &block)
