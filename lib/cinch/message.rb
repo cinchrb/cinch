@@ -132,9 +132,9 @@ module Cinch
     def channel
       @channel ||= begin
                      case command
-                     when "INVITE", RPL_CHANNELMODEIS.to_s, RPL_BANLIST.to_s
+                     when "INVITE", Constants::RPL_CHANNELMODEIS.to_s, Constants::RPL_BANLIST.to_s
                        @bot.channel_list.find_ensured(params[1])
-                     when RPL_NAMEREPLY.to_s
+                     when Constants::RPL_NAMEREPLY.to_s
                        @bot.channel_list.find_ensured(params[2])
                      else
                        if params.first.start_with?("#")
