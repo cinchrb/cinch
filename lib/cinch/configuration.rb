@@ -48,7 +48,7 @@ module Cinch
             self[option].load(value)
           else
             # recursive merging is handled by subclasses like
-            # PluginsConfiguration
+            # Configuration::Plugins
             self[option] = value
           end
         else

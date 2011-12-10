@@ -37,12 +37,11 @@ require "cinch/timer"
 require "cinch/formatting"
 
 require "cinch/configuration"
-require "cinch/bot_configuration"
-require "cinch/plugins_configuration"
-require "cinch/ssl_configuration"
-require "cinch/timeouts_configuration"
-
-require "cinch/storage_configuration"
+require "cinch/configuration/bot"
+require "cinch/configuration/plugins"
+require "cinch/configuration/ssl"
+require "cinch/configuration/timeouts"
+require "cinch/configuration/storage"
 
 module Cinch
   # @attr nick
@@ -53,7 +52,7 @@ module Cinch
     include Helpers
 
 
-    # @return [BotConfiguration]
+    # @return [Configuration::Bot]
     # @version 1.2.0
     attr_reader :config
 
@@ -353,7 +352,7 @@ module Cinch
     def initialize(&b)
       @loggers = LoggerList.new
       @loggers << Logger::FormattedLogger.new($stderr)
-      @config = BotConfiguration.new
+      @config = Configuration::Bot.new
       @handlers = HandlerList.new
       @semaphores_mutex = Mutex.new
       @semaphores = Hash.new { |h,k| h[k] = Mutex.new }
