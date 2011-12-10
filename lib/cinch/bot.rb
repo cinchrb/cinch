@@ -261,16 +261,20 @@ module Cinch
     def start(plugins = true)
       @reconnects = 0
       @plugins.register_plugins(@config.plugins.plugins) if plugins
-
       begin
         @user_list.each do |user|
           user.in_whois = false
           user.unsync_all
         end # reset state of all users
 
-        join_lambda = lambda { @config.channels.each { |channel| Channel(channel).join }}
+        @channel_list.each do |channel|
+          channel.unsync_all
+        end # reset state of all channels
+
         @join_handler.unregister if @join_handler
         @join_timer.stop if @join_timer
+
+        join_lambda = lambda { @config.channels.each { |channel| Channel(channel).join }}
 
         if @config.delay_joins.is_a?(Symbol)
           @join_handler = join_handler = on(@config.delay_joins) {
@@ -282,10 +286,6 @@ module Cinch
             join_lambda.call
           }
         end
-
-        @channel_list.each do |channel|
-          channel.unsync_all
-        end # reset state of all channels
 
         @loggers.info "Connecting to #{@config.server}:#{@config.port}"
         @irc = IRC.new(self)
