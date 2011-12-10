@@ -20,6 +20,18 @@ module Cinch
     def each_value
     end
 
+    def has_key?(key)
+    end
+    alias_method :include?, :has_key?
+    alias_method :key?, :has_key?
+    alias_method :member?, :has_key?
+
+    def delete(key)
+    end
+
+    def delete_if
+    end
+
     def save
     end
 

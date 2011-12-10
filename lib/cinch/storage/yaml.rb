@@ -1,4 +1,5 @@
 require "cinch/storage"
+require "yaml"
 
 module Cinch
   class Storage
@@ -23,8 +24,15 @@ module Cinch
       def []=(key, value)
         @yaml[key] = value
 
-        save if @options.autosave
+        maybe_save
       end
+
+      def has_key?(key)
+        @yaml.has_key?(key)
+      end
+      alias_method :include?, :has_key?
+      alias_method :key?, :has_key?
+      alias_method :member?, :has_key?
 
       def each
         @yaml.each {|e| yield(e)}
@@ -38,6 +46,22 @@ module Cinch
         @yaml.each_value {|e| yield(e)}
       end
 
+      def delete(key)
+        @yaml.delete(key)
+        maybe_save
+      end
+
+      def delete_if
+        delete_keys = []
+        each do |key, value|
+          delete_keys << key if yield(key, value)
+        end
+
+        delete_keys.each do |key|
+          delete(key)
+        end
+      end
+
       def save
         @mutex.synchronize do
           File.open(@file, "w") do |f|
@@ -47,6 +71,11 @@ module Cinch
       end
 
       def unload
+      end
+
+      private
+      def maybe_save
+        save if @options.autosave
       end
     end
   end
