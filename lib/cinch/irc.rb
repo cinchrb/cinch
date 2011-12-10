@@ -67,7 +67,7 @@ module Cinch
 
       ssl_context = OpenSSL::SSL::SSLContext.new
 
-      if @bot.config.ssl.is_a?(SSLConfiguration)
+      if @bot.config.ssl.is_a?(Configuration::SSL)
         if @bot.config.ssl.client_cert
           ssl_context.cert = OpenSSL::X509::Certificate.new(File.read(@bot.config.ssl.client_cert))
           ssl_context.key = OpenSSL::PKey::RSA.new(File.read(@bot.config.ssl.client_cert))
