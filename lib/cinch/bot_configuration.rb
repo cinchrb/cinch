@@ -7,7 +7,7 @@ module Cinch
                     :realname, :user, :messages_per_second, :server_queue_size,
                     :strictness, :message_split_start, :message_split_end,
                     :max_messages, :plugins, :channels, :encoding, :reconnect, :max_reconnect_delay,
-                    :local_host, :timeouts, :ping_interval]
+                    :local_host, :timeouts, :ping_interval, :storage]
 
     def self.default_config
       {
@@ -35,6 +35,7 @@ module Cinch
         :timeouts => TimeoutsConfiguration.new,
         :ping_interval => 120,
         :delay_joins => 0,
+        :storage => StorageConfiguration.new,
       }
     end
   end

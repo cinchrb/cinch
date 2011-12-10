@@ -43,6 +43,8 @@ require "cinch/plugins_configuration"
 require "cinch/ssl_configuration"
 require "cinch/timeouts_configuration"
 
+require "cinch/storage_configuration"
+
 module Cinch
   # @attr nick
   # @attr modes
@@ -308,6 +310,13 @@ module Cinch
           sleep wait
         end
       end while @config.reconnect and not @quitting
+    end
+
+    def stop
+      @plugins.each do |plugin|
+        plugin.storage.save
+        plugin.storage.unload
+      end
     end
 
     # @endgroup
