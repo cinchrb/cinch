@@ -1,7 +1,7 @@
-require "cinch/logger/logger"
+require "cinch/logger"
 
 module Cinch
-  module Logger
+  class Logger
     # @version 1.2.0
     class FormattedLogger < Logger
       # @private
