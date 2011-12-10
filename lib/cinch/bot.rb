@@ -10,8 +10,10 @@ require "cinch/exceptions"
 
 require "cinch/handler"
 require "cinch/helpers"
+
 require "cinch/logger_list"
 require "cinch/logger"
+
 require "cinch/logger/formatted_logger"
 require "cinch/syncable"
 require "cinch/message"
@@ -28,11 +30,13 @@ require "cinch/isupport"
 require "cinch/plugin"
 require "cinch/pattern"
 require "cinch/mode_parser"
+
 require "cinch/handler_list"
 require "cinch/cached_list"
 require "cinch/channel_list"
 require "cinch/user_list"
 require "cinch/plugin_list"
+
 require "cinch/timer"
 require "cinch/formatting"
 
@@ -249,7 +253,8 @@ module Cinch
     # @return [void]
     def quit(message = nil)
       @quitting = true
-      command = message ? "QUIT :#{message}" : "QUIT"
+      command   = message ? "QUIT :#{message}" : "QUIT"
+
       @irc.send command
     end
 
@@ -261,6 +266,7 @@ module Cinch
     def start(plugins = true)
       @reconnects = 0
       @plugins.register_plugins(@config.plugins.plugins) if plugins
+
       begin
         @user_list.each do |user|
           user.in_whois = false
@@ -352,24 +358,26 @@ module Cinch
     def initialize(&b)
       @loggers = LoggerList.new
       @loggers << Logger::FormattedLogger.new($stderr)
-      @config = Configuration::Bot.new
-      @handlers = HandlerList.new
-      @semaphores_mutex = Mutex.new
-      @semaphores = Hash.new { |h,k| h[k] = Mutex.new }
-      @callback = Callback.new(self)
-      @channels = []
-      @quitting = false
-      @modes    = []
 
-      @user_list = UserList.new(self)
+      @config           = Configuration::Bot.new
+      @handlers         = HandlerList.new
+      @semaphores_mutex = Mutex.new
+      @semaphores       = Hash.new { |h, k| h[k] = Mutex.new }
+      @callback         = Callback.new(self)
+      @channels         = []
+      @quitting         = false
+      @modes            = []
+
+      @user_list    = UserList.new(self)
       @channel_list = ChannelList.new(self)
-      @plugins = PluginList.new(self)
+      @plugins      = PluginList.new(self)
 
       instance_eval(&b) if block_given?
     end
 
     # @since 2.0.0
     def bot
+      # This method is needed for the Helpers interface
       self
     end
 

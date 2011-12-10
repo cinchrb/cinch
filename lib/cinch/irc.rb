@@ -7,11 +7,14 @@ module Cinch
 
     # @return [ISupport]
     attr_reader :isupport
+
     # @return [Bot]
     attr_reader :bot
+
     # @return [Symbol] The detected network or `:other` if no network
     #   was detected.
     attr_reader :network
+
     def initialize(bot)
       @bot      = bot
       @isupport = ISupport.new
@@ -21,8 +24,8 @@ module Cinch
     # @return [void]
     # @since 2.0.0
     def setup
-      @registration = []
-      @network = :other
+      @registration  = []
+      @network       = :other
       @whois_updates = Hash.new {|h, k| h[k] = {}}
       @in_lists      = Set.new
     end
@@ -31,6 +34,7 @@ module Cinch
     # @return [Boolean] True if the connection could be established
     def connect
       tcp_socket = nil
+
       begin
         Timeout::timeout(@bot.config.timeouts.connect) do
           tcp_socket = TCPSocket.new(@bot.config.server, @bot.config.port, @bot.config.local_host)
@@ -52,9 +56,9 @@ module Cinch
         @socket = tcp_socket
       end
 
-      @socket = Net::BufferedIO.new(@socket)
+      @socket              = Net::BufferedIO.new(@socket)
       @socket.read_timeout = @bot.config.timeouts.read
-      @queue = MessageQueue.new(@socket, @bot)
+      @queue               = MessageQueue.new(@socket, @bot)
 
       return true
     end
@@ -63,6 +67,8 @@ module Cinch
     # @return [void]
     # @since 2.0.0
     def setup_ssl(socket)
+      # require openssl in this method so the bot doesn't break for
+      # people who don't have SSL but don't want to use SSL anyway.
       require 'openssl'
 
       ssl_context = OpenSSL::SSL::SSLContext.new
@@ -70,16 +76,17 @@ module Cinch
       if @bot.config.ssl.is_a?(Configuration::SSL)
         if @bot.config.ssl.client_cert
           ssl_context.cert = OpenSSL::X509::Certificate.new(File.read(@bot.config.ssl.client_cert))
-          ssl_context.key = OpenSSL::PKey::RSA.new(File.read(@bot.config.ssl.client_cert))
+          ssl_context.key  = OpenSSL::PKey::RSA.new(File.read(@bot.config.ssl.client_cert))
         end
-        ssl_context.ca_path = @bot.config.ssl.ca_path
+
+        ssl_context.ca_path     = @bot.config.ssl.ca_path
         ssl_context.verify_mode = @bot.config.ssl.verify ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
       else
         ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
       @bot.loggers.info "Using SSL with #{@bot.config.server}:#{@bot.config.port}"
 
-      @socket = OpenSSL::SSL::SSLSocket.new(socket, ssl_context)
+      @socket      = OpenSSL::SSL::SSLSocket.new(socket, ssl_context)
       @socket.sync = true
       @socket.connect
     end
@@ -140,8 +147,9 @@ module Cinch
       Thread.new do
         while true
           sleep @bot.config.ping_interval
-          send("PING 0") # PING requires a single argument. In our
-                            # case the value doesn't matter though.
+          # PING requires a single argument. In our case the value
+          # doesn't matter though.
+          send("PING 0")
         end
       end
     end
@@ -156,7 +164,7 @@ module Cinch
         send_login
         reading_thread = start_reading_thread
         sending_thread = start_sending_thread
-        ping_thread = start_ping_thread
+        ping_thread    = start_ping_thread
 
         reading_thread.join
         sending_thread.kill
@@ -169,6 +177,7 @@ module Cinch
     def parse(input)
       return if input.chomp.empty?
       @bot.loggers.incoming(input)
+
       msg          = Message.new(input, @bot)
       events       = [[:catchall]]
 
@@ -252,9 +261,11 @@ module Cinch
 
     def on_kill(msg, events)
       user = User(msg.params[1])
+
       @bot.channel_list.each do |channel|
         channel.remove_user(user)
       end
+
       user.unsync_all
       user.online = false
 
@@ -266,13 +277,16 @@ module Cinch
       if msg.channel?
         add_and_remove = @bot.irc.isupport["CHANMODES"]["A"] + @bot.irc.isupport["CHANMODES"]["B"] + @bot.irc.isupport["PREFIX"].keys
 
-        param_modes = {:add => @bot.irc.isupport["CHANMODES"]["C"] + add_and_remove,
-          :remove => add_and_remove}
+        param_modes = {
+          :add    => @bot.irc.isupport["CHANMODES"]["C"] + add_and_remove,
+          :remove => add_and_remove
+        }
 
         modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1], param_modes)
         modes.each do |direction, mode, param|
           if @bot.irc.isupport["PREFIX"].keys.include?(mode)
             target = User(param)
+
             # (un)set a user-mode
             if direction == :add
               msg.channel.users[target] << mode unless msg.channel.users[User(param)].include?(mode)
@@ -340,6 +354,7 @@ module Cinch
     def on_part(msg, events)
       msg.channel.remove_user(msg.user)
       msg.user.channels_unsynced.delete msg.channel
+
       if msg.user == @bot
         @bot.channels.delete(msg.channel)
       end
@@ -387,10 +402,6 @@ module Cinch
         # than one argument and does not use full banmasks in
         # RPL_BANLIST
         @network = "jtv"
-      else
-        # this catches all other networks that do not require custom
-        # behaviour.
-        @network = :other
       end
     end
 
@@ -451,16 +462,16 @@ module Cinch
 
     def on_319(msg, events)
       # RPL_WHOISCHANNELS
-      user = User(msg.params[1])
+      user     = User(msg.params[1])
       channels = msg.params[2].scan(/#{@isupport["CHANTYPES"].join}[^ ]+/o).map {|c| Channel(c) }
       user.sync(:channels, channels, true)
     end
 
     def on_324(msg, events)
       # RPL_CHANNELMODEIS
-
-      modes = {}
+      modes     = {}
       arguments = msg.params[3..-1]
+
       msg.params[2][1..-1].split("").each do |mode|
         if (@isupport["CHANMODES"]["B"] + @isupport["CHANMODES"]["C"]).include?(mode)
           modes[mode] = arguments.shift
@@ -474,8 +485,9 @@ module Cinch
 
     def on_330(msg, events)
       # RPL_WHOISACCOUNT
-      user = User(msg.params[1])
+      user     = User(msg.params[1])
       authname = msg.params[2]
+
       @whois_updates[user].merge!({:authname => authname})
     end
 
@@ -505,7 +517,7 @@ module Cinch
           nick   = user
           prefixes = []
         end
-        user = User(nick)
+        user        = User(nick)
         user.online = true
         msg.channel.add_user(user, prefixes)
         user.channels_unsynced << msg.channel unless user.channels_unsynced.include?(msg.channel)
@@ -539,7 +551,7 @@ module Cinch
         by = nil
       end
 
-      at   = Time.at(msg.params[4].to_i)
+      at  = Time.at(msg.params[4].to_i)
       ban = Ban.new(mask, by, at)
       msg.channel.bans_unsynced << ban
     end
