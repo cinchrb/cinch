@@ -50,9 +50,7 @@ module Cinch
         @bot.loggers.debug "[New thread] For #{self}: #{Thread.current} -- #{@thread_group.list.size} in total."
 
         begin
-          catch(:halt) do
-            @bot.callback.instance_exec(message, *@args, *bargs, &@block)
-          end
+          @bot.callback.instance_exec(message, *@args, *bargs, &@block)
         rescue => e
           @bot.loggers.exception(e)
         ensure
