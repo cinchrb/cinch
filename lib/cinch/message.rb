@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+require "time"
+
 module Cinch
   # @attr_reader user
   # @attr_reader error
@@ -28,6 +30,10 @@ module Cinch
     # @api private
     attr_writer :events
 
+    # @return [Time]
+    # @since 2.0.0
+    attr_reader :time
+
     # @return [Bot]
     # @since 1.1.0
     attr_reader :bot
@@ -37,6 +43,7 @@ module Cinch
       @bot = bot
       @matches = {:ctcp => {}, :other => {}}
       @events = []
+      @time = Time.now
       parse if msg
     end
 
