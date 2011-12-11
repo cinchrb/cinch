@@ -23,6 +23,15 @@ module Cinch
       end
     end
 
+    def self.generate(type, argument)
+      case type
+      when :ctcp
+        Pattern.new(/^/, /#{Regexp.escape(argument.to_s)}(?:$| .+)/, nil)
+      else
+        raise ArgumentError, "Unsupported type: #{type.inspect}"
+      end
+    end
+
     attr_reader :prefix
     attr_reader :suffix
     attr_reader :pattern

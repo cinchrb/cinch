@@ -221,7 +221,7 @@ module Cinch
                     Pattern.new(nil, regexp, nil)
                   else
                     if event == :ctcp
-                      Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/, nil)
+                      Pattern.generate(:ctcp, regexp)
                     else
                       Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
                     end
