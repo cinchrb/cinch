@@ -255,17 +255,18 @@ module Cinch
     def __register_listeners
       self.class.listeners.each do |listener|
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering listener for type `#{listener.event}`"
-        new_handlers = @bot.on(listener.event, [], self) do |message, plugin, *args|
+        new_handler = Handler.new(@bot, listener.event, //) do |message, *args|
           if plugin.respond_to?(listener.method)
-            plugin.class.call_hooks(:pre, :listen_to, plugin, [message])
-            plugin.__send__(listener.method, message, *args)
-            plugin.class.call_hooks(:post, :listen_to, plugin, [message])
+            self.class.call_hooks(:pre, :listen_to, self, [message])
+            __send__(listener.method, message, *args)
+            self.class.call_hooks(:post, :listen_to, self, [message])
           else
             $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{listener.method}'. Beginning with version 2.0.0, this will cause an exception."
           end
         end
 
-        @handlers.concat new_handlers
+        @handlers << new_handler
+        @bot.handlers.register(new_handler)
       end
     end
 
@@ -273,13 +274,14 @@ module Cinch
     def __register_ctcps
       self.class.ctcps.each do |ctcp|
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering CTCP `#{ctcp}`"
-        new_handlers = @bot.on(:ctcp, ctcp, self, ctcp) do |message, plugin, ctcp, *args|
-          plugin.class.__hooks(:pre, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
-          plugin.__send__("ctcp_#{ctcp.downcase}", message, *args)
-          plugin.class.__hooks(:post, :ctcp).each {|hook| plugin.__send__(hook.method, message)}
+        new_handler = Handler.new(@bot, :ctcp, Pattern.generate(:ctcp, ctcp)) do |message, *args|
+          self.class.__hooks(:pre, :ctcp).each {|hook| __send__(hook.method, message)}
+          __send__("ctcp_#{ctcp.downcase}", message, *args)
+          self.class.__hooks(:post, :ctcp).each {|hook| __send__(hook.method, message)}
         end
 
-        @handlers.concat new_handlers
+        @handlers << new_handler
+        @bot.handlers.register(new_handler)
       end
     end
 
@@ -347,11 +349,12 @@ module Cinch
       if self.class.help
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering help message"
         help_pattern = Pattern.new(prefix, "help #{self.class.plugin_name}", suffix)
-        new_handlers = @bot.on(:message, help_pattern, self.class.help) do |message, help_message|
-          message.reply(help_message)
+        new_handler = Handler.new(:message, help_pattern) do |message|
+          message.reply(self.class.help)
         end
 
-        @handlers.concat new_handlers
+        @handlers << new_handler
+        @bot.handlers.register(new_handler)
       end
     end
 
