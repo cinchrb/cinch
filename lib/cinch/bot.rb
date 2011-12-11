@@ -57,7 +57,7 @@ module Cinch
 
 
     # @return [Configuration::Bot]
-    # @version 1.2.0
+    # @version 2.0.0
     attr_reader :config
 
     # The underlying IRC connection
@@ -90,7 +90,7 @@ module Cinch
     attr_reader :signed_on_at
 
     # @return [PluginList] All registered plugins
-    # @version 1.2.0
+    # @version 2.0.0
     attr_reader :plugins
 
     # @return [Boolean] whether the bot is in the process of disconnecting
@@ -107,7 +107,7 @@ module Cinch
     attr_reader :channel_list
 
     # @return [PluginList] All loaded plugins.
-    # @version 1.2.0
+    # @version 2.0.0
     attr_reader :plugins
 
     # @return [Boolean]

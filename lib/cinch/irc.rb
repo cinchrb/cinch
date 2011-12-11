@@ -530,7 +530,7 @@ module Cinch
       msg.channel.mark_as_synced(:users)
     end
 
-    # @version 1.2.0
+    # @version 2.0.0
     def on_367(msg, events)
       # RPL_BANLIST
       unless @in_lists.include?(:bans)

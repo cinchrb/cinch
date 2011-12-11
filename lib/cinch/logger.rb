@@ -2,7 +2,7 @@ module Cinch
   # This is the base logger class from which all loggers have to
   # inherit.
   #
-  # @version 1.2.0
+  # @version 2.0.0
   class Logger
     LevelOrder = [:debug, :log, :info, :warn, :error, :fatal]
 
@@ -29,7 +29,7 @@ module Cinch
     #
     # @param [String] message
     # @return [void]
-    # @version 1.2.0
+    # @version 2.0.0
     def debug(message)
       log(message, :debug)
     end
@@ -105,7 +105,7 @@ module Cinch
     #   triggered the message
     # @param [Symbol<:debug, :info, :warn, :error, :fatal>] level The level of the message
     # @return [void]
-    # @version 1.2.0
+    # @version 2.0.0
     def log(messages, event = :debug, level = event)
       return unless will_log?(level)
       @mutex.synchronize do

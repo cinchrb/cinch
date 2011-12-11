@@ -9,7 +9,7 @@ module Cinch
   # @attr invite_only
   # @attr key
   #
-  # @version 1.2.0
+  # @version 2.0.0
   class Channel < Target
     include Syncable
     include Helpers
