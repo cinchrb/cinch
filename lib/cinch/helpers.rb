@@ -73,6 +73,8 @@ module Cinch
       timer
     end
 
+    # @group Logging
+
     # Use this method to automatically log exceptions to the loggers.
     #
     # @example
@@ -91,6 +93,52 @@ module Cinch
         bot.loggers.exception(e)
       end
     end
+
+    # (see Logger#log)
+    def log(messages, event = :debug, level = event)
+      @bot.loggers.log(messages, event, level)
+    end
+
+    # (see Logger#debug)
+    def debug(message)
+      log(message, :debug)
+    end
+
+    # (see Logger#error)
+    def error(message)
+      log(message, :error)
+    end
+
+    # (see Logger#fatal)
+    def fatal(message)
+      log(message, :fatal)
+    end
+
+    # (see Logger#info)
+    def info(message)
+      log(message, :info)
+    end
+
+    # (see Logger#warn)
+    def warn(message)
+      log(message, :warn)
+    end
+
+    # (see Logger#incoming)
+    def incoming(message)
+      log(message, :incoming, :log)
+    end
+
+    # (see Logger#outgoing)
+    def outgoing(message)
+      log(message, :outgoing, :log)
+    end
+
+    # (see Logger#exception)
+    def exception(e)
+      log(e.message, :exception, :error)
+    end
+    # @endgroup
 
     # (see Formatting.format)
     def Format(*args)
