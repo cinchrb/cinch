@@ -49,7 +49,8 @@ module Cinch
       # @attr [Boolean] use_prefix
       # @attr [Boolean] use_suffix
       # @attr [Symbol] method
-      Match = Struct.new(:pattern, :use_prefix, :use_suffix, :method)
+      # @attr [Symbol] group
+      Match = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group)
 
       # @attr [Symbol] event
       # @attr [Symbol] method
@@ -131,10 +132,12 @@ module Cinch
       # @option options [Boolean] :use_suffix (true) If true, the
       #   plugin suffix will automatically be appended to the
       #   pattern.
+      # @option options [Symbol] :group (nil) The group the match belongs to.
       # @return [void]
+      # @todo Document match/listener grouping
       def match(pattern, options = {})
-        options = {:use_prefix => true, :use_suffix => true, :method => :execute}.merge(options)
-        @matchers << Match.new(pattern, options[:use_prefix], options[:use_suffix], options[:method])
+        options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil}.merge(options)
+        @matchers << Match.new(pattern, options[:use_prefix], options[:use_suffix], options[:method], options[:group])
       end
 
       # Events to listen to.
@@ -318,7 +321,8 @@ module Cinch
 
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
-        new_handlers = @bot.on(react_on, pattern_to_register, self, pattern) do |message, plugin, pattern, *args|
+        new_handler = Handler.new(@bot, react_on, pattern_to_register, pattern.group,
+                                  [self, pattern]) do |message, plugin, pattern, *args|
           if plugin.respond_to?(pattern.method)
             method = plugin.method(pattern.method)
             arity = method.arity - 1
@@ -334,7 +338,8 @@ module Cinch
             $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{pattern.method}'. Beginning with version 2.0.0, this will cause an exception."
           end
         end
-        @handlers.concat new_handlers
+        @handlers << new_handler
+        @bot.handlers.register(new_handler)
 
       end
       __register_ctcps

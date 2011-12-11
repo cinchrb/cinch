@@ -13,6 +13,7 @@ module Cinch
 
     def register(handler)
       @mutex.synchronize do
+        handler.bot.loggers.debug "[on handler] Registering handler with pattern `#{handler.pattern.inspect}`, reacting on `#{handler.event}`"
         @handlers[handler.event] << handler
       end
     end
@@ -34,9 +35,11 @@ module Cinch
           return handlers
         end
 
-        handlers.select { |handler|
+        handlers = handlers.select { |handler|
           msg.match(handler.pattern.to_r(msg), type)
-        }
+        }.group_by {|handler| handler.group}
+
+        handlers.values_at(*(handlers.keys - [nil])).map(&:first) + (handlers[nil] || [])
       end
     end
 

@@ -11,13 +11,16 @@ module Cinch
     attr_reader :args
     # @return [Proc]
     attr_reader :block
+    # @return [Symbol]
+    attr_reader :group
     # @return [ThreadGroup]
     # @api private
     attr_reader :thread_group
-    def initialize(bot, event, pattern, args = [], &block)
+    def initialize(bot, event, pattern, group = nil, args = [], &block)
       @bot = bot
       @event = event
       @pattern = pattern
+      @group = group
       @args = args
       @block = block
 

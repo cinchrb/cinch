@@ -226,8 +226,8 @@ module Cinch
                       Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
                     end
                   end
-        @loggers.debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
-        handler = Handler.new(self, event, pattern, args, &block)
+
+        handler = Handler.new(self, event, pattern, nil, args, &block)
         handlers << handler
         @handlers.register(handler)
       end
