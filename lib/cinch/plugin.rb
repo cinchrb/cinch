@@ -321,21 +321,20 @@ module Cinch
 
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
-        new_handler = Handler.new(@bot, react_on, pattern_to_register, pattern.group,
-                                  [self, pattern]) do |message, plugin, pattern, *args|
-          if plugin.respond_to?(pattern.method)
-            method = plugin.method(pattern.method)
+        new_handler = Handler.new(@bot, react_on, pattern_to_register, group: pattern.group) do |message, *args|
+          if respond_to?(pattern.method)
+            method = method(pattern.method)
             arity = method.arity - 1
             if arity > 0
               args = args[0..arity - 1]
             elsif arity == 0
               args = []
             end
-            plugin.class.__hooks(:pre, :match).each {|hook| plugin.__send__(hook.method, message)}
+            self.class.__hooks(:pre, :match).each {|hook| __send__(hook.method, message)}
             method.call(message, *args)
-            plugin.class.__hooks(:post, :match).each {|hook| plugin.__send__(hook.method, message)}
+            self.class.__hooks(:post, :match).each {|hook| __send__(hook.method, message)}
           else
-            $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{pattern.method}'. Beginning with version 2.0.0, this will cause an exception."
+            $stderr.puts "Warning: The plugin '#{self.class.plugin_name}' is missing the method '#{pattern.method}'. Beginning with version 2.0.0, this will cause an exception."
           end
         end
         @handlers << new_handler

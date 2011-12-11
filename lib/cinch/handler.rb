@@ -16,12 +16,14 @@ module Cinch
     # @return [ThreadGroup]
     # @api private
     attr_reader :thread_group
-    def initialize(bot, event, pattern, group = nil, args = [], &block)
+    def initialize(bot, event, pattern, options = {}, &block)
+      options = {:group => nil, :execute_in_callback => false, :args => []}.merge(options)
       @bot = bot
       @event = event
       @pattern = pattern
-      @group = group
-      @args = args
+      @group = options[:group]
+      @execute_in_callback = options[:execute_in_callback]
+      @args = options[:args]
       @block = block
 
       @thread_group = ThreadGroup.new
@@ -50,7 +52,11 @@ module Cinch
         @bot.loggers.debug "[New thread] For #{self}: #{Thread.current} -- #{@thread_group.list.size} in total."
 
         begin
-          @bot.callback.instance_exec(message, *@args, *bargs, &@block)
+          if @execute_in_callback
+            @bot.callback.instance_exec(message, *@args, *bargs, &@block)
+          else
+            @block.call(message, *@args, *bargs)
+          end
         rescue => e
           @bot.loggers.exception(e)
         ensure

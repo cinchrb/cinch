@@ -227,7 +227,7 @@ module Cinch
                     end
                   end
 
-        handler = Handler.new(self, event, pattern, nil, args, &block)
+        handler = Handler.new(self, event, pattern, {args: args, execute_in_callback: true}, &block)
         handlers << handler
         @handlers.register(handler)
       end
