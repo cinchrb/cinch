@@ -353,8 +353,6 @@ module Cinch
                @name == other.nick
              when String
                self.to_s == other
-             when Bot
-               self.nick == other.nick
              else
                false
              end
