@@ -399,8 +399,7 @@ module Cinch
     def on_001(msg, events)
       # Ensure that we know our real, possibly truncated or otherwise
       # modified nick.
-      actual_nick = msg.params.first
-      @bot.nick = actual_nick
+      @bot.set_nick msg.params.first
     end
 
     # @since 2.0.0
