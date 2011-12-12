@@ -396,6 +396,14 @@ module Cinch
     end
 
     # @since 2.0.0
+    def on_001(msg, events)
+      # Ensure that we know our real, possibly truncated or otherwise
+      # modified nick.
+      actual_nick = msg.params.first
+      @bot.nick = actual_nick
+    end
+
+    # @since 2.0.0
     def on_002(msg, events)
       if msg.params.last == "Your host is jtvchat"
         # the justin tv "IRC" server lacks support for WHOIS with more
