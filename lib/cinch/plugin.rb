@@ -255,13 +255,13 @@ module Cinch
     def __register_listeners
       self.class.listeners.each do |listener|
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering listener for type `#{listener.event}`"
-        new_handler = Handler.new(@bot, listener.event, //) do |message, *args|
-          if plugin.respond_to?(listener.method)
+        new_handler = Handler.new(@bot, listener.event, Pattern.new(nil, //, nil)) do |message, *args|
+          if respond_to?(listener.method)
             self.class.call_hooks(:pre, :listen_to, self, [message])
             __send__(listener.method, message, *args)
             self.class.call_hooks(:post, :listen_to, self, [message])
           else
-            $stderr.puts "Warning: The plugin '#{plugin.class.plugin_name}' is missing the method '#{listener.method}'. Beginning with version 2.0.0, this will cause an exception."
+            $stderr.puts "Warning: The plugin '#{self.class.plugin_name}' is missing the method '#{listener.method}'. Beginning with version 2.0.0, this will cause an exception."
           end
         end
 
@@ -349,7 +349,7 @@ module Cinch
       if self.class.help
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering help message"
         help_pattern = Pattern.new(prefix, "help #{self.class.plugin_name}", suffix)
-        new_handler = Handler.new(:message, help_pattern) do |message|
+        new_handler = Handler.new(@bot, :message, help_pattern) do |message|
           message.reply(self.class.help)
         end
 
