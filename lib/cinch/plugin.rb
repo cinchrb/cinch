@@ -1,3 +1,4 @@
+# TODO more details in "message dropped" debug output
 module Cinch
   module Plugin
     include Helpers
@@ -232,12 +233,15 @@ module Cinch
         end
       end
 
-      # @return [void]
+      # @return [Boolean] True if processing should continue
       # @api private
       def call_hooks(type, event, instance, args)
-        __hooks(type, event).each do |hook|
-          instance.__send__(hook.method, *args)
-        end
+        stop = __hooks(type, event).find { |hook|
+          # stop after the first hook that returns false
+          instance.__send__(hook.method, *args) == false
+        }
+
+        !stop
       end
 
       # @param [Bot] bot
@@ -257,9 +261,12 @@ module Cinch
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering listener for type `#{listener.event}`"
         new_handler = Handler.new(@bot, listener.event, Pattern.new(nil, //, nil)) do |message, *args|
           if respond_to?(listener.method)
-            self.class.call_hooks(:pre, :listen_to, self, [message])
-            __send__(listener.method, message, *args)
-            self.class.call_hooks(:post, :listen_to, self, [message])
+            if self.class.call_hooks(:pre, :listen_to, self, [message])
+              __send__(listener.method, message, *args)
+              self.class.call_hooks(:post, :listen_to, self, [message])
+            else
+              @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
+            end
           else
             $stderr.puts "Warning: The plugin '#{self.class.plugin_name}' is missing the method '#{listener.method}'. Beginning with version 2.0.0, this will cause an exception."
           end
@@ -275,9 +282,12 @@ module Cinch
       self.class.ctcps.each do |ctcp|
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering CTCP `#{ctcp}`"
         new_handler = Handler.new(@bot, :ctcp, Pattern.generate(:ctcp, ctcp)) do |message, *args|
-          self.class.__hooks(:pre, :ctcp).each {|hook| __send__(hook.method, message)}
-          __send__("ctcp_#{ctcp.downcase}", message, *args)
-          self.class.__hooks(:post, :ctcp).each {|hook| __send__(hook.method, message)}
+          if self.class.call_hooks(:pre, :ctcp, self, [message])
+            __send__("ctcp_#{ctcp.downcase}", message, *args)
+            self.class.call_hooks(:post, :ctcp, self, [message])
+          else
+            @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
+          end
         end
 
         @handlers << new_handler
@@ -332,9 +342,12 @@ module Cinch
             elsif arity == 0
               args = []
             end
-            self.class.__hooks(:pre, :match).each {|hook| __send__(hook.method, message)}
-            method.call(message, *args)
-            self.class.__hooks(:post, :match).each {|hook| __send__(hook.method, message)}
+            if self.class.call_hooks(:pre, :match, self, [message])
+              method.call(message, *args)
+              self.class.call_hooks(:post, :match, self, [message])
+            else
+              @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
+            end
           else
             $stderr.puts "Warning: The plugin '#{self.class.plugin_name}' is missing the method '#{pattern.method}'. Beginning with version 2.0.0, this will cause an exception."
           end
