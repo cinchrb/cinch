@@ -1,4 +1,5 @@
 require "thread"
+require "set"
 require "cinch/cached_list"
 
 module Cinch
@@ -53,7 +54,10 @@ module Cinch
     # @return [void]
     def dispatch(event, msg = nil, *arguments)
       if handlers = find(event, msg)
+        already_run = Set.new
         handlers.each do |handler|
+          next if already_run.include?(handler.block)
+          already_run << handler.block
           # calling Message#match multiple times is not a problem
           # because we cache the result
           if msg
