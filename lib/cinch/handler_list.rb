@@ -29,6 +29,8 @@ module Cinch
       end
     end
 
+    # @api private
+    # @return [Array<Handler>]
     def find(type, msg = nil)
       if handlers = @handlers[type]
         if msg.nil?
