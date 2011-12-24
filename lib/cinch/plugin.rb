@@ -302,17 +302,8 @@ module Cinch
       }
     end
 
-    # @return [void]
     # @api private
-    def __register
-      missing = self.class.check_for_missing_options(@bot)
-      unless missing.empty?
-        @bot.loggers.warn "[plugin] #{self.class.plugin_name}: Could not register plugin because the following options are not set: #{missing.join(", ")}"
-        return
-      end
-
-      __register_listeners
-
+    def __register_matchers
       prefix = self.class.prefix || @bot.config.plugins.prefix
       suffix = self.class.suffix || @bot.config.plugins.suffix
 
@@ -342,11 +333,13 @@ module Cinch
         end
         @handlers << new_handler
         @bot.handlers.register(new_handler)
-
       end
-      __register_ctcps
-      __register_timers
+    end
 
+    # @api private
+    def __register_help
+      prefix = self.class.prefix || @bot.config.plugins.prefix
+      suffix = self.class.suffix || @bot.config.plugins.suffix
       if self.class.help
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering help message"
         help_pattern = Pattern.new(prefix, "help #{self.class.plugin_name}", suffix)
@@ -357,6 +350,22 @@ module Cinch
         @handlers << new_handler
         @bot.handlers.register(new_handler)
       end
+    end
+
+    # @return [void]
+    # @api private
+    def __register
+      missing = self.class.check_for_missing_options(@bot)
+      unless missing.empty?
+        @bot.loggers.warn "[plugin] #{self.class.plugin_name}: Could not register plugin because the following options are not set: #{missing.join(", ")}"
+        return
+      end
+
+      __register_listeners
+      __register_matchers
+      __register_ctcps
+      __register_timers
+      __register_help
     end
 
     # @return [Bot]
