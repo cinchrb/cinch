@@ -255,7 +255,6 @@ module Cinch
       end
     end
 
-    # @api private
     def __register_listeners
       self.class.listeners.each do |listener|
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering listener for type `#{listener.event}`"
@@ -272,8 +271,8 @@ module Cinch
         @bot.handlers.register(new_handler)
       end
     end
+    private :__register_listeners
 
-    # @api private
     def __register_ctcps
       self.class.ctcps.each do |ctcp|
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering CTCP `#{ctcp}`"
@@ -290,8 +289,8 @@ module Cinch
         @bot.handlers.register(new_handler)
       end
     end
+    private :__register_ctcps
 
-    # @api private
     def __register_timers
       @timers = self.class.timers.map {|timer_struct|
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering timer with interval `#{timer_struct.interval}` for method `#{timer_struct.options[:method]}`"
@@ -301,8 +300,8 @@ module Cinch
         Cinch::Timer.new(@bot, options, &block)
       }
     end
+    private :__register_timers
 
-    # @api private
     def __register_matchers
       prefix = self.class.prefix || @bot.config.plugins.prefix
       suffix = self.class.suffix || @bot.config.plugins.suffix
@@ -335,8 +334,8 @@ module Cinch
         @bot.handlers.register(new_handler)
       end
     end
+    private :__register_matchers
 
-    # @api private
     def __register_help
       prefix = self.class.prefix || @bot.config.plugins.prefix
       suffix = self.class.suffix || @bot.config.plugins.suffix
@@ -351,6 +350,7 @@ module Cinch
         @bot.handlers.register(new_handler)
       end
     end
+    private :__register_help
 
     # @return [void]
     # @api private
