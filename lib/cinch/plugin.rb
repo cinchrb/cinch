@@ -260,15 +260,11 @@ module Cinch
       self.class.listeners.each do |listener|
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering listener for type `#{listener.event}`"
         new_handler = Handler.new(@bot, listener.event, Pattern.new(nil, //, nil)) do |message, *args|
-          if respond_to?(listener.method)
-            if self.class.call_hooks(:pre, :listen_to, self, [message])
-              __send__(listener.method, message, *args)
-              self.class.call_hooks(:post, :listen_to, self, [message])
-            else
-              @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
-            end
+          if self.class.call_hooks(:pre, :listen_to, self, [message])
+            __send__(listener.method, message, *args)
+            self.class.call_hooks(:post, :listen_to, self, [message])
           else
-            $stderr.puts "Warning: The plugin '#{self.class.plugin_name}' is missing the method '#{listener.method}'. Beginning with version 2.0.0, this will cause an exception."
+            @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
           end
         end
 
@@ -334,22 +330,18 @@ module Cinch
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
         new_handler = Handler.new(@bot, react_on, pattern_to_register, group: pattern.group) do |message, *args|
-          if respond_to?(pattern.method)
-            method = method(pattern.method)
-            arity = method.arity - 1
-            if arity > 0
-              args = args[0..arity - 1]
-            elsif arity == 0
-              args = []
-            end
-            if self.class.call_hooks(:pre, :match, self, [message])
-              method.call(message, *args)
-              self.class.call_hooks(:post, :match, self, [message])
-            else
-              @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
-            end
+          method = method(pattern.method)
+          arity = method.arity - 1
+          if arity > 0
+            args = args[0..arity - 1]
+          elsif arity == 0
+            args = []
+          end
+          if self.class.call_hooks(:pre, :match, self, [message])
+            method.call(message, *args)
+            self.class.call_hooks(:post, :match, self, [message])
           else
-            $stderr.puts "Warning: The plugin '#{self.class.plugin_name}' is missing the method '#{pattern.method}'. Beginning with version 2.0.0, this will cause an exception."
+            @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
           end
         end
         @handlers << new_handler
@@ -408,26 +400,6 @@ module Cinch
     # (see Bot#synchronize)
     def synchronize(*args, &block)
       @bot.synchronize(*args, &block)
-    end
-
-    # This method will be executed whenever an event the plugin
-    # {Plugin::ClassMethods#listen_to listens to} occurs.
-    #
-    # @abstract
-    # @return [void]
-    # @see Plugin::ClassMethods#listen_to
-    def listen(*args)
-      $stderr.puts "Warning: The plugin '#{self.class.plugin_name}' is missing the method 'listen'. Beginning with version 2.0.0, this will cause an exception."
-    end
-
-    # This method will be executed whenever a message matches the
-    # {Plugin::ClassMethods#match match pattern} of the plugin.
-    #
-    # @abstract
-    # @return [void]
-    # @see Plugin::ClassMethods#match
-    def execute(*args)
-      $stderr.puts "Warning: The plugin '#{self.class.plugin_name}' is missing the method 'execute'. Beginning with version 2.0.0, this will cause an exception."
     end
 
     # Provides access to plugin-specific options.
