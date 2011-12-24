@@ -12,6 +12,11 @@ module Cinch
       each {|l| l.level = level}
     end
 
+    # (see Logger::Logger#log)
+    def log(messages, event = :debug, level = event)
+      each {|l| l.log(messages, event, level)}
+    end
+
     # (see Logger::Logger#debug)
     def debug(message)
       each {|l| l.debug(message)}
