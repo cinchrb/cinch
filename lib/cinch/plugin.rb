@@ -313,10 +313,6 @@ module Cinch
 
       __register_listeners
 
-      if self.class.matchers.empty?
-        self.class.matchers << ClassMethods::Match.new(self.class.plugin_name, true, true, :execute)
-      end
-
       prefix = self.class.prefix || @bot.config.plugins.prefix
       suffix = self.class.suffix || @bot.config.plugins.suffix
 
