@@ -14,7 +14,7 @@ class Memo
 
   def initialize(*args)
     super
-    storage[:memos] = {}
+    storage[:memos] ||= {}
   end
 
   listen_to :message
