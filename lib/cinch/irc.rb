@@ -273,6 +273,17 @@ module Cinch
       end
     end
 
+    def process_owner_mode(msg, events, param, direction)
+      owner = User(param)
+      if direction == :add
+        msg.channel.owners_unsynced << owner unless msg.channel.owners_unsynced.include?(owner)
+        events << [:owner, owner]
+      else
+        msg.channel.owners_unsynced.delete(owner)
+        events << [:deowner, owner]
+      end
+    end
+
     def on_join(msg, events)
       if msg.user == @bot
         @bot.channels << msg.channel
@@ -349,6 +360,8 @@ module Cinch
                 msg.channel.bans_unsynced.delete_if {|b| b.mask == ban.mask}.first
                 events << [:unban, ban]
               end
+            when "q"
+              process_owner_mode(msg, events, param, direction) if @ircd.owner_list_mode
             else
               raise Exceptions::UnsupportedMode, mode
             end
@@ -590,6 +603,29 @@ module Cinch
       end
 
       msg.channel.mark_as_synced(:bans)
+    end
+
+    def on_386(msg, events)
+      # RPL_QLIST
+      unless @in_lists.include?(:owners)
+        msg.channel.owners_unsynced.clear
+      end
+      @in_lists << :owners
+
+      owner = User(msg.params[2])
+      msg.channel.owners_unsynced << owner
+    end
+
+    def on_387(msg, events)
+      # RPL_ENDOFQLIST
+      if @in_lists.include?(:owners)
+        @in_lists.delete :owners
+      else
+        #we never received an owner, yet an end of list -> no owners
+        msg.channel.owners_unsynced.clear
+      end
+
+      msg.channel.mark_as_synced(:owners)
     end
 
     def on_396(msg, events)

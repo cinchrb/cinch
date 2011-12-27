@@ -292,6 +292,8 @@ module Cinch
     # an RPL_REHASHING is sent back to the operator.
     RPL_REHASHING = 382
 
+    RPL_QLIST      = 386
+    RPL_ENDOFQLIST = 387
     # When replying to the TIME message, a server must send the reply
     # using the RPL_TIME format above. The string showing the time need
     # only contain the correct day and time there. There is no further

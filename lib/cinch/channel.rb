@@ -31,6 +31,11 @@ module Cinch
     attr_reader :bans
     synced_attr_reader :bans
 
+    # @return [Array<User>] all channel owners
+    # @note Only some networks implement this
+    attr_reader :owners
+    synced_attr_reader :owners
+
     # This attribute describes all modes set in the channel. They're
     # represented as a Hash, mapping the mode (e.g. "i", "k", …) to
     # either a value in the case of modes that take an option (e.g.
@@ -44,6 +49,7 @@ module Cinch
       @name  = name
       @users = Hash.new {|h,k| h[k] = []}
       @bans  = []
+      @owners = []
 
       @modes = {}
       # TODO raise if not a channel
@@ -63,6 +69,14 @@ module Cinch
             @bot.irc.send "TOPIC #@name"
           when :bans
             @bot.irc.send "MODE #@name +b"
+          when :owners
+            if @bot.irc.ircd.owner_list_mode
+              @bot.irc.send "MODE #@name +#{@bot.irc.ircd.owner_list_mode}"
+            else
+              # the current IRCd does not support channel owners, so
+              # just mark the empty array as synced
+              mark_as_synced(:owners)
+            end
           when :modes
             @bot.irc.send "MODE #@name"
           end
@@ -201,9 +215,15 @@ module Cinch
       unsync :users
       unsync :bans
       unsync :modes
+      unsync :owners
       @bot.irc.send "NAMES #@name" if all
       @bot.irc.send "MODE #@name +b" # bans
       @bot.irc.send "MODE #@name"
+      if @bot.irc.ircd.owner_list_mode
+        @bot.irc.send "MODE #@name +#{@bot.irc.ircd.owner_list_mode}"
+      else
+        mark_as_synced :owners
+      end
     end
 
     # @group Channel Manipulation
