@@ -24,7 +24,7 @@ module Cinch
 
     class UnsupportedMode < Generic
       def initialize(mode)
-        super "Cinch does not support the mode #{mode} yet."
+        super "Cinch does not support the mode '#{mode}' yet."
       end
     end
 
