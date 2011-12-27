@@ -1,5 +1,6 @@
 require "timeout"
 require "net/protocol"
+require "cinch/ircd"
 
 module Cinch
   class IRC
@@ -11,9 +12,8 @@ module Cinch
     # @return [Bot]
     attr_reader :bot
 
-    # @return [Symbol] The detected network or `:other` if no network
-    #   was detected.
-    attr_reader :network
+    # @return [IRCd] The detected IRCd
+    attr_reader :ircd
 
     def initialize(bot)
       @bot      = bot
@@ -25,7 +25,7 @@ module Cinch
     # @since 2.0.0
     def setup
       @registration  = []
-      @network       = :other
+      @ircd          = IRCd.new(:unknown)
       @whois_updates = Hash.new {|h, k| h[k] = {}}
       @in_lists      = Set.new
     end
@@ -240,6 +240,39 @@ module Cinch
       events << [:leaving, user]
     end
 
+    # @since 2.0.0
+    def detect_ircd(msg, event)
+      old_ircd = @ircd
+      new_ircd = nil
+      case event
+      when "002"
+        if msg.params.last =~ /^Your host is .+?, running version (.+)$/
+          case $1
+          when /\+snircd\(/
+            new_ircd = :snircd
+          when /^u[\d\.]+$/
+            new_ircd = :ircu
+          when /^(.+?)-?\d+/
+            new_ircd = $1.downcase.to_sym
+          end
+        elsif msg.params.last == "Your host is jtvchat"
+          new_ircd = :jtv
+        end
+      when "005"
+        if @isupport["NETWORK"] == "NGameTV"
+          new_ircd = :ngametv
+        end
+      end
+
+      if old_ircd.unknown? && new_ircd
+        @bot.loggers.info "Detected IRCd: #{new_ircd}"
+        @ircd = IRCd.new(new_ircd)
+      elsif !old_ircd.unknown? && new_ircd && new_ircd != old_ircd.name
+        @bot.loggers.info "Detected different IRCd: #{old_ircd.name} -> #{new_ircd}"
+        @ircd = IRCd.new(new_ircd)
+      end
+    end
+
     def on_join(msg, events)
       if msg.user == @bot
         @bot.channels << msg.channel
@@ -404,29 +437,13 @@ module Cinch
 
     # @since 2.0.0
     def on_002(msg, events)
-      if msg.params.last == "Your host is jtvchat"
-        # the justin tv "IRC" server lacks support for WHOIS with more
-        # than one argument and does not use full banmasks in
-        # RPL_BANLIST
-        @network = "jtv"
-      end
+      detect_ircd(msg, "002")
     end
 
     def on_005(msg, events)
       # ISUPPORT
       @isupport.parse(*msg.params[1..-2].map {|v| v.split(" ")}.flatten)
-      if @isupport["NETWORK"] == "NGameTV"
-        # the NGameTV "IRC" server does not have proper prefixes but
-        # only nicks.
-        #
-        # PONGs do not include the argument we sent in a PING but the
-        # fixed string "chat.ngame.tv"
-        #
-        # If we send a PONG, the server responds with a PONG.
-        #
-        # Neither PING nor PONG have a prefix
-        @network = "ngametv"
-      end
+      detect_ircd(msg, "005")
     end
 
     # @since 1.1.0
@@ -546,7 +563,7 @@ module Cinch
       @in_lists << :bans
 
       mask = msg.params[2]
-      if @network == "jtv"
+      if @ircd.jtv?
         # on the justin tv network, ban "masks" only consist of the
         # nick/username
         mask = "%s!%s@%s" % [mask, mask, mask + ".irc.justin.tv"]

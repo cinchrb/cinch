@@ -149,9 +149,7 @@ module Cinch
       end
 
       @in_whois = true
-      if @bot.irc.network == "jtv"
-        # the justin tv "IRC" network does not support WHOIS with two
-        # arguments
+      if @bot.irc.ircd.whois_only_one_argument?
         @bot.irc.send "WHOIS #@name"
       else
         @bot.irc.send "WHOIS #@name #@name"
