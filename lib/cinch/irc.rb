@@ -350,7 +350,7 @@ module Cinch
                 events << [:unban, ban]
               end
             else
-              raise UnsupportedFeature, mode
+              raise Exceptions::UnsupportedMode, mode
             end
           else
             # channel options
