@@ -44,7 +44,7 @@ module Cinch
           rescue ::Encoding::UndefinedConversionError
           end
         else
-          string.encode!(encoding, {:invalid => :replace, :undef => :replace})
+          string.encode!(encoding, {:invalid => :replace, :undef => :replace}).force_encoding("ASCII-8BIT")
         end
 
         return string
