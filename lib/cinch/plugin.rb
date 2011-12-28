@@ -51,7 +51,7 @@ module Cinch
       # @attr [Boolean] use_suffix
       # @attr [Symbol] method
       # @attr [Symbol] group
-      Matcher = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group)
+      Matcher = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group, :prefix, :suffix)
 
       # @attr [Symbol] event
       # @attr [Symbol] method
@@ -137,8 +137,8 @@ module Cinch
       # @return [void]
       # @todo Document match/listener grouping
       def match(pattern, options = {})
-        options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil}.merge(options)
-        @matchers << Matcher.new(pattern, options[:use_prefix], options[:use_suffix], options[:method], options[:group])
+        options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil}.merge(options)
+        @matchers << Matcher.new(pattern, options[:use_prefix], options[:use_suffix], options[:method], options[:group], options[:prefix], options[:suffix])
       end
 
       # Events to listen to.
@@ -307,8 +307,8 @@ module Cinch
       suffix = self.class.suffix || @bot.config.plugins.suffix
 
       self.class.matchers.each do |pattern|
-        _prefix = pattern.use_prefix ? prefix : nil
-        _suffix = pattern.use_suffix ? suffix : nil
+        _prefix = pattern.use_prefix ? pattern.prefix || prefix : nil
+        _suffix = pattern.use_suffix ? pattern.suffix || suffix : nil
 
         pattern_to_register = Pattern.new(_prefix, pattern.pattern, _suffix)
         react_on = self.class.reacting_on || :message
