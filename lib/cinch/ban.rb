@@ -22,7 +22,7 @@ module Cinch
     # @param [Time] at The time at which the ban was created
     def initialize(mask, by, at)
       @by, @created_at = by, at
-      if mask =~ /^\$/
+      if mask =~ /^[\$~]/
         @extended = true
         @mask     = mask
       else
@@ -35,7 +35,7 @@ module Cinch
     # @raise [Exceptions::UnsupportedFeature] Cinch does not support
     #   Freenode's extended bans
     def match(user)
-      raise UnsupportedFeature, "extended bans (freenode) are not supported yet" if @extended
+      raise UnsupportedFeature, "extended bans are not supported yet" if @extended
       @mask =~ user
     end
     alias_method :=~, :match
