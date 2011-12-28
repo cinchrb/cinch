@@ -22,7 +22,7 @@ module Cinch
         end
       end
 
-      # @return [Array<Match>] All matchers
+      # @return [Array<Matcher>] All matchers
       attr_reader   :matchers
 
       # @return [Array<Listener>] All listeners
@@ -51,7 +51,7 @@ module Cinch
       # @attr [Boolean] use_suffix
       # @attr [Symbol] method
       # @attr [Symbol] group
-      Match = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group)
+      Matcher = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group)
 
       # @attr [Symbol] event
       # @attr [Symbol] method
@@ -138,7 +138,7 @@ module Cinch
       # @todo Document match/listener grouping
       def match(pattern, options = {})
         options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil}.merge(options)
-        @matchers << Match.new(pattern, options[:use_prefix], options[:use_suffix], options[:method], options[:group])
+        @matchers << Matcher.new(pattern, options[:use_prefix], options[:use_suffix], options[:method], options[:group])
       end
 
       # Events to listen to.
