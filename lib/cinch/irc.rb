@@ -42,8 +42,8 @@ module Cinch
       rescue Timeout::Error
         @bot.loggers.warn("Timed out while connecting")
         return false
-      rescue SocketError
-        @bot.loggers.warn("Could not connect to the IRC server. Please check your network.")
+      rescue SocketError => e
+        @bot.loggers.warn("Could not connect to the IRC server. Please check your network: #{e.message}")
         return false
       rescue => e
         @bot.loggers.exception(e)
