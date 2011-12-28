@@ -38,7 +38,6 @@ module Cinch
     # @since 2.0.0
     # @raise [ArgumentError] When passing more than two colors as arguments.
     def self.format(*settings, string)
-      settings = args
       string   = string.dup
 
       attributes = settings.select {|k| Attributes.has_key?(k)}.map {|k| Attributes[k]}
