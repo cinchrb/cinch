@@ -71,17 +71,17 @@ module Cinch
       # @api private
       def self.extended(by)
         by.instance_exec do
-          @matchers  = []
-          @ctcps     = []
-          @listeners = []
-          @timers    = []
-          @help      = nil
-          @hooks     = Hash.new{|h, k| h[k] = []}
-          @prefix    = nil
-          @suffix    = nil
-          @reacting_on  = :message
+          @matchers         = []
+          @ctcps            = []
+          @listeners        = []
+          @timers           = []
+          @help             = nil
+          @hooks            = Hash.new{|h, k| h[k] = []}
+          @prefix           = nil
+          @suffix           = nil
+          @reacting_on      = :message
           @required_options = []
-          self.plugin_name = nil
+          self.plugin_name  = nil
         end
       end
 
@@ -138,7 +138,7 @@ module Cinch
       # @todo Document match/listener grouping
       def match(pattern, options = {})
         options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil}.merge(options)
-        @matchers << Matcher.new(pattern, options[:use_prefix], options[:use_suffix], options[:method], options[:group], options[:prefix], options[:suffix])
+        @matchers << Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix))
       end
 
       # Events to listen to.
@@ -306,17 +306,17 @@ module Cinch
       prefix = self.class.prefix || @bot.config.plugins.prefix
       suffix = self.class.suffix || @bot.config.plugins.suffix
 
-      self.class.matchers.each do |pattern|
-        _prefix = pattern.use_prefix ? pattern.prefix || prefix : nil
-        _suffix = pattern.use_suffix ? pattern.suffix || suffix : nil
+      self.class.matchers.each do |matcher|
+        _prefix = matcher.use_prefix ? matcher.prefix || prefix : nil
+        _suffix = matcher.use_suffix ? matcher.suffix || suffix : nil
 
-        pattern_to_register = Pattern.new(_prefix, pattern.pattern, _suffix)
+        pattern_to_register = Pattern.new(_prefix, matcher.pattern, _suffix)
         react_on = self.class.reacting_on || :message
 
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
-        new_handler = Handler.new(@bot, react_on, pattern_to_register, group: pattern.group) do |message, *args|
-          method = method(pattern.method)
+        new_handler = Handler.new(@bot, react_on, pattern_to_register, group: matcher.group) do |message, *args|
+          method = method(matcher.method)
           arity = method.arity - 1
           if arity > 0
             args = args[0..arity - 1]
