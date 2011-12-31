@@ -361,7 +361,7 @@ module Cinch
     end
 
     # @api private
-    # @return [void]
+    # @return [User, nil] The removed user
     def remove_user(user)
       @in_channel = false if user == @bot
       @users.delete(user)
