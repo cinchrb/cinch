@@ -353,10 +353,11 @@ module Cinch
     # @endgroup
 
     # @api private
-    # @return [void]
+    # @return [User] The added user
     def add_user(user, modes = [])
       @in_channel = true if user == @bot
       @users[user] = modes
+      user
     end
 
     # @api private
