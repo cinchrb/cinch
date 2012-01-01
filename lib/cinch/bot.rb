@@ -465,6 +465,7 @@ module Cinch
       @config.nick = new_nick
     end
 
+    # @return [String]
     def inspect
       "#<Bot nick=#{@name.inspect}>"
     end
