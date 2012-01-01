@@ -330,10 +330,13 @@ module Cinch
     #
     # @param [String, Channel] channel either the name of a channel or a {Channel} object
     # @param [String] key optionally the key of the channel
-    # @return [void]
+    # @return [Channel] The joined channel
     # @see Channel#join
     def join(channel, key = nil)
-      Channel(channel).join(key)
+      channel = Channel(channel)
+      channel.join(key)
+
+      channel
     end
 
     # Part a channel.
