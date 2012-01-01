@@ -49,8 +49,6 @@ require "cinch/configuration/storage"
 
 module Cinch
   # @attr nick
-  # @attr modes
-  # @attr logger
   # @version 2.0.0
   class Bot < User
     include Helpers
