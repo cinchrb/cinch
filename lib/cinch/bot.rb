@@ -74,21 +74,6 @@ module Cinch
     # @return [Array<Channel>] All channels the bot currently is in
     attr_reader :channels
 
-    # @return [String] the bot's hostname
-    attr_reader :host
-
-    # @return [Mask]
-    attr_reader :mask
-
-    # @return [String]
-    attr_reader :user
-
-    # @return [String]
-    attr_reader :realname
-
-    # @return [Time]
-    attr_reader :signed_on_at
-
     # @return [PluginList] All registered plugins
     # @version 2.0.0
     attr_reader :plugins
