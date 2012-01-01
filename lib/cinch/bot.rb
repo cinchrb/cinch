@@ -343,10 +343,13 @@ module Cinch
     #
     # @param [String, Channel] channel either the name of a channel or a {Channel} object
     # @param [String] reason an optional reason/part message
-    # @return [void]
+    # @return [Channel] The channel that was left
     # @see Channel#part
     def part(channel, reason = nil)
-      Channel(channel).part(reason)
+      channel = Channel(channel)
+      channel.part(reason)
+
+      channel
     end
 
     # @endgroup
