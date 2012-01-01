@@ -424,7 +424,7 @@ module Cinch
     # @api private
     # @return [String]
     def set_nick(nick)
-      @nick = nick
+      @name = nick
     end
 
     # The bot's nickname.
@@ -437,7 +437,7 @@ module Cinch
     #   @return [String]
     # @return [String]
     def nick
-      @nick
+      @name
     end
 
     def nick=(new_nick)
