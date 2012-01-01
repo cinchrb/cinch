@@ -81,12 +81,10 @@ module Cinch
 
     # @return [UserList] All {User users} the bot knows about.
     # @since 1.1.0
-    # TODO maybe call this :users?
     attr_reader :user_list
 
     # @return [ChannelList] All {Channel channels} the bot knows about.
     # @since 1.1.0
-    #TODO maybe call this :channels?
     attr_reader :channel_list
 
     # @return [PluginList] All loaded plugins.
