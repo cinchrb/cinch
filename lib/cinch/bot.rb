@@ -465,24 +465,6 @@ module Cinch
       @config.nick = new_nick
     end
 
-    # @return [Boolean] True if the bot is using SSL to connect to the
-    #   server.
-    def secure?
-      @config[:ssl] == true || (@config[:ssl].is_a?(Hash) && @config[:ssl][:use])
-    end
-    alias_method :secure, :secure?
-
-    # @return [false] Always returns `false`.
-    def unknown?
-      false
-    end
-    alias_method :unknown, :unknown?
-
-    def online?
-      true
-    end
-    alias_method :online, :online?
-
     def inspect
       "#<Bot nick=#{@name.inspect}>"
     end
