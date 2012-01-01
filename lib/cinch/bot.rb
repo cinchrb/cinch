@@ -363,6 +363,7 @@ module Cinch
       @channel_list = ChannelList.new(self)
       @plugins      = PluginList.new(self)
 
+      super(nil, self)
       instance_eval(&b) if block_given?
     end
 
