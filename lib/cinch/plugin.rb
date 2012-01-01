@@ -51,7 +51,7 @@ module Cinch
       # @attr [Boolean] use_suffix
       # @attr [Symbol] method
       # @attr [Symbol] group
-      Matcher = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group, :prefix, :suffix)
+      Matcher = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :reacting_on)
 
       # @attr [Symbol] event
       # @attr [Symbol] method
@@ -137,8 +137,8 @@ module Cinch
       # @return [void]
       # @todo Document match/listener grouping
       def match(pattern, options = {})
-        options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil}.merge(options)
-        @matchers << Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix))
+        options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil, :react_on => nil}.merge(options)
+        @matchers << Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :react_on))
       end
 
       # Events to listen to.
@@ -310,7 +310,7 @@ module Cinch
         _suffix = matcher.use_suffix ? matcher.suffix || suffix : nil
 
         pattern_to_register = Pattern.new(_prefix, matcher.pattern, _suffix)
-        react_on = self.class.reacting_on || :message
+        react_on = matcher.reacting_on || self.class.reacting_on || :message
 
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
