@@ -395,11 +395,11 @@ module Cinch
 
     # @since 2.0.0
     def modes=(modes)
-      @modes.each do |mode|
+      (@modes - modes).each do |mode|
         unset_mode(mode)
       end
 
-      modes.each do |mode|
+      (modes - @modes).each do |mode|
         set_mode(mode)
       end
     end
