@@ -37,7 +37,11 @@ module Cinch
     #   end
     def User(user)
       return user if user.is_a?(User)
-      bot.user_list.find_ensured(user)
+      if user == bot.nick
+        bot
+      else
+        bot.user_list.find_ensured(user)
+      end
     end
 
     # @example Used as a class method in a plugin
