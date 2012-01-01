@@ -498,5 +498,9 @@ module Cinch
       true
     end
     alias_method :online, :online?
+
+    def inspect
+      "#<Bot nick=#{@name.inspect}>"
+    end
   end
 end
