@@ -174,12 +174,11 @@ module Cinch
         @ctcps << command.to_s.upcase
       end
 
-      # Set which kind of messages to react on (i.e. call {#execute})
-      # @param [Array<Symbol<:message, :channel, :private>>] events Which events to react on
+      # Set which kind of messages to react on for matchers.
+      # @param [Symbol<:message, :channel, :private>] event Which event to react on
       # @return [void]
-      # @return [Array<Symbol>, void]
-      def react_on(*args)
-        self.reacting_on = args.first
+      def react_on(event)
+        self.reacting_on = event
       end
 
       # @example
