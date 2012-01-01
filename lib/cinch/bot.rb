@@ -106,7 +106,7 @@ module Cinch
     # @since 2.0.0
     attr_reader :handlers
 
-    # All modes set for the bot.
+    # The bot's modes.
     #
     # @return [Array<String>]
     # @since 2.0.0
