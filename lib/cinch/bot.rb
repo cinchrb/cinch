@@ -381,6 +381,7 @@ module Cinch
     # @see Bot#modes
     # @see Bot#unset_mode
     def set_mode(mode)
+      @modes << mode unless @modes.include?(mode)
       @irc.send "MODE #{nick} +#{mode}"
     end
 
@@ -390,6 +391,7 @@ module Cinch
     # @return [void]
     # @since 2.0.0
     def unset_mode(mode)
+      @modes.delete(mode)
       @irc.send "MODE #{nick} -#{mode}"
     end
 
