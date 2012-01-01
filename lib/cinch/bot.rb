@@ -422,7 +422,7 @@ module Cinch
     #
     # @param [String] nick
     # @api private
-    # @return [void]
+    # @return [String]
     def set_nick(nick)
       @nick = nick
     end
