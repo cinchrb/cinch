@@ -364,6 +364,8 @@ module Cinch
     end
 
     # @since 2.0.0
+    # @return [self]
+    # @api private
     def bot
       # This method is needed for the Helpers interface
       self
