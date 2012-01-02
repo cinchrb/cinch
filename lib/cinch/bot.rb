@@ -185,35 +185,27 @@ module Cinch
     #   be one argument to the block. It is optional to accept them,
     #   though
     #
-    # @return [Array<Handler>] The handlers that have been registered
-    def on(event, regexps = [], *args, &block)
-      regexps = [*regexps]
-      regexps = [//] if regexps.empty?
-
+    # @return [Handler] The handlers that have been registered
+    def on(event, regexp = //, *args, &block)
       event = event.to_sym
 
-      handlers = []
-
-      regexps.each do |regexp|
-        pattern = case regexp
-                  when Pattern
-                    regexp
-                  when Regexp
-                    Pattern.new(nil, regexp, nil)
+      pattern = case regexp
+                when Pattern
+                  regexp
+                when Regexp
+                  Pattern.new(nil, regexp, nil)
+                else
+                  if event == :ctcp
+                    Pattern.generate(:ctcp, regexp)
                   else
-                    if event == :ctcp
-                      Pattern.generate(:ctcp, regexp)
-                    else
-                      Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
-                    end
+                    Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
                   end
+                end
 
-        handler = Handler.new(self, event, pattern, {args: args, execute_in_callback: true}, &block)
-        handlers << handler
-        @handlers.register(handler)
-      end
+      handler = Handler.new(self, event, pattern, {args: args, execute_in_callback: true}, &block)
+      @handlers.register(handler)
 
-      return handlers
+      return handler
     end
 
     # @endgroup
