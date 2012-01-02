@@ -177,13 +177,15 @@ module Cinch
     #     - :ctcp    (ctcp requests, use a ctcp command as `match`)
     #     - :action  (actions, aka /me)
     #
-    # @param [Regexp, String, Integer] match every message of the
+    # @param [Regexp, Pattern, String] regexp every message of the
     #   right event will be checked against this argument and the event
     #   will only be called if it matches
     #
+    # @param [Array<Object>] *args Arguments that should be passed to
+    #   the block, additionally to capture groups of the regexp.
+    #
     # @yieldparam [String] *args each capture group of the regex will
-    #   be one argument to the block. It is optional to accept them,
-    #   though
+    #   be one argument to the block.
     #
     # @return [Handler] The handlers that have been registered
     def on(event, regexp = //, *args, &block)
