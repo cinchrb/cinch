@@ -437,7 +437,7 @@ module Cinch
     #
     # @param [String] base The base nick to start trying from
     # @api private
-    # @return String
+    # @return [String]
     # @since 2.0.0
     def generate_next_nick!(base = nil)
       nicks = @config.nicks || []
