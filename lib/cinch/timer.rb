@@ -54,13 +54,13 @@ module Cinch
       @thread_group = ThreadGroup.new
 
       if options[:start_automatically]
-        @bot.on :connect, [], self do |m, timer|
+        @bot.on :connect, //, self do |m, timer|
           timer.start
         end
       end
 
       if options[:stop_automatically]
-        @bot.on :disconnect, [], self do |m, timer|
+        @bot.on :disconnect, //, self do |m, timer|
           timer.stop
         end
       end
