@@ -291,6 +291,7 @@ module Cinch
       end while @config.reconnect and not @quitting
     end
 
+    # TODO document this
     def stop
       @plugins.each do |plugin|
         plugin.storage.save
