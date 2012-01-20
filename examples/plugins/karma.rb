@@ -7,8 +7,7 @@ class Karma
 
   def initialize(*args)
     super
-    @users = {}
-    @users.default = 0
+    @users = Hash.new(0)
   end
 
   def execute(m)
