@@ -3,7 +3,7 @@ require 'cinch'
 class Karma
   include Cinch::Plugin
 
-  match /[a-z_\-\[\]\\^{}|][a-z0-9_\-\[\]\\^{}|]*[+][+]/
+  match /(\S+)\+{2}/
 
   def initialize(*args)
     super
