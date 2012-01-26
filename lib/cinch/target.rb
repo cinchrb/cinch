@@ -1,6 +1,8 @@
 module Cinch
   # @since 2.0.0
   class Target
+    include Comparable
+
     # @return [String]
     attr_reader :name
     # @return [Bot]
@@ -117,6 +119,26 @@ module Cinch
     # @return [void]
     def ctcp(message)
       send "\001#{message}\001"
+    end
+
+    # @return [Boolean]
+    def eql?(other)
+      self == other
+    end
+
+    # @param [Target, String]
+    # @return [-1, 0, 1, nil]
+    def <=>(other)
+      casemapping = @bot.irc.isupport["CASEMAPPING"]
+      left = @name.irc_downcase(casemapping)
+
+      if other.is_a?(Target)
+        left <=> other.name.irc_downcase(casemapping)
+      elsif other.is_a?(String)
+        left <=> other.irc_downcase(casemapping)
+      else
+        nil
+      end
     end
   end
 end

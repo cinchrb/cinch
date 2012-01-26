@@ -375,12 +375,6 @@ module Cinch
       @users.clear
     end
 
-    # @return [Boolean]
-    def ==(other)
-      @name == other.to_s
-    end
-    alias_method :eql?, "=="
-
     # @return [Fixnum]
     def hash
       @name.hash

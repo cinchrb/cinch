@@ -338,18 +338,5 @@ module Cinch
 
       return @data.has_key?(m) || super
     end
-
-    # @return [Boolean]
-    def ==(other)
-      return case other
-             when self.class
-               @name == other.nick
-             when String
-               self.to_s == other
-             else
-               false
-             end
-    end
-    alias_method :eql?, "=="
   end
 end
