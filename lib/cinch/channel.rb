@@ -13,7 +13,6 @@ module Cinch
   class Channel < Target
     include Syncable
     include Helpers
-    @channels = {}
 
     # Users are represented by a Hash, mapping individual users to an
     # array of modes (e.g. "o" for opped).
