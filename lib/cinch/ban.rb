@@ -17,7 +17,7 @@ module Cinch
     # @return [Boolean] whether this is an extended ban (as used by for example Freenode)
     attr_reader :extended
 
-    # @param [String] mask The mask
+    # @param [String, Mask] mask The mask
     # @param [User, nil] by The user who created the ban.
     # @param [Time] at The time at which the ban was created
     def initialize(mask, by, at)
@@ -27,7 +27,7 @@ module Cinch
         @mask     = mask
       else
         @extended = false
-        @mask = Mask.new(mask)
+        @mask = Mask.from(mask)
       end
     end
 
