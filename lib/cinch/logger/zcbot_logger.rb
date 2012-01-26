@@ -7,7 +7,7 @@ module Cinch
     # produce logs parseable by pisg (with the zcbot formatter) to
     # create channel statistics..
     class ZcbotLogger < Cinch::Logger
-      # (see Logger::Logger#log)
+      # (see Logger#log)
       def log(messages, event, level = event)
         return if event != :incoming
         super
