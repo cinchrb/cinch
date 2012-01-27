@@ -30,7 +30,7 @@ module Cinch
     #   with
     # @option options [Number] :interval The interval (in seconds) of
     #   the timer
-    # @option options [Number] :shots (Infinity) How often should the
+    # @option options [Number] :shots (Float::INFINITY) How often should the
     #   timer fire?
     # @option options [Boolean] :threaded (true) If true, each invocation will be
     #   executed in a thread of its own.
@@ -40,7 +40,7 @@ module Cinch
     # @option options [Boolean] :stop_automaticall (true) If true, the
     #   timer will automatically stop when the bot disconnects.
     def initialize(bot, options, &block)
-      options = {:threaded => true, :shots => Infinity, :start_automatically => true, :stop_automatically => true}.merge(options)
+      options = {:threaded => true, :shots => Float::INFINITY, :start_automatically => true, :stop_automatically => true}.merge(options)
 
       @bot        = bot
       @interval   = options[:interval].to_f

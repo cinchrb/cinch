@@ -4,7 +4,7 @@ require "thread"
 require "ostruct"
 require "cinch/rubyext/module"
 require "cinch/rubyext/string"
-require "cinch/rubyext/infinity"
+require "cinch/rubyext/float"
 
 require "cinch/exceptions"
 

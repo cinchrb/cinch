@@ -65,7 +65,7 @@ module Cinch
     # @param [Proc] block A proc to execute
     # @option options [Symbol] :method (:timer) Method to call (only if no proc is provided)
     # @option options [Boolean] :threaded (true) Call method in a thread?
-    # @option options [Number] :shots (Infinity) How often should the timer fire?
+    # @option options [Number] :shots (Float::INFINITY) How often should the timer fire?
     # @return [Timer]
     # @since 2.0.0
     def Timer(interval, options = {}, &block)

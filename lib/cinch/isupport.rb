@@ -64,16 +64,16 @@ module Cinch
         "D"             => %w[i m n p s t r]
       }
       self["MODES"]       = 1
-      self["NICKLEN"]     = Infinity
-      self["MAXBANS"]     = Infinity
-      self["TOPICLEN"]    = Infinity
-      self["KICKLEN"]     = Infinity
-      self["CHANNELLEN"]  = Infinity
+      self["NICKLEN"]     = Float::INFINITY
+      self["MAXBANS"]     = Float::INFINITY
+      self["TOPICLEN"]    = Float::INFINITY
+      self["KICKLEN"]     = Float::INFINITY
+      self["CHANNELLEN"]  = Float::INFINITY
       self["CHIDLEN"]     = 5
-      self["AWAYLEN"]     = Infinity
+      self["AWAYLEN"]     = Float::INFINITY
       self["MAXTARGETS"]  = 1
-      self["MAXCHANNELS"] = Infinity # deprecated
-      self["CHANLIMIT"]   = {"#" => Infinity}
+      self["MAXCHANNELS"] = Float::INFINITY # deprecated
+      self["CHANLIMIT"]   = {"#" => Float::INFINITY}
       self["STATUSMSG"]   = ["@", "+"]
       self["CASEMAPPING"] = :rfc1459
       self["ELIST"]       = []
