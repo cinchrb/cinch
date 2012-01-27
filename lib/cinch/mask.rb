@@ -1,4 +1,5 @@
 module Cinch
+  # This class represents masks, which are primarily used for bans.
   class Mask
     # @return [String]
     attr_reader :nick
