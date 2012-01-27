@@ -1,4 +1,13 @@
+# TODO @since for all methods
 module Cinch
+  # The Helpers module contains a number of methods whose purpose is
+  # to make writing plugins easier by hiding parts of the API. The
+  # {#Channel} helper, for example, provides an easier way for turning
+  # a String object into a {Channel} object than directly using
+  # {ChannelList}: Compare `Channel("#some_channel")` with
+  # `bot.channel_list.find_ensured("#some_channel")`.
+  #
+  # The Helpers module automatically gets included in all plugins.
   module Helpers
     # @group Type casts
 
