@@ -23,8 +23,6 @@ module Cinch
 
       def []=(key, value)
         @yaml[key] = value
-
-        maybe_save
       end
 
       def has_key?(key)
@@ -48,7 +46,6 @@ module Cinch
 
       def delete(key)
         @yaml.delete(key)
-        maybe_save
       end
 
       def delete_if
@@ -71,11 +68,6 @@ module Cinch
       end
 
       def unload
-      end
-
-      private
-      def maybe_save
-        save if @options.autosave
       end
     end
   end
