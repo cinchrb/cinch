@@ -212,11 +212,14 @@ module Cinch
       # @option options [Array<:match, :listen_to, :ctcp>] :for ([:match, :listen_to, :ctcp])
       #   Which kinds of events to run the hook for.
       # @option options [Symbol] :method (true) The method to execute.
-      # @return [void]
+      # @return [Hook]
       # @since 1.1.0
       def hook(type, options = {})
         options = {:for => [:match, :listen_to, :ctcp], :method => :hook}.merge(options)
-        __hooks(type) << Hook.new(type, options[:for], options[:method])
+        hook = Hook.new(type, options[:for], options[:method])
+        __hooks(type) << hook
+
+        hook
       end
 
       # @return [Hash]
