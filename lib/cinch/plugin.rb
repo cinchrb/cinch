@@ -134,12 +134,15 @@ module Cinch
       #   plugin suffix will automatically be appended to the
       #   pattern.
       # @option options [Symbol] :group (nil) The group the match belongs to.
-      # @return [void]
+      # @return [Matcher]
       # @todo Document match/listener grouping
       # @todo document new options
       def match(pattern, options = {})
         options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil, :react_on => nil}.merge(options)
-        @matchers << Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :react_on))
+        matcher = Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :react_on))
+        @matchers << matcher
+
+        matcher
       end
 
       # Events to listen to.
