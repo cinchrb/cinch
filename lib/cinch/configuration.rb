@@ -3,6 +3,9 @@ module Cinch
   class Configuration < OpenStruct
     KnownOptions = []
 
+    # Generate a default configuration.
+    #
+    # @return [Hash]
     def self.default_config
       {}
     end
@@ -12,6 +15,7 @@ module Cinch
       super(base)
     end
 
+    # @return [Hash]
     def to_h
       @table.clone
     end

@@ -10,6 +10,7 @@ module Cinch
     attr_reader :mask
 
     # @version 1.1.2
+    # @param [String] mask
     def initialize(mask)
       @mask = mask
       @nick, @user, @host = mask.match(/(.+)!(.+)@(.+)/)[1..-1]
@@ -28,6 +29,7 @@ module Cinch
       other.is_a?(self.class) && self == other
     end
 
+    # @return [Fixnum]
     def hash
       @mask.hash
     end

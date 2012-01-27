@@ -80,10 +80,12 @@ module Cinch
     attr_reader :quitting
 
     # @return [UserList] All {User users} the bot knows about.
+    # @see UserList
     # @since 1.1.0
     attr_reader :user_list
 
     # @return [ChannelList] All {Channel channels} the bot knows about.
+    # @see ChannelList
     # @since 1.1.0
     attr_reader :channel_list
 
@@ -99,7 +101,8 @@ module Cinch
     # @api private
     attr_reader :callback
 
-    # All registered handlers.
+    # The {HandlerList}, providing access to all registered plugins
+    # and plugin manipulation as well as {HandlerList#dispatch calling handlers}.
     #
     # @return [HandlerList]
     # @see HandlerList

@@ -10,6 +10,7 @@ module Cinch
                       :max_messages, :plugins, :channels, :encoding, :reconnect, :max_reconnect_delay,
                       :local_host, :timeouts, :ping_interval, :storage]
 
+      # (see Configuration.default_config)
       def self.default_config
         {
           :server => "localhost",

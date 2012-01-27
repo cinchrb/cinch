@@ -3,19 +3,26 @@ module Cinch
   class Handler
     # @return [Bot]
     attr_reader :bot
+
     # @return [Symbol]
     attr_reader :event
+
     # @return [Pattern]
     attr_reader :pattern
+
     # @return [Array]
     attr_reader :args
+
     # @return [Proc]
     attr_reader :block
+
     # @return [Symbol]
     attr_reader :group
+
     # @return [ThreadGroup]
     # @api private
     attr_reader :thread_group
+
     def initialize(bot, event, pattern, options = {}, &block)
       options = {:group => nil, :execute_in_callback => false, :args => []}.merge(options)
       @bot = bot

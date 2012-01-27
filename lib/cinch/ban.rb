@@ -1,7 +1,8 @@
 require "cinch/mask"
 module Cinch
   class Ban
-    # @return [Mask, String]
+    # @return [Mask] A {Mask} object for non-extended bans
+    # @return [String] A String object for extended bans (see {#extended})
     attr_reader :mask
 
     # The user who created the ban. Might be nil on networks that do
