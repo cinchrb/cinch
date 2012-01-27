@@ -2,6 +2,9 @@
 require "cinch/open_ended_queue"
 
 module Cinch
+  # This class manages all outgoing messages, applying rate throttling
+  # and fair distribution.
+  #
   # @api private
   class MessageQueue
     def initialize(socket, bot)
