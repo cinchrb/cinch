@@ -30,9 +30,16 @@ module Cinch
       # @return [Array<Symbol<:message, :channel, :private>>] The list of events to react on
       attr_accessor :reacting_on
 
+      # The name of the plugin.
+      # @overload plugin_name
+      #   @return [String, nil]
+      # @overload plugin_name=(new_name)
+      #   @param [String, nil] new_name
+      #   @return [String]
       # @return [String, nil] The name of the plugin
       attr_reader :plugin_name
 
+      # @return [String]
       def plugin_name=(new_name)
         if new_name.nil? && self.name
           @plugin_name = self.name.split("::").last.downcase
