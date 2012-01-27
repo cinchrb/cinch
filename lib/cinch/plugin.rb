@@ -1,8 +1,27 @@
 # TODO more details in "message dropped" debug output
 module Cinch
+  # This class represents the core of the plugin functionality of
+  # Cinch. It provides both the methods for users to write their own
+  # plugins as well as for the Cinch framework to use them.
+  #
+  # The {ClassMethods} module, which will get included automatically
+  # in all classes that include `Cinch::Plugin`, includes all class
+  # methods that the user will use for creating plugins.
+  #
+  # Most of the instance methods are for use by the Cinch framework
+  # and part of the private API, but some will also be used by plugin
+  # authors, mainly {#config}, {#synchronize}, {#storage} and {#bot}.
   module Plugin
     include Helpers
 
+    # The ClassMethods module includes all methods that the user will
+    # need for creating plugins for the Cinch framework: Setting
+    # options (see {#set} and the attributes) as well as methods for
+    # configuring the actual pattern matching ({#match}, {#listen_to}).
+    #
+    # Furthermore, the attributes allow for programmatically
+    # inspecting plugins.
+    #
     # @attr plugin_name
     module ClassMethods
       # @return [Hash<Symbol<:pre, :post> => Array<Hook>>] All hooks
@@ -46,6 +65,8 @@ module Cinch
       # @return [Array<Symbol>] Required plugin options
       attr_accessor :required_options
 
+      # Represents a Matcher as created by {#match}.
+      #
       # @attr [String, Regexp, Proc] pattern
       # @attr [Boolean] use_prefix
       # @attr [Boolean] use_suffix
@@ -53,16 +74,27 @@ module Cinch
       # @attr [Symbol] group
       Matcher = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :reacting_on)
 
+      # Represents a Listener as created by {#listen_to}.
+      #
       # @attr [Symbol] event
       # @attr [Symbol] method
       Listener = Struct.new(:event, :method)
 
+      # Represents a Timer as created by {#timer}.
+      #
+      # @note This is not the same as a {Cinch::Timer} object, which
+      #   will allow controlling and inspecting actually running
+      #   timers. This class only describes a Timer that still has to
+      #   be created.
+      #
       # @attr [Number] interval
       # @attr [Symbol] method
       # @attr [Hash] options
       # @attr [Boolean] registered
       Timer = Struct.new(:interval, :options, :registered)
 
+      # Represents a Hook as created by {#hook}.
+      #
       # @attr [Symbol] type
       # @attr [Array<Symbol>] for
       # @attr [Symbol] method
