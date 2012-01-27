@@ -97,6 +97,7 @@ module Cinch
 
     # @return [String]
     def to_s
+      # TODO maybe add the number of running threads to the output?
       "#<Cinch::Handler @event=#{@event.inspect} pattern=#{@pattern.inspect}>"
     end
   end
