@@ -1,4 +1,5 @@
 module Cinch
+  # This class exposes parsed ISUPPORT information of the IRC network.
   class ISupport < Hash
     @@mappings = {
       %w[PREFIX] => lambda {|v|
