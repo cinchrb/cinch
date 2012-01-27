@@ -4,6 +4,7 @@ module Cinch
   #
   # @version 2.0.0
   class Logger
+    # @private
     LevelOrder = [:debug, :log, :info, :warn, :error, :fatal]
 
     # @return [Array<:debug, :log, :info, :warn, :error, :fatal>]
