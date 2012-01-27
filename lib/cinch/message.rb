@@ -2,6 +2,13 @@
 require "time"
 
 module Cinch
+  # This class serves two purposes. For one, it simply
+  # represents incoming messages and allows for querying various
+  # details (who sent the message, what kind of message it is, etc).
+  #
+  # At the same time, it allows **responding** to messages, which
+  # means sending messages to either users or channels.
+  #
   # @attr_reader user
   # @attr_reader error
   # @attr_reader message
