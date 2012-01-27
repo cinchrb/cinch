@@ -194,11 +194,14 @@ module Cinch
       # @param [Number] interval Interval in seconds
       # @option options [Symbol] :method (:timer) Method to call (only if no proc is provided)
       # @option options [Boolean] :threaded (true) Call method in a thread?
-      # @return [void]
+      # @return [Timer]
       # @since 1.1.0
       def timer(interval, options = {})
         options = {:method => :timer, :threaded => true}.merge(options)
-        @timers << Timer.new(interval, options, false)
+        timer = Timer.new(interval, options, false)
+        @timers << timer
+
+        timer
       end
 
       # Defines a hook which will be run before or after a handler is
