@@ -1,5 +1,6 @@
 require "cinch/mask"
 module Cinch
+  # This class represents channel bans.
   class Ban
     # @return [Mask] A {Mask} object for non-extended bans
     # @return [String] A String object for extended bans (see {#extended})
