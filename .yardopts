@@ -1,1 +1,1 @@
---hide-void-return -m markdown --verbose
+--hide-void-return -m markdown --verbose --no-private
