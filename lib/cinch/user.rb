@@ -310,7 +310,11 @@ module Cinch
       end
     end
 
+    # Used to update the user's nick on nickchange events.
+    #
+    # @param [String] new_nick The user's new nick
     # @api private
+    # @return [void]
     def update_nick(new_nick)
       @last_nick, @name = @name, new_nick
       @bot.user_list.update_nick(self)
