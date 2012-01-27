@@ -1,4 +1,8 @@
+# Extensions to Ruby's Module class.
 class Module
+  # Like `attr_reader`, but for defining a synchronized attribute
+  # reader.
+  #
   # @api private
   def synced_attr_reader(attribute)
     define_method(attribute) do
@@ -10,6 +14,9 @@ class Module
     end
   end
 
+  # Like `attr_accessor`, but for defining a synchronized attribute
+  # accessor
+  #
   # @api private
   def synced_attr_accessor(attr)
     synced_attr_reader(attr)
