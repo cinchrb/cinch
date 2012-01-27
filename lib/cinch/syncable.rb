@@ -1,4 +1,5 @@
 module Cinch
+  # Provide blocking access to user/channel information.
   module Syncable
     # Blocks until the object is synced.
     #
@@ -50,6 +51,9 @@ module Cinch
       @synced_attributes.clear
     end
 
+    # @param [Symbol] attribute
+    # @param [Boolean] data
+    # @param [Boolean] unsync
     # @api private
     def attr(attribute, data = false, unsync = false)
       unless unsync
