@@ -3,6 +3,9 @@ require "net/protocol"
 require "cinch/ircd"
 
 module Cinch
+  # This class manages the connection to the IRC server. That includes
+  # processing incoming and outgoing messages, creating Ruby objects
+  # and invoking plugins.
   class IRC
     include Helpers
 
