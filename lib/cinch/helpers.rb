@@ -1,5 +1,7 @@
 module Cinch
   module Helpers
+    # @group Type casts
+
     # Helper method for turning a String into a {Target} object.
     #
     # @param [String] target a target name
@@ -77,6 +79,8 @@ module Cinch
       timer
     end
 
+    # @endgroup
+
     # @group Logging
 
     # Use this method to automatically log exceptions to the loggers.
@@ -144,10 +148,14 @@ module Cinch
     end
     # @endgroup
 
+    # @group Formatting
+
     # (see Formatting.format)
     def Format(*args)
       Formatting.format(*args)
     end
     alias_method :Color, :Format
+
+    # @endgroup
   end
 end
