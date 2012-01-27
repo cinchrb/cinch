@@ -34,18 +34,26 @@ module Cinch
 
       def each
         @yaml.each {|e| yield(e)}
+
+        self
       end
 
       def each_key
         @yaml.each_key {|e| yield(e)}
+
+        self
       end
 
       def each_value
         @yaml.each_value {|e| yield(e)}
+
+        self
       end
 
       def delete(key)
-        @yaml.delete(key)
+        obj = @yaml.delete(key)
+
+        obj
       end
 
       def delete_if
@@ -57,6 +65,8 @@ module Cinch
         delete_keys.each do |key|
           delete(key)
         end
+
+        self
       end
 
       def save
