@@ -53,8 +53,27 @@ module Cinch
       @ircd == :unknown
     end
 
-    def default_messages_per_second
+    # Note for the default_* methods: Always make sure to return a
+    # value for when no network/ircd was detected so that MessageQueue
+    # doesn't break.
 
+    
+    def default_messages_per_second
+      case @network
+      when :freenode
+        0.7
+      else
+        0.5
+      end
+    end
+
+    def default_server_queue_size
+      case @network
+      when :quakenet
+        40
+      else
+        10
+      end
     end
   end
 end

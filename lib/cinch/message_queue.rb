@@ -82,8 +82,8 @@ module Cinch
 
     private
     def wait
-      mps            = @bot.config.messages_per_second
-      max_queue_size = @bot.config.server_queue_size
+      mps            = @bot.config.messages_per_second || @bot.irc.network.default_messages_per_second
+      max_queue_size = @bot.config.server_queue_size   || @bot.irc.network.default_server_queue_size
 
       if @log.size > 1
         time_passed = 0
