@@ -144,7 +144,7 @@ module Cinch
       end
 
       @in_whois = true
-      if @bot.irc.ircd.whois_only_one_argument?
+      if @bot.irc.network.whois_only_one_argument?
         @bot.irc.send "WHOIS #@name"
       else
         @bot.irc.send "WHOIS #@name #@name"

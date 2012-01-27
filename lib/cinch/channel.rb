@@ -69,8 +69,8 @@ module Cinch
           when :bans
             @bot.irc.send "MODE #@name +b"
           when :owners
-            if @bot.irc.ircd.owner_list_mode
-              @bot.irc.send "MODE #@name +#{@bot.irc.ircd.owner_list_mode}"
+            if @bot.irc.network.owner_list_mode
+              @bot.irc.send "MODE #@name +#{@bot.irc.network.owner_list_mode}"
             else
               # the current IRCd does not support channel owners, so
               # just mark the empty array as synced
@@ -218,8 +218,8 @@ module Cinch
       @bot.irc.send "NAMES #@name" if all
       @bot.irc.send "MODE #@name +b" # bans
       @bot.irc.send "MODE #@name"
-      if @bot.irc.ircd.owner_list_mode
-        @bot.irc.send "MODE #@name +#{@bot.irc.ircd.owner_list_mode}"
+      if @bot.irc.network.owner_list_mode
+        @bot.irc.send "MODE #@name +#{@bot.irc.network.owner_list_mode}"
       else
         mark_as_synced :owners
       end

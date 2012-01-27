@@ -1,6 +1,6 @@
 require "timeout"
 require "net/protocol"
-require "cinch/ircd"
+require "cinch/network"
 
 module Cinch
   # This class manages the connection to the IRC server. That includes
@@ -15,8 +15,8 @@ module Cinch
     # @return [Bot]
     attr_reader :bot
 
-    # @return [IRCd] The detected IRCd
-    attr_reader :ircd
+    # @return [Network] The detected network
+    attr_reader :network
 
     def initialize(bot)
       @bot      = bot
@@ -28,7 +28,7 @@ module Cinch
     # @since 2.0.0
     def setup
       @registration  = []
-      @ircd          = IRCd.new(:unknown)
+      @network       = Network.new(:unknown, :unknown)
       @whois_updates = Hash.new {|h, k| h[k] = {}}
       @in_lists      = Set.new
     end
@@ -244,9 +244,10 @@ module Cinch
     end
 
     # @since 2.0.0
-    def detect_ircd(msg, event)
-      old_ircd = @ircd
-      new_ircd = nil
+    def detect_network(msg, event)
+      old_network = @network
+      new_network = nil
+      new_ircd    = nil
       case event
       when "002"
         if msg.params.last =~ /^Your host is .+?, running version (.+)$/
@@ -259,21 +260,37 @@ module Cinch
             new_ircd = $1.downcase.to_sym
           end
         elsif msg.params.last == "Your host is jtvchat"
-          new_ircd = :jtv
+          new_network = :jtv
+          new_ircd    = :jtv
         end
       when "005"
-        if @isupport["NETWORK"] == "NGameTV"
-          new_ircd = :ngametv
+        case @isupport["NETWORK"]
+        when "NGameTV"
+          new_network = :ngametv
+          new_ircd    = :ngametv
+        when nil
+        else
+          new_network = @isupport["NETWORK"].downcase.to_sym
         end
       end
 
-      if old_ircd.unknown? && new_ircd
+      new_network ||= old_network.name
+      new_ircd    ||= old_network.ircd
+
+      if old_network.unknown_ircd? && new_ircd != :unknown
         @bot.loggers.info "Detected IRCd: #{new_ircd}"
-        @ircd = IRCd.new(new_ircd)
-      elsif !old_ircd.unknown? && new_ircd && new_ircd != old_ircd.name
-        @bot.loggers.info "Detected different IRCd: #{old_ircd.name} -> #{new_ircd}"
-        @ircd = IRCd.new(new_ircd)
       end
+      if !old_network.unknown_ircd? && new_ircd != old_network.ircd
+        @bot.loggers.info "Detected different IRCd: #{old_network.ircd} -> #{new_ircd}"
+      end
+      if old_network.unknown_network? && new_network != :unknown
+        @bot.loggers.info "Detected network: #{new_network}"
+      end
+      if !old_network.unknown_network? && new_network != old_network.name
+        @bot.loggers.info "Detected different network: #{old_network.name} -> #{new_network}"
+      end
+
+      @network = Network.new(new_network, new_ircd)
     end
 
     def process_owner_mode(msg, events, param, direction)
@@ -453,13 +470,13 @@ module Cinch
 
     # @since 2.0.0
     def on_002(msg, events)
-      detect_ircd(msg, "002")
+      detect_network(msg, "002")
     end
 
     def on_005(msg, events)
       # ISUPPORT
       @isupport.parse(*msg.params[1..-2].map {|v| v.split(" ")}.flatten)
-      detect_ircd(msg, "005")
+      detect_network(msg, "005")
     end
 
     # @since 1.1.0

@@ -60,7 +60,7 @@ module Cinch
       match = @raw.match(/(^:(\S+) )?(\S+)(.*)/)
       _, @prefix, @command, raw_params = match.captures
 
-      if @bot.irc.ircd.ngametv?
+      if @bot.irc.network.ngametv?
         if @prefix != "ngame"
           @prefix = "%s!user@host" % [@prefix, @prefix, @prefix]
         end
