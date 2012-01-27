@@ -1,3 +1,4 @@
+# Extensions to Ruby's String class.
 class String
   # Like `String#downcase`, but respecting different IRC casemaps.
   #
