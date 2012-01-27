@@ -161,16 +161,17 @@ module Cinch
       #   @param [Hash] options
       #   @option options [Symbol] :method (:listen) The method to
       #     execute
-      #   @return [void]
+      #   @return [Array<Listener]
       def listen_to(*types)
         options = {:method => :listen}
         if types.last.is_a?(Hash)
           options.merge!(types.pop)
         end
 
-        types.each do |type|
-          @listeners << Listener.new(type, options[:method])
-        end
+        listeners = types.map {|type| Listener.new(type, options[:method])}
+        @listeners.concat listeners
+
+        listeners
       end
 
       # @version 1.1.1
