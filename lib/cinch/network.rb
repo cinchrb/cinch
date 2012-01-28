@@ -1,14 +1,22 @@
 module Cinch
-  # This class allows querying the IRC server for its name and certain
-  # non-standard behaviour.
+  # This class allows querying the IRC network for its name and used
+  # server software as well as certain non-standard behaviour.
+  #
+  # @since 2.0.0
   class Network
-    # @return [Symbol]
+    # @return [Symbol] The name of the network. `:unknown` if the
+    #   network couldn't be detected.
     attr_reader :name
 
-    # @return [Symbol]
+    # @return [Symbol] The server software used by the network.
+    #   `:unknown` if the software couldn't be detected.
     attr_reader :ircd
 
     # @param [Symbol] name
+    # @param [Symbol] ircd
+    # @api private
+    # @note The user should not create instances of this class but use
+    #   {IRC#network} instead.
     def initialize(name, ircd)
       @name = name
       @ircd = ircd
@@ -57,7 +65,8 @@ module Cinch
     # value for when no network/ircd was detected so that MessageQueue
     # doesn't break.
 
-    
+    # @return [Number] The `messages per second` value that best suits
+    #   the current network
     def default_messages_per_second
       case @network
       when :freenode
@@ -67,6 +76,8 @@ module Cinch
       end
     end
 
+    # @return [Number] The `server queue size` value that best suits
+    #   the current network
     def default_server_queue_size
       case @network
       when :quakenet
