@@ -1,1 +1,1 @@
---hide-void-return -m markdown --verbose --no-private
+--hide-void-return -m markdown --verbose --no-private - docs/**/*.md
