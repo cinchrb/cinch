@@ -597,7 +597,7 @@ module Cinch
       msg.params[3].split(" ").each do |user|
         m = user.match(/^([#{@isupport["PREFIX"].values.join}]+)/)
         if m
-          prefixes = m[1].split.map {|s| @isupport["PREFIX"].key(s)}
+          prefixes = m[1].split("").map {|s| @isupport["PREFIX"].key(s)}
           nick   = user[prefixes.size..-1]
         else
           nick   = user
