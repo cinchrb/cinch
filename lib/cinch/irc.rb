@@ -97,6 +97,21 @@ module Cinch
     # @api private
     # @return [void]
     # @since 2.0.0
+    def send_cap_ls
+      send "CAP LS"
+    end
+
+    # @api private
+    # @return [void]
+    # @since 2.0.0
+    def send_cap_req
+      send "CAP REQ :" + ([:"multi-prefix"] & @network.capabilities).join(" ")
+      send "CAP END"
+    end
+
+    # @api private
+    # @return [void]
+    # @since 2.0.0
     def send_login
       send "PASS #{@bot.config.password}" if @bot.config.password
       send "NICK #{@bot.generate_next_nick!}"
@@ -164,6 +179,7 @@ module Cinch
     def start
       setup
       if connect
+        send_cap_ls
         send_login
         reading_thread = start_reading_thread
         sending_thread = start_sending_thread
@@ -290,7 +306,8 @@ module Cinch
         @bot.loggers.info "Detected different network: #{old_network.name} -> #{new_network}"
       end
 
-      @network = Network.new(new_network, new_ircd)
+      @network.name = new_network
+      @network.ircd = new_ircd
     end
 
     def process_owner_mode(msg, events, param, direction)
@@ -301,6 +318,14 @@ module Cinch
       else
         msg.channel.owners_unsynced.delete(owner)
         events << [:deowner, owner]
+      end
+    end
+
+    # @since 2.0.0
+    def on_cap(msg, events)
+      if msg.params[0, 2] == ["*", "LS"]
+        @network.capabilities.concat msg.message.split(" ").map(&:to_sym)
+        send_cap_req
       end
     end
 

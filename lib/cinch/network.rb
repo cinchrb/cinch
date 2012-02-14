@@ -8,9 +8,22 @@ module Cinch
     #   network couldn't be detected.
     attr_reader :name
 
+    # @api private
+    attr_writer :name
+
     # @return [Symbol] The server software used by the network.
     #   `:unknown` if the software couldn't be detected.
     attr_reader :ircd
+
+    # @api private
+    attr_writer :ircd
+
+    # @return [Array<Symbol>] All client capabilities supported by the
+    # network.
+    attr_reader :capabilities
+
+    # @api private
+    attr_writer :capabilities
 
     # @param [Symbol] name
     # @param [Symbol] ircd
@@ -18,8 +31,9 @@ module Cinch
     # @note The user should not create instances of this class but use
     #   {IRC#network} instead.
     def initialize(name, ircd)
-      @name = name
-      @ircd = ircd
+      @name         = name
+      @ircd         = ircd
+      @capabilities = []
     end
 
     # @return [String, nil] The mode used for getting the list of
