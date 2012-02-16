@@ -10,6 +10,8 @@ module Cinch
   #   This is a snapshot of the last WHOIS.
   # @attr_reader [Time] signed_on_at
   # @attr_reader [Array<Channel>] channels All channels the user is in.
+  # @attr_reader [String, nil] away The user's away message, or
+  #   `nil` if not away.
   #
   # @version 2.0.0
   class User < Target
@@ -97,6 +99,7 @@ module Cinch
         :online?      => false,
         :channels     => [],
         :secure?      => false,
+        :away         => nil,
       }
       case args.size
       when 2

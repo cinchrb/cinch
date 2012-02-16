@@ -504,6 +504,17 @@ module Cinch
       detect_network(msg, "005")
     end
 
+    # @since 2.0.0
+    def on_301(msg, events)
+      # RPL_AWAY
+      user = User(msg.params.first)
+      away = msg.message
+
+      if @whois_updates[user]
+        @whois_updates[user].merge!({:away => away})
+      end
+    end
+
     # @since 1.1.0
     def on_307(msg, events)
       # RPL_WHOISREGNICK
