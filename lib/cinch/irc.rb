@@ -105,7 +105,7 @@ module Cinch
     # @return [void]
     # @since 2.0.0
     def send_cap_req
-      send "CAP REQ :" + ([:"multi-prefix"] & @network.capabilities).join(" ")
+      send "CAP REQ :" + ([:"away-notify", :"multi-prefix"] & @network.capabilities).join(" ")
       send "CAP END"
     end
 
@@ -318,6 +318,19 @@ module Cinch
       else
         msg.channel.owners_unsynced.delete(owner)
         events << [:deowner, owner]
+      end
+    end
+
+    # @since 2.0.0
+    def on_away(msg, events)
+      if msg.message.to_s.empty?
+        # unaway
+        m.user.sync(:away, nil, true)
+        events << [:unaway, m.user]
+      else
+        # away
+        m.user.sync(:away, msg.message, true)
+        events << [:away, m.user, msg.message]
       end
     end
 
