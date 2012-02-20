@@ -381,7 +381,7 @@ module Cinch
                 events << [:unban, ban]
               end
             when "q"
-              process_owner_mode(msg, events, param, direction) if @ircd.owner_list_mode
+              process_owner_mode(msg, events, param, direction) if @network.owner_list_mode
             else
               raise Exceptions::UnsupportedMode, mode
             end
@@ -596,7 +596,7 @@ module Cinch
       @in_lists << :bans
 
       mask = msg.params[2]
-      if @ircd.jtv?
+      if @network.jtv?
         # on the justin tv network, ban "masks" only consist of the
         # nick/username
         mask = "%s!%s@%s" % [mask, mask, mask + ".irc.justin.tv"]
