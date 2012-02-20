@@ -215,7 +215,13 @@ module Cinch
       unsync :bans
       unsync :modes
       unsync :owners
-      @bot.irc.send "NAMES #@name" if all
+      # TODO get rid of `all`
+      @bot.irc.send "NAMES #@name" if all # TODO do we need NAMES when we've got WHO?
+      if @bot.irc.isupport["WHOX"]
+        @bot.irc.send "WHO #@name %acfhnru" if all
+      else
+        @bot.irc.send "WHO #@name" if all
+      end
       @bot.irc.send "MODE #@name +b" # bans
       @bot.irc.send "MODE #@name"
       if @bot.irc.network.owner_list_mode

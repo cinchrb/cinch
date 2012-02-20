@@ -294,6 +294,9 @@ module Cinch
     # @todo Document this constant
     RPL_NAMEREPLY = RPL_NAMREPLY
 
+    # @todo Document this constant
+    RPL_WHOSPCRPL = 354
+
     # To reply to a NAMES message, a reply pair consisting of RPL_NAMREPLY
     # and RPL_ENDOFNAMES is sent by the server back to the client. If
     # there is no channel found as in the query, then only RPL_ENDOFNAMES

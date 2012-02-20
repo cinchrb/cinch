@@ -558,6 +558,35 @@ module Cinch
       msg.channel.sync(:topic, msg.params[2])
     end
 
+    def on_352(msg, events)
+      # RPL_WHOREPLY
+      # "<channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hopcount> <real name>"
+      _, channel, user, host, server, nick, flags, hopsrealname = msg.params
+      hops, realname = hopsrealname.split(" ", 2)
+      channel     = Channel(channel)
+      user_object = User(nick)
+      user_object.sync(:user, user, true)
+      user_object.sync(:host, host, true)
+    end
+
+    def on_354(msg, events)
+      # RPL_WHOSPCRPL
+      # We are using the following format: %acfhnru
+
+      #                          _         user      host                                 nick      f account  realame
+      # :leguin.freenode.net 354 dominikh_ ~a        ip-88-152-125-117.unitymediagroup.de dominikh_ H 0        :d
+      # :leguin.freenode.net 354 dominikh_ ~FiXato   fixato.net                           FiXato    H FiXato   :FiXato, using WeeChat -- More? See: http://twitter
+      # :leguin.freenode.net 354 dominikh_ ~dominikh cinch/developer/dominikh             dominikh  H DominikH :dominikh
+      # :leguin.freenode.net 354 dominikh_ ~oddmunds s21-04214.dsl.no.powertech.net       oddmunds  H 0        :oddmunds
+
+      _, channel, user, host, nick, _, account, realname = msg.params
+      channel = Channel(channel)
+      user_object = User(nick)
+      user_object.sync(:user, user, true)
+      user_object.sync(:host, host, true)
+      user_object.sync(:authname, account == "0" ? nil : account, true)
+    end
+
     def on_353(msg, events)
       # RPL_NAMEREPLY
       unless @in_lists.include?(:names)
