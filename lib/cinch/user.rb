@@ -110,11 +110,10 @@ module Cinch
       @synced_attributes  = Set.new
 
       @when_requesting_synced_attribute = lambda {|attr|
-        unless @synced
+        unless synced?(attr)
           @data[:unknown?] = false
           unsync :unknown?
 
-          unsync attr
           whois
         end
       }
@@ -138,7 +137,6 @@ module Cinch
     # @return [void]
     def whois
       return if @in_whois
-      @synced = false
       @data.keys.each do |attr|
         unsync attr
       end
@@ -198,7 +196,6 @@ module Cinch
 
       sync(:unknown?, false, true)
       self.online = true
-      @synced = true
     end
 
     # @return [void]
@@ -206,7 +203,6 @@ module Cinch
     # @api private
     # @see Syncable#unsync_all
     def unsync_all
-      @synced = false
       super
     end
 
