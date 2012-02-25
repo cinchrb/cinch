@@ -65,7 +65,7 @@ module Cinch
         end
 
         begin
-          @socket.writeline Cinch::Utilities::Encoding.encode_outgoing(message, @bot.config.encoding) + "\r\n"
+          @socket.writeline Cinch::Utilities::Encoding.encode_outgoing(message, @bot.config.encoding)
           @log << Time.now
           @bot.loggers.outgoing(message)
 
