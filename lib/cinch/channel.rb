@@ -135,6 +135,7 @@ module Cinch
     # @return [Array<User>] All admins in the channel
     # @since 2.0.0
     def admins
+      # FIXME wrong mode
       @users.select {|user, modes| modes.include?("o")}.keys
     end
     # @endgroup

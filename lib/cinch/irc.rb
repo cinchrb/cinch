@@ -97,6 +97,21 @@ module Cinch
     # @api private
     # @return [void]
     # @since 2.0.0
+    def send_cap_ls
+      send "CAP LS"
+    end
+
+    # @api private
+    # @return [void]
+    # @since 2.0.0
+    def send_cap_req
+      send "CAP REQ :" + ([:"away-notify", :"multi-prefix"] & @network.capabilities).join(" ")
+      send "CAP END"
+    end
+
+    # @api private
+    # @return [void]
+    # @since 2.0.0
     def send_login
       send "PASS #{@bot.config.password}" if @bot.config.password
       send "NICK #{@bot.generate_next_nick!}"
@@ -164,6 +179,7 @@ module Cinch
     def start
       setup
       if connect
+        send_cap_ls
         send_login
         reading_thread = start_reading_thread
         sending_thread = start_sending_thread
@@ -290,7 +306,8 @@ module Cinch
         @bot.loggers.info "Detected different network: #{old_network.name} -> #{new_network}"
       end
 
-      @network = Network.new(new_network, new_ircd)
+      @network.name = new_network
+      @network.ircd = new_ircd
     end
 
     def process_owner_mode(msg, events, param, direction)
@@ -301,6 +318,27 @@ module Cinch
       else
         msg.channel.owners_unsynced.delete(owner)
         events << [:deowner, owner]
+      end
+    end
+
+    # @since 2.0.0
+    def on_away(msg, events)
+      if msg.message.to_s.empty?
+        # unaway
+        m.user.sync(:away, nil, true)
+        events << [:unaway, m.user]
+      else
+        # away
+        m.user.sync(:away, msg.message, true)
+        events << [:away, m.user, msg.message]
+      end
+    end
+
+    # @since 2.0.0
+    def on_cap(msg, events)
+      if msg.params[0, 2] == ["*", "LS"]
+        @network.capabilities.concat msg.message.split(" ").map(&:to_sym)
+        send_cap_req
       end
     end
 
@@ -479,6 +517,17 @@ module Cinch
       detect_network(msg, "005")
     end
 
+    # @since 2.0.0
+    def on_301(msg, events)
+      # RPL_AWAY
+      user = User(msg.params.first)
+      away = msg.message
+
+      if @whois_updates[user]
+        @whois_updates[user].merge!({:away => away})
+      end
+    end
+
     # @since 1.1.0
     def on_307(msg, events)
       # RPL_WHOISREGNICK
@@ -597,7 +646,7 @@ module Cinch
       msg.params[3].split(" ").each do |user|
         m = user.match(/^([#{@isupport["PREFIX"].values.join}]+)/)
         if m
-          prefixes = m[1].split.map {|s| @isupport["PREFIX"].key(s)}
+          prefixes = m[1].split("").map {|s| @isupport["PREFIX"].key(s)}
           nick   = user[prefixes.size..-1]
         else
           nick   = user
