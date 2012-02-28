@@ -30,6 +30,7 @@ require "cinch/isupport"
 require "cinch/plugin"
 require "cinch/pattern"
 require "cinch/mode_parser"
+require "cinch/dcc"
 
 require "cinch/handler_list"
 require "cinch/cached_list"
@@ -46,6 +47,7 @@ require "cinch/configuration/plugins"
 require "cinch/configuration/ssl"
 require "cinch/configuration/timeouts"
 require "cinch/configuration/storage"
+require "cinch/configuration/dcc"
 
 module Cinch
   # @attr nick

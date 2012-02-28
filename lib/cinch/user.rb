@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require "cinch/target"
+require "timeout"
 
 module Cinch
   # @attr_reader [String] user
@@ -290,6 +291,47 @@ module Cinch
       end
 
       @monitored = false
+    end
+
+    # Send data via DCC SEND to a user.
+    #
+    # @param [DCCableObject] io
+    # @param [String] filename
+    # @since 2.0.0
+    # @return [void]
+    # @note This method blocks.
+    def dcc_send(io, filename = File.basename(io.path))
+      own_ip = bot.config.dcc.own_ip || @bot.irc.socket.addr[2]
+      dcc = DCC::Outgoing::Send.new(receiver: self,
+                                    filename: filename,
+                                    io: io,
+                                    own_ip: own_ip
+                                    )
+
+      dcc.start_server
+
+      handler = Handler.new(@bot, :message,
+                            Pattern.new(/^/,
+                                        /\001DCC RESUME #{filename} #{dcc.port} (\d+)\001/,
+                                        /$/)) do |m, position|
+        next unless m.user == self
+        dcc.seek(position.to_i)
+        m.user.send "\001DCC ACCEPT #{filename} #{dcc.port} #{position}\001"
+
+        handler.unregister
+      end
+      @bot.handlers.register(handler)
+
+      @bot.loggers.info "DCC: Outgoing DCC SEND: File name: %s - Size: %dB - IP: %s - Port: %d - Status: waiting" % [filename, io.size, own_ip, dcc.port]
+      dcc.send_handshake
+      begin
+        dcc.listen
+        @bot.loggers.info "DCC: Outgoing DCC SEND: File name: %s - Size: %dB - IP: %s - Port: %d - Status: done" % [filename, io.size, own_ip, dcc.port]
+      rescue Timeout::Error
+        @bot.loggers.info "DCC: Outgoing DCC SEND: File name: %s - Size: %dB - IP: %s - Port: %d - Status: failed (timeout)" % [filename, io.size, own_ip, dcc.port]
+      ensure
+        handler.unregister
+      end
     end
 
     # Updates the user's online state and dispatch the correct event.

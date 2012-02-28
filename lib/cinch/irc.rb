@@ -23,6 +23,13 @@ module Cinch
       @isupport = ISupport.new
     end
 
+    # @return [TCPSocket]
+    # @api private
+    # @since 2.0.0
+    def socket
+      @socket.io
+    end
+
     # @api private
     # @return [void]
     # @since 2.0.0
@@ -217,7 +224,7 @@ module Cinch
         end
 
         if msg.command == "PRIVMSG"
-          events << [:message] << [:privmsg]
+          events << [:message]
         else
           events << [:notice]
         end
@@ -225,15 +232,15 @@ module Cinch
         if msg.action?
           events << [:action]
         end
-      else
-        meth = "on_#{msg.command.downcase}"
-        __send__(meth, msg, events) if respond_to?(meth, true)
+      end
 
-        if msg.error?
-          events << [:error]
-        else
-          events << [msg.command.downcase.to_sym]
-        end
+      meth = "on_#{msg.command.downcase}"
+      __send__(meth, msg, events) if respond_to?(meth, true)
+
+      if msg.error?
+        events << [:error]
+      else
+        events << [msg.command.downcase.to_sym]
       end
 
       msg.events = events.map(&:first)
@@ -497,6 +504,24 @@ module Cinch
       if msg.user
         msg.user.online = true
       end
+
+
+      if msg.message =~ /^\001DCC SEND (\S+) (\d+) (\d+)(?: (\d+))?\001$/
+        process_dcc_send($1, $2, $3, $4, msg, events)
+      end
+    end
+
+    # @since 2.0.0
+    def process_dcc_send(filename, ip, port, size, m, events)
+      ip   = ip.to_i
+      ip   = [24, 16, 8, 0].collect {|b| (ip >> b) & 255}.join('.')
+      port = port.to_i
+      size = size.to_i
+
+      @bot.loggers.info "DCC: Incoming DCC SEND: File name: %s - Size: %dB - IP: %s - Port: %d" % [filename, size, ip, port]
+
+      dcc = DCC::Incoming::Send.new(user: m.user, filename: filename, size: size, ip: ip, port: port)
+      events << [:dcc_send, dcc]
     end
 
     # @since 2.0.0
