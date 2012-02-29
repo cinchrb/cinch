@@ -511,5 +511,23 @@ module Cinch
 
     # @todo Document this constant
     ERR_MONLISTFULL  = 734
+
+    # @todo Document this constant
+    RPL_SASLLOGIN = 900
+
+    # @todo Document this constant
+    RPL_SASLSUCCESS = 903
+
+    # @todo Document this constant
+    RPL_SASLFAILED = 904
+
+    # @todo Document this constant
+    RPL_SASLERROR = 905
+
+    # @todo Document this constant
+    RPL_SASLABORT = 906
+
+    # @todo Document this constant
+    RPL_SASLALREADYAUTH = 907
   end
 end

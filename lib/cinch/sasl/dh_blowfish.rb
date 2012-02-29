@@ -21,6 +21,10 @@ module Cinch
           pgy.map {|i| OpenSSL::BN.new(i, 2).to_i}
         end
 
+        # @param [String] user
+        # @param [String] password
+        # @param [String] payload
+        # @return [String]
         def generate(user, password, payload)
           data = Base64.decode64(payload).force_encoding("ASCII-8BIT")
 
