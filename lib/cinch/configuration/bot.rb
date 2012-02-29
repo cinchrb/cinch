@@ -39,6 +39,7 @@ module Cinch
           :delay_joins => 0,
           :storage => Configuration::Storage.new,
           :dcc => Configuration::DCC.new,
+          :sasl => Configuration::SASL.new,
         }
       end
     end

@@ -112,7 +112,13 @@ module Cinch
     # @return [void]
     # @since 2.0.0
     def send_cap_req
-      send "CAP REQ :" + ([:"away-notify", :"multi-prefix"] & @network.capabilities).join(" ")
+      send "CAP REQ :" + ([:"away-notify", :"multi-prefix", :sasl] & @network.capabilities).join(" ")
+    end
+
+    # @since 2.0.0
+    # @api private
+    # @return [void]
+    def send_cap_end
       send "CAP END"
     end
 
@@ -179,6 +185,15 @@ module Cinch
       end
     end
 
+    # @since 2.0.0
+    def send_sasl
+      if @bot.config.sasl.username && @sasl_current_method = @sasl_remaining_methods.pop
+        send "AUTHENTICATE #@sasl_current_method"
+      else
+        send_cap_end
+      end
+    end
+
     # Establish a connection.
     #
     # @return [void]
@@ -186,8 +201,10 @@ module Cinch
     def start
       setup
       if connect
+        @sasl_remaining_methods = ["PLAIN", "DH-BLOWFISH"]
         send_cap_ls
         send_login
+
         reading_thread = start_reading_thread
         sending_thread = start_sending_thread
         ping_thread    = start_ping_thread
@@ -346,6 +363,14 @@ module Cinch
       if msg.params[0, 2] == ["*", "LS"]
         @network.capabilities.concat msg.message.split(" ").map(&:to_sym)
         send_cap_req
+      elsif msg.params[0, 2] == ["*", "ACK"]
+        if @network.capabilities.include?(:sasl)
+          send_sasl
+        else
+          send_cap_end
+        end
+      elsif msg.params[0, 2] == ["*", "NACK"]
+        send_cap_end
       end
     end
 
@@ -813,6 +838,30 @@ module Cinch
       # ERR_MONLISTFULL
       user = User(msg.params[2])
       user.monitored = false
+    end
+
+    # @since 2.0.0
+    def on_903(msg, events)
+      # SASL authentication successful
+      send_cap_end
+    end
+
+    # @since 2.0.0
+    def on_904(msg, events)
+      # SASL authentication failed
+      send_sasl
+    end
+
+    # @since 2.0.0
+    def on_authenticate(msg, events)
+      params = @bot.config.sasl.username, @bot.config.sasl.password, msg.params.last
+      mechanism = case @sasl_current_method
+                  when "DH-BLOWFISH"
+                    SASL::DH_Blowfish
+                  when "PLAIN"
+                    SASL::Plain
+                  end
+      send "AUTHENTICATE " + mechanism.generate(*params)
     end
   end
 end
