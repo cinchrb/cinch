@@ -35,7 +35,7 @@ module Cinch
         # Listen for an incoming connection.
         #
         # This starts listening for an incoming connection to the server
-        # started by {start_server}. After a client successfully
+        # started by {#start_server}. After a client successfully
         # connected, the server socket will be closed and the file
         # transferred to the client.
         #
