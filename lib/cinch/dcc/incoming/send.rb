@@ -74,12 +74,14 @@ module Cinch
         end
 
         # @return [Boolean] True if the DCC originates from a private ip
+        # @see #from_localhost?
         def from_private_ip?
           ip   = IPAddr.new(@ip)
           PRIVATE_NETS.any? {|n| n.include?(ip)}
         end
 
         # @return [Boolean] True if the DCC originates from localhost
+        # @see #from_private_ip?
         def from_localhost?
           ip   = IPAddr.new(@ip)
           LOCAL_NETS.any? {|n| n.include?(ip)}

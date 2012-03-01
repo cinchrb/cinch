@@ -295,7 +295,7 @@ module Cinch
 
     # Send data via DCC SEND to a user.
     #
-    # @param [DCCableObject] io
+    # @param [DCC::DCCableObject] io
     # @param [String] filename
     # @since 2.0.0
     # @return [void]

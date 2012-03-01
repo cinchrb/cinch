@@ -7,6 +7,8 @@ module Cinch
     # @since 2.0.0
     # @abstract
     module DCCableObject
+      # Return the next `number` bytes of the object.
+      #
       # @param [Number] number Read `number` bytes at most
       # @return [String] The read data
       # @return [nil] If no more data can be read
