@@ -17,19 +17,36 @@
 <!-- *** DONE Investigate if Cinch forgets modes for people who change their nicks :bug: -->
 
 # What has changed in 2.x?
+1. **Added support for SASL** (2.0.0)
+1. **Added support for DCC SEND** (2.0.0)
 1. **Added a fair scheduler for outgoing messages** (2.0.0)
-2. **Added required plugin options** (2.0.0)
-3. **Added methods to query channels for specific kinds of users** (2.0.0)
-4. **Added a {Cinch::Target Target} class** (2.0.0)
-5. **Added support for broken IRC networks** (2.0.0)
-6. **Added a {Cinch::Helpers Helpers} module and new helpers** (2.0.0)
-7. **Added support for actions (/me)** (2.0.0)
-8. **Fixed crash when network is down** (2.0.0)
-9. **Print warnings when plugins are missing methods** (2.0.0)
-x. **New signals** (2.0.0)
-x. **New methods** (2.0.0)
-x. **Removed methods** (2.0.0)
-x. Channel/User Sortable now
+1. **Added required plugin options** (2.0.0)
+1. **Added support for actions (/me)** (2.0.0)
+
+1. **API improvements** (2.0.0)
+   1. **Helper changes** (2.0.0)
+   1. **Added a {Cinch::Target Target} class** (2.0.0)
+   1. **New methods**
+      1. **New {Cinch::Channel} methods** (2.0.0)
+      1. **New {Cinch::Message} methods** (2.0.0)
+      1. **New {Cinch::Helpers} methods** (2.0.0)
+   1. **Removed methods** (2.0.0)
+
+
+1. **Added support for broken IRC networks** (2.0.0)
+1. **Fixed crash when network is down** (2.0.0)
+1. **Print warnings when plugins are missing methods** (2.0.0)
+1. **New signals** (2.0.0)
+1. Channel/User Sortable now
+
+## Added support for SASL (2.0.0)
+Cinch now supports authenticating to services via SASL. For more
+information check the {file:sasl.md readme on SASL}.
+
+## Added support for DCC SEND (2.0.0)
+
+Support for sending and receiving files via DCC has been added to
+Cinch. Check the {file:dcc.md readme on DCC} for more information.
 
 ## Added a fair scheduler for outgoing messages (2.0.0)
 Cinch always provided sophisticated throttling to avoid getting kicked
@@ -69,63 +86,54 @@ Example:
     # The plugin won't load because the option :bar is not set.
     # Instead it will print a warning.
 
-## Added methods to query channels for specific kinds of users (2.0.0)
-- {Cinch::Channel#ops}
-- {Cinch::Channel#half_ops}
-- {Cinch::Channel#admins}
-- {Cinch::Channel#voiced}
+## Added support for actions (/me) (2.0.0)
+TODO
 
-## Added a {Cinch::Target Target} class (2.0.0)
-Since {Cinch::Channel} and {Cinch::User} share one common interface
-for sending messages, it only makes sense to have a common base class.
-{Cinch::Target This new class} takes care of sending messages and
-removes this responsibility from {Cinch::Channel}, {Cinch::User} and
-{Cinch::Bot}
+## API improvements (2.0.0)
 
-## Added support for broken IRC networks (2.0.0)
-Special support for the following flawed IRC networks has been added:
-
-- JustinTV
-- NGameTV
-- IRCnet
-
-## Added a {Cinch::Helpers Helpers} module and new helpers (2.0.0)
+### Helper changes (2.0.0)
 
 The helper methods {Cinch::Helpers#User User()} and
 {Cinch::Helpers#Channel Channel()} have been extracted from
 {Cinch::Bot} and moved to {Cinch::Helpers their own module} which can
 be reused in various places.
 
-Additionally, the following new helpers have been added:
+### Added a {Cinch::Target Target} class (2.0.0)
 
+Since {Cinch::Channel} and {Cinch::User} share one common interface
+for sending messages, it only makes sense to have a common base class.
+{Cinch::Target This new class} takes care of sending messages and
+removes this responsibility from {Cinch::Channel}, {Cinch::User} and
+{Cinch::Bot}
+
+
+### New methods
+
+#### {Cinch::Channel} (2.0.0)
+
+New methods for getting lists of users:
+
+- {Cinch::Channel#ops}
+- {Cinch::Channel#half_ops}
+- {Cinch::Channel#admins}
+- {Cinch::Channel#voiced}
+
+#### {Cinch::Message} (2.0.0)
+
+New action (/me)-related methods:
+
+- {Cinch::Message#action?}
+- {Cinch::Message#action_message}
+
+#### {Cinch::Helpers}
+
+- {Cinch::Helpers#User}
+- {Cinch::Helpers#Channel}
 - {Cinch::Helpers#Target} -- For creating a {Cinch::Target Target} which can receive messages
 - {Cinch::Helpers#Timer}  -- For creating new timers anywhere
 - {Cinch::Helpers#rescue_exception} -- For rescueing and automatically logging an exception
 
-## Added support for actions (/me) (2.0.0)
-TODO
-
-## Fixed crash when network is down (2.0.0)
-
-Cinch will no longer crash when trying to connect to a server while
-the local network is down.
-
-## Print warnings when plugins are missing methods (2.0.0)
-TODO
-
-## New signals (2.0.0)
-TODO
-:action
-:online
-:offline
-
-
-## New methods (2.0.0)
-TODO
-Message#action?
-Message#action_message
-
-## Removed methods (2.0.0)
+### Removed methods (2.0.0)
 The following methods have been removed:
 
 | Removed method                         | Replacement                                                                     |
@@ -146,6 +154,28 @@ The following methods have been removed:
 | Cinch::Bot#debug                       | {Cinch::LoggerList#debug}                                                       |
 | Cinch::Logger::Logger#log_exception    | {Cinch::Logger#exception}                                               |
 | Class methods in Plugin to set options | A new {Cinch::Plugin::ClassMethods#set set} method as well as attribute setters |
+
+
+## Added support for broken IRC networks (2.0.0)
+Special support for the following flawed IRC networks has been added:
+
+- JustinTV
+- NGameTV
+- IRCnet
+
+## Fixed crash when network is down (2.0.0)
+
+Cinch will no longer crash when trying to connect to a server while
+the local network is down.
+
+## Print warnings when plugins are missing methods (2.0.0)
+TODO
+
+## New signals (2.0.0)
+TODO
+:action
+:online
+:offline
 
 
 # What has changed in 1.1.x?
