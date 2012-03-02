@@ -177,8 +177,8 @@ module Cinch
       # @todo Document match/listener grouping
       # @todo document new options
       def match(pattern, options = {})
-        options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil, :react_on => nil}.merge(options)
-        matcher = Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :react_on))
+        options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil, :reacting_on => nil}.merge(options)
+        matcher = Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :reacting_on))
         @matchers << matcher
 
         matcher
