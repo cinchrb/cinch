@@ -1,1 +1,1 @@
---hide-void-return -m markdown --verbose --no-private --asset docs/images:images - docs/**/*.md
+--hide-void-return -m markdown --markup-provider kramdown --verbose --no-private --asset docs/images:images - docs/**/*.md
