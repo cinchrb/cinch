@@ -335,6 +335,19 @@ module Cinch
       @network.ircd = new_ircd
     end
 
+    def process_ban_mode(msg, events, param, direction)
+      mask = param
+      ban = Ban.new(mask, msg.user, Time.now)
+
+      if direction == :add
+        msg.channel.bans_unsynced << ban
+        events << [:ban, ban]
+      else
+        msg.channel.bans_unsynced.delete_if {|b| b.mask == ban.mask}.first
+        events << [:unban, ban]
+      end
+    end
+
     def process_owner_mode(msg, events, param, direction)
       owner = User(param)
       if direction == :add
@@ -441,16 +454,7 @@ module Cinch
           elsif @bot.irc.isupport["CHANMODES"]["A"].include?(mode)
             case mode
             when "b"
-              mask = param
-              ban = Ban.new(mask, msg.user, Time.now)
-
-              if direction == :add
-                msg.channel.bans_unsynced << ban
-                events << [:ban, ban]
-              else
-                msg.channel.bans_unsynced.delete_if {|b| b.mask == ban.mask}.first
-                events << [:unban, ban]
-              end
+              process_ban_mode(msg, events, param, direction)
             when "q"
               process_owner_mode(msg, events, param, direction) if @network.owner_list_mode
             else
