@@ -368,7 +368,7 @@ module Cinch
       else
         # away
         m.user.sync(:away, msg.message, true)
-        events << [:away, m.user, msg.message]
+        events << [:away, m.user]
       end
     end
 
