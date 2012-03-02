@@ -48,7 +48,7 @@ module Cinch
     def initialize(msg, bot)
       @raw = msg
       @bot = bot
-      @matches = {:ctcp => {}, :other => {}}
+      @matches = {:ctcp => {}, :action => {}, :other => {}}
       @events = []
       @time = Time.now
       parse if msg
@@ -170,6 +170,8 @@ module Cinch
     def match(regexp, type)
       if type == :ctcp
         @matches[:ctcp][regexp] ||= ctcp_message.match(regexp)
+      elsif type == :action
+        @matches[:action][regexp] ||= action_message.match(regexp)
       else
         @matches[:other][regexp] ||= message.to_s.match(regexp)
       end
