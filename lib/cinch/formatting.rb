@@ -69,6 +69,10 @@ module Cinch
     # @return [String] The formatted string
     # @since 2.0.0
     # @raise [ArgumentError] When passing more than two colors as arguments.
+    # @see Helpers#Format Helpers#Format for easier access to this method.
+    #
+    # @example Nested formatting, combining text styles and colors
+    #   reply = Format(:underline, "Hello %s! Is your favourite color %s?" % [Format(:bold, "stranger"), Format(:red, "red")])
     def self.format(*settings, string)
       string   = string.dup
 
