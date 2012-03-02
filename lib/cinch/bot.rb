@@ -173,16 +173,9 @@ module Cinch
 
     # Registers a handler.
     #
-    # @param [String, Symbol, Integer] event the event to match. Available
-    #   events are all IRC commands in lowercase as symbols, all numeric
-    #   replies, and the following:
-    #
-    #     - :channel (a channel message)
-    #     - :private (a private message)
-    #     - :message (both channel and private messages)
-    #     - :error   (handling errors, use a numeric error code as `match`)
-    #     - :ctcp    (ctcp requests, use a ctcp command as `match`)
-    #     - :action  (actions, aka /me)
+    # @param [String, Symbol, Integer] event the event to match. For a
+    #   list of available signals, check the {file:signals.md Signals
+    #   documentation}.
     #
     # @param [Regexp, Pattern, String] regexp every message of the
     #   right event will be checked against this argument and the event
