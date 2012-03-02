@@ -6,6 +6,10 @@ module Cinch
   module SASL
     class DH_Blowfish < Mechanism
       class << self
+        def mechanism_name
+          "DH-BLOWFISH"
+        end
+
         # @return [Array<Number, Number, Number>] p, g and y for DH
         def unpack_payload(payload)
           pgy     = []

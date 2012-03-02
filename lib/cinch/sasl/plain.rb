@@ -5,6 +5,10 @@ module Cinch
   module SASL
     class Plain < Mechanism
       class << self
+        def mechanism_name
+          "PLAIN"
+        end
+
         # @param [String] user
         # @param [String] password
         # @return [String]

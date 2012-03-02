@@ -188,8 +188,8 @@ module Cinch
     # @since 2.0.0
     def send_sasl
       if @bot.config.sasl.username && @sasl_current_method = @sasl_remaining_methods.pop
-        @bot.loggers.info "[SASL] Trying to authenticate with #@sasl_current_method"
-        send "AUTHENTICATE #@sasl_current_method"
+        @bot.loggers.info "[SASL] Trying to authenticate with #{@sasl_current_method.mechanism_name}"
+        send "AUTHENTICATE #{@sasl_current_method.mechanism_name}"
       else
         send_cap_end
       end
@@ -202,7 +202,7 @@ module Cinch
     def start
       setup
       if connect
-        @sasl_remaining_methods = ["PLAIN", "DH-BLOWFISH"]
+        @sasl_remaining_methods = [SASL::Plain, SASL::DH_Blowfish]
         send_cap_ls
         send_login
 
@@ -844,27 +844,22 @@ module Cinch
     # @since 2.0.0
     def on_903(msg, events)
       # SASL authentication successful
-      @bot.loggers.info "[SASL] SASL authentication with #@sasl_current_method successful"
+      @bot.loggers.info "[SASL] SASL authentication with #{@sasl_current_method.mechanism_name} successful"
       send_cap_end
     end
 
     # @since 2.0.0
     def on_904(msg, events)
       # SASL authentication failed
-      @bot.loggers.info "[SASL] SASL authentication with #@sasl_current_method failed"
+      @bot.loggers.info "[SASL] SASL authentication with #{@sasl_current_method.mechanism_name} failed"
       send_sasl
     end
 
     # @since 2.0.0
     def on_authenticate(msg, events)
-      params = @bot.config.sasl.username, @bot.config.sasl.password, msg.params.last
-      mechanism = case @sasl_current_method
-                  when "DH-BLOWFISH"
-                    SASL::DH_Blowfish
-                  when "PLAIN"
-                    SASL::Plain
-                  end
-      send "AUTHENTICATE " + mechanism.generate(*params)
+      send "AUTHENTICATE " + @sasl_current_method.generate(@bot.config.sasl.username,
+                                                           @bot.config.sasl.password,
+                                                           msg.params.last)
     end
   end
 end
