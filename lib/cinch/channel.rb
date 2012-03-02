@@ -210,16 +210,16 @@ module Cinch
 
     # @api private
     # @return [void]
-    def sync_modes(all = true)
+    def sync_modes
       unsync :users
       unsync :bans
       unsync :modes
       unsync :owners
-      # TODO get rid of `all`
+
       if @bot.irc.isupport["WHOX"]
-        @bot.irc.send "WHO #@name %acfhnru" if all
+        @bot.irc.send "WHO #@name %acfhnru"
       else
-        @bot.irc.send "WHO #@name" if all
+        @bot.irc.send "WHO #@name"
       end
       @bot.irc.send "MODE #@name +b" # bans
       @bot.irc.send "MODE #@name"
