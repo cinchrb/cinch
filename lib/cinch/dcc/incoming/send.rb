@@ -10,9 +10,9 @@ module Cinch
       # happens directly between two clients. As such it doesn't put
       # stress on the IRC server.
       #
-      # When someone tries to send a file to the bot, the `:dcc_send` signal
-      # will be triggered, in which the DCC request can be inspected and
-      # optionally accepted.
+      # When someone tries to send a file to the bot, the `:dcc_send`
+      # event will be triggered, in which the DCC request can be
+      # inspected and optionally accepted.
       #
       # The event handler receives the plain message object as well as
       # an instance of this class. That instance contains information

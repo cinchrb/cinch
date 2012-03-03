@@ -11,4 +11,4 @@ The following is a list of important documents to read.
 - {file:encodings.md Encodings}
 - {file:logging.md Logging}
 - {Cinch::SASL SASL}
-- {file:signals Signals}
+- {file:events.d Events}

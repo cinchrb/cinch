@@ -174,7 +174,7 @@ module Cinch
     # Registers a handler.
     #
     # @param [String, Symbol, Integer] event the event to match. For a
-    #   list of available signals, check the {file:signals.md Signals
+    #   list of available events, check the {file:events.md Events
     #   documentation}.
     #
     # @param [Regexp, Pattern, String] regexp every message of the
