@@ -194,18 +194,23 @@ provided by {Cinch::Helpers}.
 For more information on the logging architecture as well as examples
 on how to use it, check the {file:logging.md Logging readme}.
 
-## `Bot#dispatch`
+## Prefix/suffix + string semantics
 
-## Prefix/matcher + string semantics
+Behaviour of string prefixes and suffixes has been adapted to match
+that of matchers.
 
-## *Manager → *List
+That means that if the prefix or suffix are strings, the ^ or $ anchor
+will be prepended/appened.
 
 ## Hooks and their return value
+
+Hooks now behave as filters. If a hook returns `false`, the message
+will not further be processed in a particular plugin.
 
 ## Constants
 
 All constants for numeric replies (e.g. `RPL_INFO`) have been moved from
-`Cinch` to `Cinch::Constants`. Thus `Cinch::RPL_INFO` becomes
+{Cinch} to {Cinch::Constants}. Thus `Cinch::RPL_INFO` becomes
 {Cinch::Constants::RPL_INFO}, same for all other numeric constants.
 
 ## Bot configuration
@@ -235,27 +240,11 @@ The second version is especially interesting to tools like
 configuration from a YAML file. For more information see
 {file:bot_options.md Bot options}.
 
+
 ## Various removed methods
 
-### `Bot#raw`, `IRC#message`
+See {file:changes.md#removedrenamed-methods What's changed}
 
-Use {Cinch::IRC#send} instead.
-
-### `Bot#msg`, `Bot#notice`, `Bot#safe_msg`, `Bot#safe_notice`, `Bot#action`, `Bot#safe_action`
-
-These methods have been moved to the {Cinch::Target Target} class, whose direct
-descendants are {Cinch::User User} and {Cinch::Channel Channel}.
-
-### Removed `halt` method
-
-`halt` was being used for breaking out of `on`-handlers early. The same
-thing can be achieved with `break`/`next`.
-
-### Bot#dispatch
-
-### UserList/ChannelList
-
-## `@config.verbose`
 
 ## `on`-handlers now only accepts one pattern
 

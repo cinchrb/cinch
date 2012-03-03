@@ -53,8 +53,10 @@ Now Cinch uses a round-robin approach, having one queue per message
 target (channels and users) and one for generic commands.
 
 ## Added required plugin options
+
 Plugins can now require specific options to be set. If any of those
-options is not set, the plugin will automatically refuse being loaded.
+options are not set, the plugin will automatically refuse being
+loaded.
 
 This is useful for example for plugins that require API keys to
 interact with web services.
@@ -144,7 +146,14 @@ options which overwrite plugin options for single matchers.
 
 
 ## Added support for actions (/me)
-TODO
+
+A new event, {`:action`} has been added and can be used for matching
+actions as follows:
+
+    match "kicks the bot", reacting_on: :action
+    def execute(m)
+      m.reply "Ouch!"
+    end
 
 ## API improvements
 
@@ -240,7 +249,7 @@ moved from {Cinch} to {Cinch::Constants}
 ### Handlers
 
 Internally, Cinch uses {Cinch::Handler Handlers} for listening to and
-matching events. In Previous versions, this was hidden from the user,
+matching events. In previous versions, this was hidden from the user,
 but now they're part of the public API, providing valuable information
 and the chance to {Cinch::Handler#unregister unregister handlers}
 alltogether.
