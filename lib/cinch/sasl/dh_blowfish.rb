@@ -4,8 +4,13 @@ require "cinch/sasl/mechanism"
 
 module Cinch
   module SASL
+    # DH-BLOWFISH is a combination of Diffie-Hellman key exchange and
+    # the Blowfish encryption algorithm. Due to its nature it is more
+    # secure than transmitting the password unencrypted and can be
+    # used on potentially insecure networks.
     class DH_Blowfish < Mechanism
       class << self
+        # @return [String]
         def mechanism_name
           "DH-BLOWFISH"
         end

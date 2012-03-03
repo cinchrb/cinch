@@ -3,8 +3,13 @@ require "cinch/sasl/mechanism"
 
 module Cinch
   module SASL
+    # The simplest mechanisms simply transmits the username and
+    # password without adding any encryption or hashing. As such it's more
+    # insecure than DH-BLOWFISH and should only be used in combination with
+    # SSL.
     class Plain < Mechanism
       class << self
+        # @return [String]
         def mechanism_name
           "PLAIN"
         end
