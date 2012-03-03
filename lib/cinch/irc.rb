@@ -374,16 +374,17 @@ module Cinch
 
     # @since 2.0.0
     def on_cap(msg, events)
-      if msg.params[1] == "LS"
+      case msg.params[1]
+      when "LS"
         @network.capabilities.concat msg.message.split(" ").map(&:to_sym)
         send_cap_req
-      elsif msg.params[1] == "ACK"
+      when "ACK"
         if @network.capabilities.include?(:sasl)
           send_sasl
         else
           send_cap_end
         end
-      elsif msg.params[1] == "NACK"
+      when "NACK"
         send_cap_end
       end
     end
