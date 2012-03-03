@@ -281,12 +281,14 @@ module Cinch
             @reconnects += 1
           end
 
-          # Sleep for a few seconds before reconnecting to prevent being
-          # throttled by the IRC server
+          # Throttle reconnect attempts
           wait = 2**@reconnects
           wait = @config.max_reconnect_delay if wait > @config.max_reconnect_delay
           @loggers.info "Waiting #{wait} seconds before reconnecting"
-          sleep wait
+          start_time = Time.now
+          while !@quitting && (Time.now - start_time) < wait
+            sleep 1
+          end
         end
       end while @config.reconnect and not @quitting
     end
