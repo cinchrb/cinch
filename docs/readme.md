@@ -1,5 +1,9 @@
 # @title README
 
+
+- {file:changes.md Changelog}
+- {file:migrating.md Migration guides}
+
 # Important documents
 
 The following is a list of important documents to read.

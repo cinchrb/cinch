@@ -31,7 +31,7 @@
    1. **Channel/Target/User implement Comparable**
    1. **Renamed `*Manager` to `*List`**
 
-1. **New signals**
+1. **New events**
 
 ## Added support for SASL
 
@@ -240,7 +240,7 @@ moved from {Cinch} to {Cinch::Constants}
 ### Handlers
 
 Internally, Cinch uses {Cinch::Handler Handlers} for listening to and
-matching signals. In Previous versions, this was hidden from the user,
+matching events. In Previous versions, this was hidden from the user,
 but now they're part of the public API, providing valuable information
 and the chance to {Cinch::Handler#unregister unregister handlers}
 alltogether.
@@ -348,37 +348,37 @@ For more information on timers, see the {Cinch::Timer Timer documentation}.
 - :{file:bot_options.md#saslusername sasl.username}
 - :{file:bot_options.md#saslpassword sasl.password}
 
-## New signals
-- :{file:signals.md#action action}
-- :{file:signals.md#away away}
-- :{file:signals.md#unaway unaway}
-- :{file:signals.md#dccsend dcc_send}
-- :{file:signals.md#owner owner}
-- :{file:signals.md#dehalfop-deop-deowner-devoice deowner}
-- :{file:signals.md#leaving leaving}
-- :{file:signals.md#online online}
-- :{file:signals.md#offline offline}
+## New events
+- :{file:events.md#action action}
+- :{file:events.md#away away}
+- :{file:events.md#unaway unaway}
+- :{file:events.md#dccsend dcc_send}
+- :{file:events.md#owner owner}
+- :{file:events.md#dehalfop-deop-deowner-devoice deowner}
+- :{file:events.md#leaving leaving}
+- :{file:events.md#online online}
+- :{file:events.md#offline offline}
 
 
 # What has changed in 1.1?
-1. **New signals**
+1. **New events**
 2. **New methods**
 3. **New options**
 4. **Improved logger**
 x. **Deprecated methods**
 
-## New signals
+## New events
 
-- :{file:signals.md#op op}
-- :{file:signals.md#dehalfop-deop-deowner-devoice deop}
-- :{file:signals.md#voice voice}
-- :{file:signals.md#dehalfop-deop-deowner-devoice devoice}
-- :{file:signals.md#halfop halfop}
-- :{file:signals.md#dehalfop-deop-deowner-devoice dehalfop}
-- :{file:signals.md#ban ban}
-- :{file:signals.md#unban unban}
-- :{file:signals.md#modechange mode_change}
-- :{file:signals.md#catchall catchall}
+- :{file:events.md#op op}
+- :{file:events.md#dehalfop-deop-deowner-devoice deop}
+- :{file:events.md#voice voice}
+- :{file:events.md#dehalfop-deop-deowner-devoice devoice}
+- :{file:events.md#halfop halfop}
+- :{file:events.md#dehalfop-deop-deowner-devoice dehalfop}
+- :{file:events.md#ban ban}
+- :{file:events.md#unban unban}
+- :{file:events.md#modechange mode_change}
+- :{file:events.md#catchall catchall}
 
 Additionally, plugins are now able to send their own events by using
 Cinch::Bot#dispatch.
