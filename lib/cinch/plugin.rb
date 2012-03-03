@@ -232,8 +232,17 @@ module Cinch
       #   end
       #
       # @param [Number] interval Interval in seconds
-      # @option options [Symbol] :method (:timer) Method to call (only if no proc is provided)
-      # @option options [Boolean] :threaded (true) Call method in a thread?
+      # @option options [Symbol] :method (:timer) Method to call (only
+      #   if no proc is provided)
+      # @option options [Number] :shots (Float::INFINITY) How often
+      #   should the timer fire?
+      # @option options [Boolean] :threaded (true) Call method in a
+      #   thread?
+      # @option options [Boolean] :start_automatically (true) If true,
+      #   the timer will automatically start after the bot finished
+      #   connecting.
+      # @option options [Boolean] :stop_automaticall (true) If true,
+      #   the timer will automatically stop when the bot disconnects.
       # @return [Timer]
       # @since 1.1.0
       def timer(interval, options = {})
