@@ -20,6 +20,19 @@ Description
   password to the channel's name, separated by a space, e.g.
   `"#mychannel mypassword"`.
 
+## dcc
+
+### dcc.own_ip
+Type
+: String
+
+Default value
+: `nil`
+
+Description
+: The external IP which should be used for outgoing DCC SENDs. For
+more information see {Cinch::DCC::Outgoing::Send}.
+
 ## delay_joins
 Type
 : Number, Symbol
@@ -47,6 +60,16 @@ Description
 ### Notes
 - {file:encodings.md More information on how Cinch handles encoding issues}
 
+## local_host
+Type
+: String
+
+Default value
+: `nil`
+
+Description
+: Which IP/host to bind to when connecting. This is useful for using
+  so called "vhosts".
 
 ## max_messages
 Type
@@ -63,12 +86,24 @@ Description
 ### Notes
 - Set this option to `nil` to disable any limit.
 
+## max_reconnect_delay
+Type
+: Fixnum
+
+Default value
+: `300`
+
+Descriptipn
+: With every unsuccessful reconnection attempt, Cinch increases the
+  delay between new attempts. This setting is the maximum number of
+  seconds to wait between two attempts.
+
 ## messages_per_second
 Type
 : Float
 
 Default value
-: `0.5`
+: Network dependent
 
 Description
 : How many incoming messages the server processes per second. This is
@@ -105,6 +140,15 @@ Description
   and the value of this option will be prepended to all but the first
   parts of the message.
 
+## modes
+Type
+: Array<String>
+
+Default value
+: []
+
+Description
+: An array of modes the bot should set on itself after connecting.
 
 ## nick
 Type
@@ -245,6 +289,37 @@ Default value
 Description
 : The real name Cinch will connect with.
 
+## reconnect
+Type
+: Boolean
+
+Default value
+: `true`
+
+Description
+: Should Cinch attempt to reconnect after a connection loss?
+
+## sasl
+
+### sasl.username
+Type
+: String
+
+Default value
+: `nil`
+
+Description
+: The username to use for SASL authentication.
+
+### sasl.password
+Type
+: String
+
+Default value
+: `nil`
+
+Description
+: The password to use for SASL authentication.
 
 ## server
 Type
@@ -262,7 +337,7 @@ Type
 : Fixnum
 
 Default value
-: `10`
+: Network dependent
 
 Description
 : The number of incoming messages the server will queue, before
@@ -333,24 +408,6 @@ Default value
 
 Description
 : The user name to use when connecting to the IRC server.
-
-
-## verbose
-Type
-: Boolean
-
-Default value
-: `true`
-
-Description
-: When true, Cinch will output more detailed logs, including raw
-  traffic
-
-
-### Notes
-- Beginning with the next release (Cinch v1.2.0), Cinch will provide a
-  more advanced mechanism for controlling logging, which will
-  deprecate this option.
 
 ## timeouts
 
