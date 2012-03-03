@@ -107,10 +107,10 @@ providing the required methods will always result in an exception.
 
 If you're using the API to register plugins on your own, you will have
 to use the new {Cinch::PluginList} class and its methods, instead of
-using `Cinch::Bot#register_plugin`/`Cinch::Bot#register_plugins`,
+using `Cinch::Bot#register_plugin` or `Cinch::Bot#register_plugins`,
 which have been removed.
 
-The PluginList instance is available via {Cinch::Bot#plugins}
+The PluginList instance is available via {Cinch::Bot#plugins}.
 
 ## Logging
 
@@ -145,7 +145,12 @@ All logging related methods (`Cinch::Bot#debug` et al) have been
 removed from the Bot class and instead moved to the loggers and the
 {Cinch::LoggerList LoggerList}. If you want to log messages from your
 plugins or handlers, you should use {Cinch::Bot#loggers} to access the
-{Cinch::LoggerList LoggerList} and then call the right methods on that.
+{Cinch::LoggerList LoggerList} and then call the right methods on
+that. Alterntively you can also use the logging-related helper methods
+provided by {Cinch::Helpers}.
+
+For more information on the logging architecture as well as examples
+on how to use it, check the {file:logging.md Logging readme}.
 
 ## `Bot#dispatch`
 
@@ -161,7 +166,32 @@ All constants for numeric replies (e.g. `RPL_INFO`) have been moved from
 `Cinch` to `Cinch::Constants`. Thus `Cinch::RPL_INFO` becomes
 {Cinch::Constants::RPL_INFO}, same for all other numeric constants.
 
-## Configuration namespace
+## Bot configuration
+
+Bot configuration now uses {Cinch::Configuration special classes}
+instead of OpenStructs. Thus, assignments like
+
+    configure do |c|
+      c.timeouts = OpenStruct.new({:read => 240, :connect => 10})
+    end
+
+are not possible anymore and have to be written as either
+
+    configure do |c|
+      c.timeouts.read    = 240
+      c.timeouts.connect = 10
+    end
+
+or
+
+    configure do |c|
+      c.timeouts.load({:read => 240, :connect => 10})
+    end
+
+The second version is especially interesting to tools like
+{https://github.com/netfeed/cinchize Cinchize}, which load the
+configuration from a YAML file. For more information see
+{file:bot_options.md Bot options}.
 
 ## Various removed methods
 
