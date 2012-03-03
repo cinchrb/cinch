@@ -3,9 +3,38 @@ require "ipaddr"
 require "timeout"
 
 module Cinch
-  # @since 2.0.0
   module DCC
     module Outgoing
+      # DCC SEND is a protocol for transferring files, usually found
+      # in IRC. While the handshake, i.e. the details of the file
+      # transfer, are transferred over IRC, the actual file transfer
+      # happens directly between two clients. As such it doesn't put
+      # stress on the IRC server.
+      #
+      # Cinch allows sending files by either using
+      # {Cinch::User#dcc_send}, which takes care of all parameters as
+      # well as setting up resume support, or by creating instances of
+      # this class directly. The latter will only be useful to people
+      # working on the Cinch code itself.
+      #
+      # {Cinch::User#dcc_send} expects an object to send as well as
+      # optionaly a file name, which is sent to the receiver as a
+      # suggestion where to save the file. If no file name is
+      # provided, the method will use the object's `#path` method to
+      # determine it.
+      #
+      # Any object that implements {DCC::DCCableObject} can be sent,
+      # but sending files will probably be the most common case.
+      #
+      # If you're behind a NAT it is necessary to explicitly set the
+      # external IP using the {file:bot_options.md#dccownip dcc.own_ip
+      # option}.
+      #
+      # @example Sending a file to a user
+      #   match "send me something"
+      #   def execute(m)
+      #     m.user.dcc_send(open("/tmp/cookies"))
+      #   end
       class Send
         # @param [Hash] opts
         # @option opts [User] receiver

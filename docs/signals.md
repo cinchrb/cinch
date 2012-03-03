@@ -127,8 +127,8 @@ bot, using the DCC SEND protocol.
 One additional argument, a {Cinch::DCC::Incoming::Send DCC::Send
 object}, gets passed to the handler.
 
-For example usage and a general explanation of DCC in Cinch check the
-{file:dcc.md DCC documentation}.
+For example usage and a general explanation of DCC in Cinch check
+{Cinch::DCC::Incoming::Send}.
 
 
 ## `:dehalfop`, `:deop`, `:deowner`, `:devoice`

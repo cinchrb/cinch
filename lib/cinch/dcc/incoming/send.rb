@@ -2,9 +2,47 @@ require "socket"
 require "ipaddr"
 
 module Cinch
-  # @since 2.0.0
   module DCC
     module Incoming
+      # DCC SEND is a protocol for transferring files, usually found
+      # in IRC. While the handshake, i.e. the details of the file
+      # transfer, are transferred over IRC, the actual file transfer
+      # happens directly between two clients. As such it doesn't put
+      # stress on the IRC server.
+      #
+      # When someone tries to send a file to the bot, the `:dcc_send` signal
+      # will be triggered, in which the DCC request can be inspected and
+      # optionally accepted.
+      #
+      # The event handler receives the plain message object as well as
+      # an instance of this class. That instance contains information
+      # about {#filename the suggested file name} (in a sanitized way)
+      # and allows for checking the origin.
+      #
+      # It is advised to reject transfers that seem to originate from
+      # a {#from_private_ip? private IP} or {#from_localhost? the
+      # local IP itself} unless that is expected. Otherwise, specially
+      # crafted requests could cause the bot to connect to internal
+      # services.
+      #
+      # Finally, the file transfer can be {#accept accepted} and
+      # written to any object that implements a `#<<` method, which
+      # includes File objects as well as plain strings.
+      #
+      # @example Saving a transfer to a temporary file
+      #   require "tempfile"
+      #
+      #   listen_to :dcc_send, method: :incoming_dcc
+      #   def incoming_dcc(m, dcc)
+      #     if dcc.from_private_ip? || dcc.from_localhost?
+      #       @bot.loggers.debug "Not accepting potentially dangerous file transfer"
+      #       return
+      #     end
+      #
+      #     t = Tempfile.new(dcc.filename)
+      #     dcc.accept(t)
+      #     t.close
+      #   end
       class Send
         # @private
         PRIVATE_NETS = [IPAddr.new("fc00::/7"),
@@ -37,6 +75,7 @@ module Cinch
         # @option opts [Number] size
         # @option opts [String] ip
         # @option opts [Number] port
+        # @api private
         def initialize(opts)
           @user, @filename, @size, @ip, @port = opts.values_at(:user, :filename, :size, :ip, :port)
         end
