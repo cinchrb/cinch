@@ -1,54 +1,49 @@
 # @title What has changed?
 
-<!-- **** DONE Provide an API for acessing plugin infos (name, help, etc) :feature: -->
-<!-- **** DONE Introduce a PluginManager                                :refactor: -->
-<!-- *** DONE Only return booleans from foo? methods                 :improvement: -->
-<!-- *** DONE Load the configuration from a hash                         :feature: -->
-<!-- *** DONE Helpers should get defined on the specific Callback, not all.  :bug: -->
-<!-- *** DONE Allow unregistering handlers                               :feature: -->
-<!-- *** DONE Add a HandlerList class, move Bot#find to it, possibly others  :refactor: -->
-<!-- *** DONE provide a class representing timers                    :improvement: -->
-<!-- *** DONE rename *Manager classes to *List classes                  :refactor: -->
-<!-- *** DONE Subclass Queue instead of monkeypatching it            :improvement: -->
-<!-- *** DONE add User#match (alias to User#=~) which calls Mask#match with self :feature: -->
-<!-- *** DONE Allow creating new timers dynamically                      :feature: -->
-<!-- *** DONE One-shot option for timer                              :improvement: -->
-<!-- *** DONE In Bot#generate_next_nick, also set the new nick as the bot's nick :bug: -->
-<!-- *** DONE Investigate if Cinch forgets modes for people who change their nicks :bug: -->
+# What has changed in 2.0?
+1. **Added support for SASL**
+1. **Added support for DCC SEND**
+1. **Added a fair scheduler for outgoing messages**
+1. **Added required plugin options**
+1. **Added support for colors/formatting**
+1. **Added network discovery**
+1. **Added match groups**
+1. **Added match options overwriting plugin options**
+1. **Added support for actions (/me)**
+1. **Added support for broken IRC networks**
+1. **Dynamic timers**
+1. **Reworked logging facilities**
 
-# What has changed in 2.x?
-1. **Added support for SASL** (2.0.0)
-1. **Added support for DCC SEND** (2.0.0)
-1. **Added a fair scheduler for outgoing messages** (2.0.0)
-1. **Added required plugin options** (2.0.0)
-1. **Added support for actions (/me)** (2.0.0)
-
-1. **API improvements** (2.0.0)
-   1. **Helper changes** (2.0.0)
-   1. **Added a {Cinch::Target Target} class** (2.0.0)
+1. **API improvements**
+   1. **Helper changes**
+   1. **Added a Cinch::Target Target class**
+   1. **Cinch::Constants**
    1. **New methods**
-      1. **New {Cinch::Channel} methods** (2.0.0)
-      1. **New {Cinch::Message} methods** (2.0.0)
-      1. **New {Cinch::Helpers} methods** (2.0.0)
-   1. **Removed methods** (2.0.0)
+      1. **Cinch::Bot**
+      1. **Cinch::Channel**
+      1. **Cinch::Helpers**
+      1. **Cinch::IRC**
+      1. **Cinch::Message**
+      1. **Cinch::User**
+   1. **Removed/Renamed methods**
+   1. **Handlers**
+   1. The Plugin class
+   1. **Channel/Target/User implement Comparable**
+   1. **Renamed `*Manager` to `*List`**
 
+1. **New signals**
 
-1. **Added support for broken IRC networks** (2.0.0)
-1. **Fixed crash when network is down** (2.0.0)
-1. **Print warnings when plugins are missing methods** (2.0.0)
-1. **New signals** (2.0.0)
-1. Channel/User Sortable now
+## Added support for SASL
 
-## Added support for SASL (2.0.0)
 Cinch now supports authenticating to services via SASL. For more
-information check the {file:sasl.md readme on SASL}.
+information check {Cinch::SASL}.
 
-## Added support for DCC SEND (2.0.0)
+## Added support for DCC SEND
 
 Support for sending and receiving files via DCC has been added to
-Cinch. Check the {file:dcc.md readme on DCC} for more information.
+Cinch. Check {Cinch::DCC} for more information.
 
-## Added a fair scheduler for outgoing messages (2.0.0)
+## Added a fair scheduler for outgoing messages
 Cinch always provided sophisticated throttling to avoid getting kicked
 due to _excess flood_. One major flaw, however, was that it used a
 single FIFO for all messages, thus preferring early message targets
@@ -57,7 +52,7 @@ and penalizing later ones.
 Now Cinch uses a round-robin approach, having one queue per message
 target (channels and users) and one for generic commands.
 
-## Added required plugin options (2.0.0)
+## Added required plugin options
 Plugins can now require specific options to be set. If any of those
 options is not set, the plugin will automatically refuse being loaded.
 
@@ -86,19 +81,81 @@ Example:
     # The plugin won't load because the option :bar is not set.
     # Instead it will print a warning.
 
-## Added support for actions (/me) (2.0.0)
+## Added support for colors/formatting
+
+A new {Cinch::Formatting module} and {Cinch::Helpers#Format helper}
+for adding colors and formatting to messages has been added. See the
+{Cinch::Formatting module's documentation} for more information on
+usage.
+
+## Added support for network discovery
+
+Cinch now tries to detect the network it connects to, including the
+running IRCd. For most parts this is only interesting internally, but
+if you're writing advanced plugins that hook directly into IRC and
+needs to be aware of available features/quirks, check out
+{Cinch::IRC#network} and {Cinch::Network}.
+
+## Reworked logging facilities
+
+The logging API has been drastically improved. Check the
+{file:logging.md logging documentation} for more information.
+
+
+## Added match groups
+
+A new option for matchers, `:group`, allows grouping multiple matchers
+to a group. What's special is that in any group, only the first
+matching handler will be executed.
+
+Example:
+
+    class Foo
+      include Cinch::Plugin
+
+      match /foo (\d+)/, group: :blegh, method: :foo1
+      match /foo (.+)/,  group: :blegh, method: :foo2
+      match /foo .+/,                   method: :foo3
+      def foo1(m, arg)
+        m.reply "foo1"
+      end
+
+      def foo2(m, arg)
+        m.reply "foo2"
+      end
+
+      def foo3(m)
+        m.reply "foo3"
+      end
+    end
+    # 02:05:39       dominikh │ !foo 123
+    # 02:05:40          cinch │ foo1
+    # 02:05:40          cinch │ foo3
+
+    # 02:05:43       dominikh │ !foo bar
+    # 02:05:44          cinch │ foo2
+    # 02:05:44          cinch │ foo3
+
+
+## Added match options overwriting plugin options
+
+Matchers now have their own `:prefix`, `:suffix` and `:reacting_on`
+options which overwrite plugin options for single matchers.
+
+
+## Added support for actions (/me)
 TODO
 
-## API improvements (2.0.0)
+## API improvements
 
-### Helper changes (2.0.0)
+### Helper changes
 
 The helper methods {Cinch::Helpers#User User()} and
 {Cinch::Helpers#Channel Channel()} have been extracted from
 {Cinch::Bot} and moved to {Cinch::Helpers their own module} which can
 be reused in various places.
 
-### Added a {Cinch::Target Target} class (2.0.0)
+### Added a {Cinch::Target Target} class
 
 Since {Cinch::Channel} and {Cinch::User} share one common interface
 for sending messages, it only makes sense to have a common base class.
@@ -106,34 +163,93 @@ for sending messages, it only makes sense to have a common base class.
 removes this responsibility from {Cinch::Channel}, {Cinch::User} and
 {Cinch::Bot}
 
+### {Cinch::Constants}
+
+All constants for IRC numeric replies (`RPL_*` and `ERR_*`) have been
+moved from {Cinch} to {Cinch::Constants}
 
 ### New methods
 
-#### {Cinch::Channel} (2.0.0)
+#### {Cinch::Bot}
 
-New methods for getting lists of users:
+- {Cinch::Bot#channel_list}
+- {Cinch::Bot#handlers}
+- {Cinch::Bot#loggers}
+- {Cinch::Bot#loggers=}
+- {Cinch::Bot#modes}
+- {Cinch::Bot#modes=}
+- {Cinch::Bot#set_mode}
+- {Cinch::Bot#stop}
+- {Cinch::Bot#unset_mode}
+- {Cinch::Bot#user_list}
 
-- {Cinch::Channel#ops}
-- {Cinch::Channel#half_ops}
+#### {Cinch::Channel}
+
 - {Cinch::Channel#admins}
+- {Cinch::Channel#half_ops}
+- {Cinch::Channel#ops}
+- {Cinch::Channel#owners}
 - {Cinch::Channel#voiced}
-
-#### {Cinch::Message} (2.0.0)
-
-New action (/me)-related methods:
-
-- {Cinch::Message#action?}
-- {Cinch::Message#action_message}
 
 #### {Cinch::Helpers}
 
-- {Cinch::Helpers#User}
-- {Cinch::Helpers#Channel}
 - {Cinch::Helpers#Target} -- For creating a {Cinch::Target Target} which can receive messages
 - {Cinch::Helpers#Timer}  -- For creating new timers anywhere
 - {Cinch::Helpers#rescue_exception} -- For rescueing and automatically logging an exception
+- {Cinch::Helpers#Format} -- For adding colors and formatting to messages
 
-### Removed methods (2.0.0)
+##### Logging shortcuts
+- {Cinch::Helpers#debug}
+- {Cinch::Helpers#error}
+- {Cinch::Helpers#exception}
+- {Cinch::Helpers#fatal}
+- {Cinch::Helpers#incoming}
+- {Cinch::Helpers#info}
+- {Cinch::Helpers#log}
+- {Cinch::Helpers#outgoing}
+- {Cinch::Helpers#warn}
+
+#### {Cinch::IRC}
+
+- {Cinch::IRC#network}
+
+#### {Cinch::Message}
+
+- {Cinch::Message#action?}
+- {Cinch::Message#action_message}
+- {Cinch::Message#target}
+- {Cinch::Message#time}
+
+#### {Cinch::Plugin}
+
+- {Cinch::Plugin#handlers}
+- {Cinch::Plugin#storage}
+- {Cinch::Plugin#timers}
+- {Cinch::Plugin#unregister}
+
+#### {Cinch::User}
+
+- {Cinch::User#away}
+- {Cinch::User#dcc_send} - See {Cinch::DCC::Outgoing::Send}
+- {Cinch::User#match}
+- {Cinch::User#monitor} - See {file:common_tasks.md#checking-if-a-user-is-online Checking if a user is online}
+- {Cinch::User#monitored}
+- {Cinch::User#online?}
+- {Cinch::User#unmonitor}
+
+### Handlers
+
+Internally, Cinch uses {Cinch::Handler Handlers} for listening to and
+matching signals. In Previous versions, this was hidden from the user,
+but now they're part of the public API, providing valuable information
+and the chance to {Cinch::Handler#unregister unregister handlers}
+alltogether.
+
+{Cinch::Bot#on} now returns the created handler and
+{Cinch::Plugin#handlers} allows getting a plugin's registered
+handlers.
+
+### Removed/Renamed methods
 The following methods have been removed:
 
 | Removed method                         | Replacement                                                                     |
@@ -152,58 +268,122 @@ The following methods have been removed:
 | Cinch::Bot#logger                      | {Cinch::Bot#loggers}                                                            |
 | Cinch::Bot#logger=                     |                                                                                 |
 | Cinch::Bot#debug                       | {Cinch::LoggerList#debug}                                                       |
-| Cinch::Logger::Logger#log_exception    | {Cinch::Logger#exception}                                               |
+| Cinch::IRC#message                     | {Cinch::IRC#send}                                                               |
+| Cinch::Logger::Logger#log_exception    | {Cinch::Logger#exception}                                                       |
 | Class methods in Plugin to set options | A new {Cinch::Plugin::ClassMethods#set set} method as well as attribute setters |
 
 
-## Added support for broken IRC networks (2.0.0)
+### The Plugin class
+
+The {Cinch::Plugin Plugin} class has been drastically improved to look
+and behave more like a proper Ruby class instead of being some
+abstract black box.
+
+All attributes of a plugin (name, help message, matchers, …) are being
+made available via attribute getters and setters. Furthermore, it is
+possible to access a Plugin instance's registered handlers and timers,
+as well as unregister plugins.
+
+For a complete overview of available attributes and methods, see
+{Cinch::Plugin} and {Cinch::Plugin::ClassMethods}.
+
+### Plugin options
+
+The aforementioned changes also affect the way plugin options are
+being set: Plugin options aren't set with DSL-like methods anymore but
+instead are made available via {Cinch::Plugin::ClassMethods#set a
+`set` method} or alternatively plain attribute setters.
+
+See
+{file:migrating.md#plugin-options the migration guide} for more
+information.
+
+### Channel/Target/User implement Comparable
+
+{Cinch::Target} and thus {Cinch::Channel} and {Cinch::User} now
+implement the Comparable interface, which makes them sortable by all
+usual Ruby means.
+
+### Renamed `*Manager` to `*List`
+
+`Cinch::ChannelManager` and `Cinch::UserManager` have been renamed to
+{Cinch::ChannelList} and {Cinch::UserList} respectively.
+
+## Added support for broken IRC networks
 Special support for the following flawed IRC networks has been added:
 
 - JustinTV
 - NGameTV
 - IRCnet
 
-## Fixed crash when network is down (2.0.0)
+## Dynamic timers
 
-Cinch will no longer crash when trying to connect to a server while
-the local network is down.
+It is now possible to create new timers from any method/handler. It is
+also possible to {Cinch::Timer#stop stop existing timers} or
+{Cinch::Timer#start restart them}.
 
-## Print warnings when plugins are missing methods (2.0.0)
-TODO
+The easiest way of creating new timers is by using the
+{Cinch::Helpers#Timer Timer helper method}, even though it is also
+possible, albeit more complex, to create instances of {Cinch::Timer}
+directly.
 
-## New signals (2.0.0)
-TODO
-:action
-:online
-:offline
+Example:
+
+    match /remind me in (\d+) seconds/
+    def execute(m, seconds)
+      Timer(seconds.to_i, shots: 1) do
+        m.reply "This is your reminder.", true
+      end
+    end
+
+For more information on timers, see the {Cinch::Timer Timer documentation}.
+
+## New options
+
+- :{file:bot_options.md#dccownip dcc.own_ip}
+- :{file:bot_options.md#modes modes}
+- :{file:bot_options.md#maxreconnectdelay max_reconnect_delay}
+- :{file:bot_options.md#localhost local_host}
+- :{file:bot_options.md#delayjoins delay_joins}
+- :{file:bot_options.md#saslusername sasl.username}
+- :{file:bot_options.md#saslpassword sasl.password}
+
+## New signals
+- :{file:signals.md#action action}
+- :{file:signals.md#away away}
+- :{file:signals.md#unaway unaway}
+- :{file:signals.md#dccsend dcc_send}
+- :{file:signals.md#owner owner}
+- :{file:signals.md#dehalfop-deop-deowner-devoice deowner}
+- :{file:signals.md#leaving leaving}
+- :{file:signals.md#online online}
+- :{file:signals.md#offline offline}
 
 
-# What has changed in 1.1.x?
-1. **New signals** (1.1.0)
-2. **New methods** (1.1.0)
-3. **New options** (1.1.0)
-4. **Improved logger** (1.1.0)
-x. **Deprecated methods** (1.1.0)
+# What has changed in 1.1?
+1. **New signals**
+2. **New methods**
+3. **New options**
+4. **Improved logger**
+x. **Deprecated methods**
 
-## New signals (1.1.0)
+## New signals
 
-| Name/Signature                                                                       | Description                                     |
-|--------------------------------------------------------------------------------------+-------------------------------------------------|
-| :op(&lt;{Cinch::Message Message}&gt;message, &lt;{Cinch::User User}&gt;target)       | emitted when someone gets opped                 |
-| :deop(&lt;{Cinch::Message Message}&gt;message, &lt;{Cinch::User User}&gt;target)     | emitted when someone gets deopped               |
-| :voice(&lt;{Cinch::Message Message}&gt;message, &lt;{Cinch::User User}&gt;target)    | emitted when someone gets voiced                |
-| :devoice(&lt;{Cinch::Message Message}&gt;message, &lt;{Cinch::User User}&gt;target)  | emitted when someone gets devoiced              |
-| :halfop(&lt;{Cinch::Message Message}&gt;message, &lt;{Cinch::User User}&gt;target)   | emitted when someone gets half-opped            |
-| :dehalfop(&lt;{Cinch::Message Message}&gt;message, &lt;{Cinch::User User}&gt;target) | emitted when someone gets de-half-opped         |
-| :ban(&lt;{Cinch::Message Message}&gt;message, &lt;{Cinch::Ban Ban}&gt;ban)           | emitted when someone gets banned                |
-| :unban(&lt;{Cinch::Message Message}&gt;message, &lt;{Cinch::Ban Ban}&gt;ban)         | emitted when someone gets unbanned              |
-| :mode_change(&lt;{Cinch::Message Message}&gt;message, &lt;Array&gt;modes)            | emitted on any mode change on a user or channel |
-| :catchall(&lt;{Cinch::Message Message}&gt;message)                                   | a generic signal that matches any kind of event |
+- :{file:signals.md#op op}
+- :{file:signals.md#dehalfop-deop-deowner-devoice deop}
+- :{file:signals.md#voice voice}
+- :{file:signals.md#dehalfop-deop-deowner-devoice devoice}
+- :{file:signals.md#halfop halfop}
+- :{file:signals.md#dehalfop-deop-deowner-devoice dehalfop}
+- :{file:signals.md#ban ban}
+- :{file:signals.md#unban unban}
+- :{file:signals.md#modechange mode_change}
+- :{file:signals.md#catchall catchall}
 
 Additionally, plugins are now able to send their own events by using
 Cinch::Bot#dispatch.
 
-## New methods (1.1.0)
+## New methods
 
 ### {Cinch::User#last_nick}
 Stores the last nick of a user. This can for example be used in `on
@@ -218,28 +398,28 @@ Provides a nicer representation of {Cinch::Message} objects.
 ### {Cinch::Channel#has_user?}
 Provides an easier way of checking if a given user is in a channel
 
-## New options (1.1.0)
-- plugins.suffix
-- ssl.use
-- ssl.verify
-- ssl.ca_path
-- ssl.client_cert
-- nicks
-- timeouts.read
-- timeouts.connect
-- ping_interval
-- reconnect
+## New options
+- {file:bot_options.md#pluginssuffix plugins.suffix}
+- {file:bot_options.md#ssluse ssl.use}
+- {file:bot_options.md#sslverify ssl.verify}
+- {file:bot_options.md#sslcapath ssl.ca_path}
+- {file:bot_options.md#sslclientcert ssl.client_cert}
+- {file:bot_options.md#nicks nicks}
+- {file:bot_options.md#timeoutsread timeouts.read}
+- {file:bot_options.md#timeoutsconnect timeouts.connect}
+- {file:bot_options.md#pinginterval ping_interval}
+- {file:bot_options.md#reconnect reconnect}
 
 
 
-## Improved logger (1.1.0)
+## Improved logger
 The {Cinch::Logger::FormattedLogger formatted logger} (which is the
 default one) now contains timestamps. Furthermore, it won't emit color
 codes if not writing to a TTY.
 
 Additionally, it can now log any kind of object, not only strings.
 
-## Deprecated methods (1.1.0)
+## Deprecated methods
 
 | Deprecated method           | Replacement                        |
 |-----------------------------+------------------------------------|

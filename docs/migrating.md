@@ -8,6 +8,48 @@ versions of Cinch.
 
 ## Plugins
 
+### New methods
+
+Plugins have the following (new) instance and class methods, which you
+shouldn't and usually mustn't overwrite:
+
+- `#bot`
+- `#config`
+- `#handlers`
+- `#storage`
+- `#synchronize`
+- `#timers`
+- `#unregister`
+- `::call_hooks`
+- `::check_for_missing_options`
+- `::ctcp`
+- `::ctcps`
+- `::help=`
+- `::help`
+- `::hook`
+- `::hooks`
+- `::listen_to`
+- `::listeners`
+- `::match`
+- `::matchers`
+- `::plugin_name=`
+- `::plugin_name`
+- `::prefix=`
+- `::prefix`
+- `::react_on`
+- `::reacting_on=`
+- `::reacting_on`
+- `::required_options=`
+- `::required_options`
+- `::set`
+- `::suffix=`
+- `::suffix`
+- `::timer`
+- `::timers`
+
+Note: The list does also include methods from prior versions.
+
+
 ### Plugin options
 
 Previously, plugins used a DSL-like way of setting options like the
