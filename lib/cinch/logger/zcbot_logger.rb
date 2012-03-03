@@ -1,4 +1,4 @@
-require "cinch/logger/logger"
+require "cinch/logger"
 module Cinch
   class Logger
     # This logger logs all incoming messages in the format of zcbot.
