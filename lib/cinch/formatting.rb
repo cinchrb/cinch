@@ -1,6 +1,37 @@
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
+  #
+  # List of valid colors
+  # =========================
+  # - aqua
+  # - black
+  # - blue
+  # - brown
+  # - green
+  # - grey
+  # - lime
+  # - orange
+  # - pink
+  # - purple
+  # - red
+  # - royal
+  # - silver
+  # - teal
+  # - white
+  # - yellow
+  #
+  # List of valid attributes
+  # ========================
+  # - bold
+  # - italic
+  # - reverse/reversed
+  # - underline/underlined
+  #
+  # Other
+  # =====
+  # - reset (Resets all formatting to the client's defaults)
   module Formatting
+    # @private
     Colors = {
       :white  => "00",
       :black  => "01",
@@ -20,6 +51,7 @@ module Cinch
       :silver => "15",
     }
 
+    # @private
     Attributes = {
       :bold       => 2.chr,
       :underlined => 31.chr,
@@ -30,9 +62,19 @@ module Cinch
       :reset      => 15.chr,
     }
 
-    def self.format(*args)
-      settings = args[0..-2]
-      string     = args.last.dup
+    # @param [Array<Symbol>] *settings The colors and attributes to apply.
+    #   When supplying two colors, the first will be used for the
+    #   foreground and the second for the background.
+    # @param [String] string The string to format.
+    # @return [String] The formatted string
+    # @since 2.0.0
+    # @raise [ArgumentError] When passing more than two colors as arguments.
+    # @see Helpers#Format Helpers#Format for easier access to this method.
+    #
+    # @example Nested formatting, combining text styles and colors
+    #   reply = Format(:underline, "Hello %s! Is your favourite color %s?" % [Format(:bold, "stranger"), Format(:red, "red")])
+    def self.format(*settings, string)
+      string   = string.dup
 
       attributes = settings.select {|k| Attributes.has_key?(k)}.map {|k| Attributes[k]}
       colors = settings.select {|k| Colors.has_key?(k)}.map {|k| Colors[k]}

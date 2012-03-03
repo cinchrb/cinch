@@ -2,6 +2,9 @@
 require "cinch/open_ended_queue"
 
 module Cinch
+  # This class manages all outgoing messages, applying rate throttling
+  # and fair distribution.
+  #
   # @api private
   class MessageQueue
     def initialize(socket, bot)
@@ -65,7 +68,8 @@ module Cinch
         end
 
         begin
-          @socket.writeline Cinch::Utilities::Encoding.encode_outgoing(message, @bot.config.encoding) + "\r\n"
+          to_send = Cinch::Utilities::Encoding.encode_outgoing(message, @bot.config.encoding)
+          @socket.write to_send + "\r\n"
           @log << Time.now
           @bot.loggers.outgoing(message)
 
@@ -78,8 +82,8 @@ module Cinch
 
     private
     def wait
-      mps            = @bot.config.messages_per_second
-      max_queue_size = @bot.config.server_queue_size
+      mps            = @bot.config.messages_per_second || @bot.irc.network.default_messages_per_second
+      max_queue_size = @bot.config.server_queue_size   || @bot.irc.network.default_server_queue_size
 
       if @log.size > 1
         time_passed = 0

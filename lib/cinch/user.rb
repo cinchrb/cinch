@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require "cinch/target"
+require "timeout"
 
 module Cinch
   # @attr_reader [String] user
@@ -10,77 +11,12 @@ module Cinch
   #   This is a snapshot of the last WHOIS.
   # @attr_reader [Time] signed_on_at
   # @attr_reader [Array<Channel>] channels All channels the user is in.
+  # @attr_reader [String, nil] away The user's away message, or
+  #   `nil` if not away.
   #
-  # @version 1.2.0
+  # @version 2.0.0
   class User < Target
     include Syncable
-
-    @users = {} # this will be removed with version 2.0.0
-    class << self
-
-      # @overload find_ensured(nick, bot)
-      #   Finds or creates a user based on his nick.
-      #
-      #   @param [String] nick The user's nickname
-      #   @param [Bot]    bot  An instance of Bot
-      # @overload find_ensured(user, nick, host, bot)
-      #   Finds or creates a user based on his nick but already
-      #   setting user and host.
-      #
-      #   @param [String] user The username
-      #   @param [String] nick The nickname
-      #   @param [String] host The user's hostname
-      #   @param [Bot]    bot  An instance of bot
-      #
-      # @return [User]
-      # @deprecated See {Bot#user_manager} and {UserManager#find_ensured} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def find_ensured(*args)
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.find_ensured")
-
-        case args.size
-        when 2
-          nick = args.first
-          bot  = args.last
-          bargs = [nick]
-        when 4
-          nick = args[1]
-          bot  = args.pop
-          bargs = args
-        else
-          raise ArgumentError
-        end
-        downcased_nick = nick.irc_downcase(bot.irc.isupport["CASEMAPPING"])
-        @users[downcased_nick] = args.last.user_manager.find_ensured(*args[0..-2])
-        # note: the complete case statement and the assignment to
-        #   @users is only for keeping compatibility with older
-        #   versions, which still use User.find and User.all.
-      end
-
-      # Finds a user.
-      #
-      # @param [String] nick nick of a user
-      # @return [User, nil]
-      # @deprecated See {Bot#user_manager} and {UserManager#find} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def find(nick)
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.find")
-
-        @users[downcased_nick]
-      end
-
-      # @return [Array<User>] Returns all users
-      # @deprecated See {Bot#user_manager} and {CacheManager#each} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def all
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.all")
-
-        @users.values
-      end
-    end
 
     alias_method :nick, :name
 
@@ -164,6 +100,7 @@ module Cinch
         :online?      => false,
         :channels     => [],
         :secure?      => false,
+        :away         => nil,
       }
       case args.size
       when 2
@@ -177,11 +114,10 @@ module Cinch
       @synced_attributes  = Set.new
 
       @when_requesting_synced_attribute = lambda {|attr|
-        unless @synced
+        unless synced?(attr)
           @data[:unknown?] = false
           unsync :unknown?
 
-          unsync attr
           whois
         end
       }
@@ -198,11 +134,6 @@ module Cinch
       !attr(:authname).nil?
     end
 
-    # @see Syncable#attr
-    def attr(attribute, data = true, unsync = false)
-      super
-    end
-
     # Queries the IRC server for information on the user. This will
     # set the User's state to not synced. After all information are
     # received, the object will be set back to synced.
@@ -210,15 +141,12 @@ module Cinch
     # @return [void]
     def whois
       return if @in_whois
-      @synced = false
       @data.keys.each do |attr|
         unsync attr
       end
 
       @in_whois = true
-      if @bot.irc.network == "jtv"
-        # the justin tv "IRC" network does not support WHOIS with two
-        # arguments
+      if @bot.irc.network.whois_only_one_argument?
         @bot.irc.send "WHOIS #@name"
       else
         @bot.irc.send "WHOIS #@name #@name"
@@ -272,7 +200,6 @@ module Cinch
 
       sync(:unknown?, false, true)
       self.online = true
-      @synced = true
     end
 
     # @return [void]
@@ -280,7 +207,6 @@ module Cinch
     # @api private
     # @see Syncable#unsync_all
     def unsync_all
-      @synced = false
       super
     end
 
@@ -336,7 +262,7 @@ module Cinch
     # Starts monitoring a user's online state by either using MONITOR
     # or periodically running WHOIS.
     #
-    # @since 1.2.0
+    # @since 2.0.0
     # @return [void]
     # @see #unmonitor
     def monitor
@@ -354,7 +280,7 @@ module Cinch
 
     # Stops monitoring a user's online state.
     #
-    # @since 1.2.0
+    # @since 2.0.0
     # @return [void]
     # @see #monitor
     def unmonitor
@@ -367,13 +293,54 @@ module Cinch
       @monitored = false
     end
 
+    # Send data via DCC SEND to a user.
+    #
+    # @param [DCC::DCCableObject] io
+    # @param [String] filename
+    # @since 2.0.0
+    # @return [void]
+    # @note This method blocks.
+    def dcc_send(io, filename = File.basename(io.path))
+      own_ip = bot.config.dcc.own_ip || @bot.irc.socket.addr[2]
+      dcc = DCC::Outgoing::Send.new(receiver: self,
+                                    filename: filename,
+                                    io: io,
+                                    own_ip: own_ip
+                                    )
+
+      dcc.start_server
+
+      handler = Handler.new(@bot, :message,
+                            Pattern.new(/^/,
+                                        /\001DCC RESUME #{filename} #{dcc.port} (\d+)\001/,
+                                        /$/)) do |m, position|
+        next unless m.user == self
+        dcc.seek(position.to_i)
+        m.user.send "\001DCC ACCEPT #{filename} #{dcc.port} #{position}\001"
+
+        handler.unregister
+      end
+      @bot.handlers.register(handler)
+
+      @bot.loggers.info "DCC: Outgoing DCC SEND: File name: %s - Size: %dB - IP: %s - Port: %d - Status: waiting" % [filename, io.size, own_ip, dcc.port]
+      dcc.send_handshake
+      begin
+        dcc.listen
+        @bot.loggers.info "DCC: Outgoing DCC SEND: File name: %s - Size: %dB - IP: %s - Port: %d - Status: done" % [filename, io.size, own_ip, dcc.port]
+      rescue Timeout::Error
+        @bot.loggers.info "DCC: Outgoing DCC SEND: File name: %s - Size: %dB - IP: %s - Port: %d - Status: failed (timeout)" % [filename, io.size, own_ip, dcc.port]
+      ensure
+        handler.unregister
+      end
+    end
+
     # Updates the user's online state and dispatch the correct event.
     #
-    # @since 1.2.0
+    # @since 2.0.0
     # @return [void]
     # @api private
     def online=(bool)
-      notify = self.__send__("online?_unsynced") != bool
+      notify = self.__send__("online?_unsynced") != bool && @monitored
       sync(:online?, bool, true)
 
       return unless notify
@@ -384,10 +351,14 @@ module Cinch
       end
     end
 
+    # Used to update the user's nick on nickchange events.
+    #
+    # @param [String] new_nick The user's new nick
     # @api private
+    # @return [void]
     def update_nick(new_nick)
       @last_nick, @name = @name, new_nick
-      @bot.user_manager.update_nick(self)
+      @bot.user_list.update_nick(self)
     end
 
     # Provides synced access to user attributes.
@@ -412,20 +383,5 @@ module Cinch
 
       return @data.has_key?(m) || super
     end
-
-    # @return [Boolean]
-    def ==(other)
-      return case other
-             when self.class
-               @name == other.nick
-             when String
-               self.to_s == other
-             when Bot
-               self.nick == other.config.nick
-             else
-               false
-             end
-    end
-    alias_method :eql?, "=="
   end
 end

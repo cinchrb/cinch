@@ -1,3 +1,4 @@
 module Cinch
-  VERSION = '1.1.3'
+  # Version of the library
+  VERSION = '2.0.0-pre.1'
 end

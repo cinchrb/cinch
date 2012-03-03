@@ -1,4 +1,5 @@
 module Cinch
+  # This class represents masks, which are primarily used for bans.
   class Mask
     # @return [String]
     attr_reader :nick
@@ -10,6 +11,7 @@ module Cinch
     attr_reader :mask
 
     # @version 1.1.2
+    # @param [String] mask
     def initialize(mask)
       @mask = mask
       @nick, @user, @host = mask.match(/(.+)!(.+)@(.+)/)[1..-1]
@@ -28,11 +30,12 @@ module Cinch
       other.is_a?(self.class) && self == other
     end
 
+    # @return [Fixnum]
     def hash
       @mask.hash
     end
 
-    # @param [Ban, Mask, User, String] target
+    # @param [Mask, String, #mask] target
     # @return [Boolean]
     # @version 1.1.2
     def match(target)
@@ -47,21 +50,20 @@ module Cinch
       @mask.dup
     end
 
-    # @param [Ban, Mask, User, String]
+    # @param [String, #mask]
+    # @return [target] if already a Mask
     # @return [Mask]
+    # @version 2.0.0
     def self.from(target)
-      case target
-      when User, Ban
-        target.mask
-      when Bot
-        target.to_user.mask
-      when String
-        Mask.new(target)
-      when Mask
-        target
+      return target if target.is_a?(self)
+
+      if target.respond_to?(:mask)
+        mask = target.mask
       else
-        raise ArgumentError
+        mask = Mask.new(target.to_s)
       end
+
+      return mask
     end
   end
 end

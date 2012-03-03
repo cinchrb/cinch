@@ -1,8 +1,9 @@
 require "thread"
+require "set"
 require "cinch/cached_list"
 
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
   class HandlerList
     include Enumerable
 
@@ -13,6 +14,7 @@ module Cinch
 
     def register(handler)
       @mutex.synchronize do
+        handler.bot.loggers.debug "[on handler] Registering handler with pattern `#{handler.pattern.inspect}`, reacting on `#{handler.event}`"
         @handlers[handler.event] << handler
       end
     end
@@ -28,15 +30,19 @@ module Cinch
       end
     end
 
+    # @api private
+    # @return [Array<Handler>]
     def find(type, msg = nil)
       if handlers = @handlers[type]
         if msg.nil?
           return handlers
         end
 
-        handlers.select { |handler|
+        handlers = handlers.select { |handler|
           msg.match(handler.pattern.to_r(msg), type)
-        }
+        }.group_by {|handler| handler.group}
+
+        handlers.values_at(*(handlers.keys - [nil])).map(&:first) + (handlers[nil] || [])
       end
     end
 
@@ -48,7 +54,10 @@ module Cinch
     # @return [void]
     def dispatch(event, msg = nil, *arguments)
       if handlers = find(event, msg)
+        already_run = Set.new
         handlers.each do |handler|
+          next if already_run.include?(handler.block)
+          already_run << handler.block
           # calling Message#match multiple times is not a problem
           # because we cache the result
           if msg

@@ -3,7 +3,7 @@ require 'cinch'
 class SomeCommand
   include Cinch::Plugin
 
-  prefix "~"
+  prefix /^~/
   match "somecommand"
 
   def execute(m)

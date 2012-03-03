@@ -1,21 +1,42 @@
 require "cinch/helpers"
 
 module Cinch
-  # @since 1.2.0
+  # Timers are used for executing code in the future, either
+  # repeatedly or only once.
+  #
+  # In Cinch, two ways for creating timers are available:
+  #
+  # - The first way is by declaring them for a plugin, in which case
+  #   they will start as soon as the bot connects to a server.
+  #
+  # - The second way is to dynamically create new timers in response
+  #   to user input. A common example for this is an alarm clock
+  #   plugin, which has to execute at a specific time.
+  #
+  # @see Helpers#Timer For dynamically creating timers
+  # @see Plugin::ClassMethods#timer For declaring timers in plugins
+  # @note It is possible to directly create instances of this class,
+  #   but the referenced methods should suffice.
+  # @since 2.0.0
   class Timer
     include Helpers
 
     # @return [Bot]
     attr_reader :bot
+
     # @return [Number] The interval (in seconds) of the timer
     attr_accessor :interval
+
     # @return [Boolean] If true, each invocation will be
     #   executed in a thread of its own.
     attr_accessor :threaded
+
     # @return [Proc]
     attr_reader :block
+
     # @return [Boolean]
     attr_reader :started
+
     # @return [Number] The remaining number of shots before this timer
     #   will stop. This value will automatically reset after
     #   restarting the timer.
@@ -23,6 +44,7 @@ module Cinch
     alias_method :threaded?, :threaded
     alias_method :started?, :started
 
+    # @return [ThreadGroup]
     # @api private
     attr_reader :thread_group
 
@@ -30,7 +52,7 @@ module Cinch
     #   with
     # @option options [Number] :interval The interval (in seconds) of
     #   the timer
-    # @option options [Number] :shots (Infinity) How often should the
+    # @option options [Number] :shots (Float::INFINITY) How often should the
     #   timer fire?
     # @option options [Boolean] :threaded (true) If true, each invocation will be
     #   executed in a thread of its own.
@@ -40,7 +62,7 @@ module Cinch
     # @option options [Boolean] :stop_automaticall (true) If true, the
     #   timer will automatically stop when the bot disconnects.
     def initialize(bot, options, &block)
-      options = {:treaded => true, :shots => Infinity, :start_automatically => true, :stop_automatically => true}.merge(options)
+      options = {:threaded => true, :shots => Float::INFINITY, :start_automatically => true, :stop_automatically => true}.merge(options)
 
       @bot        = bot
       @interval   = options[:interval].to_f
@@ -54,13 +76,13 @@ module Cinch
       @thread_group = ThreadGroup.new
 
       if options[:start_automatically]
-        @bot.on :connect, [], self do |m, timer|
+        @bot.on :connect, //, self do |m, timer|
           timer.start
         end
       end
 
       if options[:stop_automatically]
-        @bot.on :disconnect, [], self do |m, timer|
+        @bot.on :disconnect, //, self do |m, timer|
           timer.stop
         end
       end
@@ -115,6 +137,7 @@ module Cinch
       @started = false
     end
 
+    # @return [String]
     def to_s
       "<Cinch::Timer %s/%s shots, %ds interval, %sthreaded, %sstarted, block: %s>" % [@orig_shots - @shots, @orig_shots, @interval, @threaded ? "" : "not ", @started ? "" : "not ", @block]
     end

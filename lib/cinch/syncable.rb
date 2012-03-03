@@ -1,4 +1,5 @@
 module Cinch
+  # Provide blocking access to user/channel information.
   module Syncable
     # Blocks until the object is synced.
     #
@@ -6,8 +7,16 @@ module Cinch
     # @api private
     def wait_until_synced(attr)
       attr = attr.to_sym
+      waited = 0
       while true
-        return if @synced_attributes.include?(attr)
+        return if synced?(attr)
+        waited += 1
+
+        if waited % 100 == 0
+          # TODO improve this message
+          bot.loggers.warn "A synced attribute ('%s') has not been available for %d seconds, still waiting" % [attr, waited / 10]
+          bot.loggers.warn caller.map {|s| "  #{s}"}
+        end
         sleep 0.1
       end
     end
@@ -42,6 +51,9 @@ module Cinch
       @synced_attributes.clear
     end
 
+    # @param [Symbol] attribute
+    # @param [Boolean] data
+    # @param [Boolean] unsync
     # @api private
     def attr(attribute, data = false, unsync = false)
       unless unsync

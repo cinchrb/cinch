@@ -4,15 +4,16 @@ require "thread"
 require "ostruct"
 require "cinch/rubyext/module"
 require "cinch/rubyext/string"
-require "cinch/rubyext/infinity"
+require "cinch/rubyext/float"
 
 require "cinch/exceptions"
 
 require "cinch/handler"
 require "cinch/helpers"
+
 require "cinch/logger_list"
-require "cinch/logger/logger"
-require "cinch/logger/null_logger"
+require "cinch/logger"
+
 require "cinch/logger/formatted_logger"
 require "cinch/syncable"
 require "cinch/message"
@@ -29,31 +30,36 @@ require "cinch/isupport"
 require "cinch/plugin"
 require "cinch/pattern"
 require "cinch/mode_parser"
+require "cinch/dcc"
+require "cinch/sasl"
+
 require "cinch/handler_list"
 require "cinch/cached_list"
 require "cinch/channel_list"
 require "cinch/user_list"
 require "cinch/plugin_list"
+
 require "cinch/timer"
 require "cinch/formatting"
 
 require "cinch/configuration"
-require "cinch/bot_configuration"
-require "cinch/plugins_configuration"
-require "cinch/ssl_configuration"
-require "cinch/timeouts_configuration"
+require "cinch/configuration/bot"
+require "cinch/configuration/plugins"
+require "cinch/configuration/ssl"
+require "cinch/configuration/timeouts"
+require "cinch/configuration/storage"
+require "cinch/configuration/dcc"
+require "cinch/configuration/sasl"
 
 module Cinch
   # @attr nick
-  # @attr modes
-  # @attr logger
-  # @version 1.2.0
-  class Bot
+  # @version 2.0.0
+  class Bot < User
     include Helpers
 
 
-    # @return [BotConfiguration]
-    # @version 1.2.0
+    # @return [Configuration::Bot]
+    # @version 2.0.0
     attr_reader :config
 
     # The underlying IRC connection
@@ -64,46 +70,31 @@ module Cinch
     # The logger list containing all loggers
     #
     # @return [LoggerList]
-    # @since 1.2.0
+    # @since 2.0.0
     attr_accessor :loggers
 
     # @return [Array<Channel>] All channels the bot currently is in
     attr_reader :channels
 
-    # @return [String] the bot's hostname
-    attr_reader :host
-
-    # @return [Mask]
-    attr_reader :mask
-
-    # @return [String]
-    attr_reader :user
-
-    # @return [String]
-    attr_reader :realname
-
-    # @return [Time]
-    attr_reader :signed_on_at
-
     # @return [PluginList] All registered plugins
-    # @version 1.2.0
+    # @version 2.0.0
     attr_reader :plugins
 
     # @return [Boolean] whether the bot is in the process of disconnecting
     attr_reader :quitting
 
     # @return [UserList] All {User users} the bot knows about.
+    # @see UserList
     # @since 1.1.0
-    # @todo Rename to :user_list, provide :user_manager as a deprecated alias
-    attr_reader :user_manager
+    attr_reader :user_list
 
     # @return [ChannelList] All {Channel channels} the bot knows about.
+    # @see ChannelList
     # @since 1.1.0
-    # @todo Rename to :channel_list, provide :channel_manager as a deprecated alias
-    attr_reader :channel_manager
+    attr_reader :channel_list
 
     # @return [PluginList] All loaded plugins.
-    # @version 1.2.0
+    # @version 2.0.0
     attr_reader :plugins
 
     # @return [Boolean]
@@ -114,17 +105,18 @@ module Cinch
     # @api private
     attr_reader :callback
 
-    # All registered handlers.
+    # The {HandlerList}, providing access to all registered plugins
+    # and plugin manipulation as well as {HandlerList#dispatch calling handlers}.
     #
     # @return [HandlerList]
     # @see HandlerList
-    # @since 1.2.0
+    # @since 2.0.0
     attr_reader :handlers
 
-    # All modes set for the bot.
+    # The bot's modes.
     #
     # @return [Array<String>]
-    # @since 1.2.0
+    # @since 2.0.0
     attr_reader :modes
 
     # @group Helper methods
@@ -175,165 +167,47 @@ module Cinch
       semaphore.synchronize(&block)
     end
 
-    # Stop execution of the current {#on} handler.
-    #
-    # @return [void]
-    # @deprecated Use `next` or `break` instead
-    # @note This method will be removed in Cinch 2.0.0
-    def halt
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#halt")
-      throw :halt
-    end
-
     # @endgroup
-    # @group Sending messages
 
-    # Sends a raw message to the server.
-    #
-    # @param [String] command The message to send.
-    # @return [void]
-    # @deprecated See {IRC#send} instead
-    # @see IRC#send
-    def raw(command)
-      @irc.send(command)
-    end
-
-    # @deprecated See {Target#msg} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def msg(recipient, text, notice = false)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#msg")
-
-      Target(recipient).msg(text, notice)
-    end
-    alias_method :privmsg, :msg
-    alias_method :send, :msg
-
-    # @deprecated See {Target#notice} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def notice(recipient, text)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#notice")
-
-      Target(recipient).msg(text, true)
-    end
-
-    # @deprecated See {Target#safe_msg} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def safe_msg(recipient, text)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#safe_msg")
-
-      Target(recipient).safe_msg(text)
-    end
-    alias_method :safe_privmsg, :safe_msg
-    alias_method :safe_send, :safe_msg
-
-    # @deprecated See {Target#safe_notice} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def safe_notice(recipient, text)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#safe_notice")
-
-      Target(recipient).safe_msg(text, true)
-    end
-
-    # @deprecated See {Target#action} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def action(recipient, text)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#action")
-
-      Target(recipient).action(text)
-    end
-
-    # @deprecated See {Target#safe_action} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def safe_action(recipient, text)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#safe_action")
-
-      Target(recipient).safe_action(text)
-    end
-
-    # @endgroup
     # @group Events &amp; Plugins
 
     # Registers a handler.
     #
-    # @param [String, Symbol, Integer] event the event to match. Available
-    #   events are all IRC commands in lowercase as symbols, all numeric
-    #   replies, and the following:
+    # @param [String, Symbol, Integer] event the event to match. For a
+    #   list of available events, check the {file:events.md Events
+    #   documentation}.
     #
-    #     - :channel (a channel message)
-    #     - :private (a private message)
-    #     - :message (both channel and private messages)
-    #     - :error   (handling errors, use a numeric error code as `match`)
-    #     - :ctcp    (ctcp requests, use a ctcp command as `match`)
-    #     - :action  (actions, aka /me)
-    #
-    # @param [Regexp, String, Integer] match every message of the
+    # @param [Regexp, Pattern, String] regexp every message of the
     #   right event will be checked against this argument and the event
     #   will only be called if it matches
     #
-    # @yieldparam [String] *args each capture group of the regex will
-    #   be one argument to the block. It is optional to accept them,
-    #   though
+    # @param [Array<Object>] *args Arguments that should be passed to
+    #   the block, additionally to capture groups of the regexp.
     #
-    # @return [Array<Handler>] The handlers that have been registered
-    def on(event, regexps = [], *args, &block)
-      regexps = [*regexps]
-      regexps = [//] if regexps.empty?
-
+    # @yieldparam [String] *args each capture group of the regex will
+    #   be one argument to the block.
+    #
+    # @return [Handler] The handlers that have been registered
+    def on(event, regexp = //, *args, &block)
       event = event.to_sym
 
-      handlers = []
+      pattern = case regexp
+                when Pattern
+                  regexp
+                when Regexp
+                  Pattern.new(nil, regexp, nil)
+                else
+                  if event == :ctcp
+                    Pattern.generate(:ctcp, regexp)
+                  else
+                    Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
+                  end
+                end
 
-      regexps.each do |regexp|
-        pattern = case regexp
-                 when Pattern
-                   regexp
-                 when Regexp
-                   Pattern.new(nil, regexp, nil)
-                 else
-                   if event == :ctcp
-                     Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}(?:$| .+)/, nil)
-                   else
-                     Pattern.new(/^/, /#{Regexp.escape(regexp.to_s)}/, /$/)
-                   end
-                 end
-        @loggers.debug "[on handler] Registering handler with pattern `#{pattern.inspect}`, reacting on `#{event}`"
-        handler = Handler.new(self, event, pattern, args, &block)
-        handlers << handler
-        @handlers.register(handler)
-      end
+      handler = Handler.new(self, event, pattern, {args: args, execute_in_callback: true}, &block)
+      @handlers.register(handler)
 
-      return handlers
-    end
-
-    # @deprecated See {HandlerList#dispatch} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def dispatch(event, msg = nil, *arguments)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#dispatch")
-
-      @handlers.dispatch(event, msg, *arguments)
-    end
-
-    # Register all plugins from `@config.plugins.plugins`.
-    #
-    # @return [void]
-    # @deprecated See {Bot#plugins} and {PluginList#register_plugins} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def register_plugins
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#register_plugins")
-
-      @plugins.register_plugins(@config.plugins.plugins)
-    end
-
-    # Registers a plugin.
-    #
-    # @param [Class<Plugin>] plugin The plugin class to register
-    # @return [void]
-    # @deprecated See {Bot#plugins} and {PluginList#register_plugin} instead
-    # @note This method will be removed in Cinch 2.0.0
-    def register_plugin(plugin)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#register_plugin")
-
-      @plugins.register_plugin(plugin)
+      return handler
     end
 
     # @endgroup
@@ -354,7 +228,8 @@ module Cinch
     # @return [void]
     def quit(message = nil)
       @quitting = true
-      command = message ? "QUIT :#{message}" : "QUIT"
+      command   = message ? "QUIT :#{message}" : "QUIT"
+
       @irc.send command
     end
 
@@ -368,14 +243,30 @@ module Cinch
       @plugins.register_plugins(@config.plugins.plugins) if plugins
 
       begin
-        @user_manager.each do |user|
+        @user_list.each do |user|
           user.in_whois = false
           user.unsync_all
         end # reset state of all users
 
-        @channel_manager.each do |channel|
+        @channel_list.each do |channel|
           channel.unsync_all
         end # reset state of all channels
+
+        @join_handler.unregister if @join_handler
+        @join_timer.stop if @join_timer
+
+        join_lambda = lambda { @config.channels.each { |channel| Channel(channel).join }}
+
+        if @config.delay_joins.is_a?(Symbol)
+          @join_handler = join_handler = on(@config.delay_joins) {
+            join_handler.unregister
+            join_lambda.call
+          }.first
+        else
+          @join_timer = Timer.new(self, interval: @config.delay_joins, shots: 1) {
+            join_lambda.call
+          }
+        end
 
         @loggers.info "Connecting to #{@config.server}:#{@config.port}"
         @irc = IRC.new(self)
@@ -390,14 +281,24 @@ module Cinch
             @reconnects += 1
           end
 
-          # Sleep for a few seconds before reconnecting to prevent being
-          # throttled by the IRC server
+          # Throttle reconnect attempts
           wait = 2**@reconnects
           wait = @config.max_reconnect_delay if wait > @config.max_reconnect_delay
           @loggers.info "Waiting #{wait} seconds before reconnecting"
-          sleep wait
+          start_time = Time.now
+          while !@quitting && (Time.now - start_time) < wait
+            sleep 1
+          end
         end
       end while @config.reconnect and not @quitting
+    end
+
+    # TODO document this
+    def stop
+      @plugins.each do |plugin|
+        plugin.storage.save
+        plugin.storage.unload
+      end
     end
 
     # @endgroup
@@ -407,43 +308,29 @@ module Cinch
     #
     # @param [String, Channel] channel either the name of a channel or a {Channel} object
     # @param [String] key optionally the key of the channel
-    # @return [void]
+    # @return [Channel] The joined channel
     # @see Channel#join
     def join(channel, key = nil)
-      Channel(channel).join(key)
+      channel = Channel(channel)
+      channel.join(key)
+
+      channel
     end
 
     # Part a channel.
     #
     # @param [String, Channel] channel either the name of a channel or a {Channel} object
     # @param [String] reason an optional reason/part message
-    # @return [void]
+    # @return [Channel] The channel that was left
     # @see Channel#part
     def part(channel, reason = nil)
-      Channel(channel).part(reason)
+      channel = Channel(channel)
+      channel.part(reason)
+
+      channel
     end
 
     # @endgroup
-
-    # @deprecated See {Bot#loggers} instead
-    def logger
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#logger")
-      @loggers.first
-    end
-
-    # @deprecated See {Bot#loggers} instead
-    def logger=(logger)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#logger=")
-      @loggers.clear
-      @loggers << logger
-    end
-
-    # (see Logger::Logger#debug)
-    # @deprecated See {LoggerList#debug} instead
-    def debug(msg)
-      Cinch::Utilities::Deprecation.print_deprecation("1.2.0", "Bot#debug")
-      @loggers.debug(msg)
-    end
 
     # @return [Boolean] True if the bot reports ISUPPORT violations as
     #   exceptions.
@@ -455,39 +342,29 @@ module Cinch
     def initialize(&b)
       @loggers = LoggerList.new
       @loggers << Logger::FormattedLogger.new($stderr)
-      @config = BotConfiguration.new
-      @handlers = HandlerList.new
+
+      @config           = Configuration::Bot.new
+      @handlers         = HandlerList.new
       @semaphores_mutex = Mutex.new
-      @semaphores = Hash.new { |h,k| h[k] = Mutex.new }
-      @callback = Callback.new(self)
-      @channels = []
-      @quitting = false
-      @modes    = []
+      @semaphores       = Hash.new { |h, k| h[k] = Mutex.new }
+      @callback         = Callback.new(self)
+      @channels         = []
+      @quitting         = false
+      @modes            = []
 
-      @user_manager = UserManager.new(self)
-      @channel_manager = ChannelManager.new(self)
-      @plugins = PluginList.new(self)
+      @user_list    = UserList.new(self)
+      @channel_list = ChannelList.new(self)
+      @plugins      = PluginList.new(self)
 
+      super(nil, self)
       instance_eval(&b) if block_given?
-
-      if @config.verbose.nil?
-        @loggers.level = :debug
-      else
-        @loggers.warn "Deprecation warning: Beginning with version 1.2.0, @config.verbose should not be used anymore. See Logger#level= instead"
-        @loggers.level = @config.verbose ? :debug : :info
-      end
-
-      on :connect do
-        bot.config.channels.each do |channel|
-          bot.join channel
-        end
-
-        bot.modes = bot.config.modes
-      end
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
+    # @return [self]
+    # @api private
     def bot
+      # This method is needed for the Helpers interface
       self
     end
 
@@ -495,10 +372,11 @@ module Cinch
     #
     # @param [String] mode
     # @return [void]
-    # @since 1.2.0
+    # @since 2.0.0
     # @see Bot#modes
     # @see Bot#unset_mode
     def set_mode(mode)
+      @modes << mode unless @modes.include?(mode)
       @irc.send "MODE #{nick} +#{mode}"
     end
 
@@ -506,20 +384,30 @@ module Cinch
     #
     # @param [String] mode
     # @return [void]
-    # @since 1.2.0
+    # @since 2.0.0
     def unset_mode(mode)
+      @modes.delete(mode)
       @irc.send "MODE #{nick} -#{mode}"
     end
 
-    # @since 1.2.0
+    # @since 2.0.0
     def modes=(modes)
-      @modes.each do |mode|
+      (@modes - modes).each do |mode|
         unset_mode(mode)
       end
 
-      modes.each do |mode|
+      (modes - @modes).each do |mode|
         set_mode(mode)
       end
+    end
+
+    # Used for updating the bot's nick from within the IRC parser.
+    #
+    # @param [String] nick
+    # @api private
+    # @return [String]
+    def set_nick(nick)
+      @name = nick
     end
 
     # The bot's nickname.
@@ -532,7 +420,7 @@ module Cinch
     #   @return [String]
     # @return [String]
     def nick
-      @config.nick
+      @name
     end
 
     def nick=(new_nick)
@@ -548,8 +436,8 @@ module Cinch
     #
     # @param [String] base The base nick to start trying from
     # @api private
-    # @return String
-    # @since 1.2.0
+    # @return [String]
+    # @since 2.0.0
     def generate_next_nick!(base = nil)
       nicks = @config.nicks || []
 
@@ -576,32 +464,9 @@ module Cinch
       @config.nick = new_nick
     end
 
-    # @return [Boolean] True if the bot is using SSL to connect to the
-    #   server.
-    def secure?
-      @config[:ssl] == true || (@config[:ssl].is_a?(Hash) && @config[:ssl][:use])
-    end
-
-    # This method is only provided in order to give {Bot} and {User} a
-    # common interface.
-    #
-    # @return [false] Always returns `false`.
-    # @see User#unknown? See User#unknown? for the method's real use.
-    def unknown?
-      false
-    end
-
-    [:host, :mask, :user, :realname, :signed_on_at, :secure?].each do |attr|
-      define_method(attr) do
-        User(nick).__send__(attr)
-      end
-    end
-
-    # @return [User] The {User} object describing the bot on the IRC
-    #   server.
-    # @since 1.2.0
-    def to_user
-      User(nick)
+    # @return [String]
+    def inspect
+      "#<Bot nick=#{@name.inspect}>"
     end
   end
 end

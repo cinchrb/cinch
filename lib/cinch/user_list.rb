@@ -1,7 +1,7 @@
 require "cinch/cached_list"
 
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
   # @version 1.1.0
   # @note In prior versions, this class was called UserManager
   class UserList < CachedList
@@ -48,6 +48,7 @@ module Cinch
     end
 
     # @api private
+    # @return [void]
     def update_nick(user)
       @mutex.synchronize do
         @cache[user.nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])] = user
@@ -56,9 +57,9 @@ module Cinch
     end
 
     # @api private
+    # @return [void]
     def delete(user)
       @cache.delete_if {|n, u| u == user }
     end
   end
-  UserManager = UserList
 end

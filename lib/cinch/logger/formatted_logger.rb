@@ -1,8 +1,8 @@
-require "cinch/logger/logger"
+require "cinch/logger"
 
 module Cinch
-  module Logger
-    # @version 1.2.0
+  class Logger
+    # @version 2.0.0
     class FormattedLogger < Logger
       # @private
       Colors = {

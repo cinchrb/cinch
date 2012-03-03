@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
+require "time"
+
 module Cinch
+  # This class serves two purposes. For one, it simply
+  # represents incoming messages and allows for querying various
+  # details (who sent the message, what kind of message it is, etc).
+  #
+  # At the same time, it allows **responding** to messages, which
+  # means sending messages to either users or channels.
+  #
   # @attr_reader user
   # @attr_reader error
   # @attr_reader message
@@ -28,6 +37,10 @@ module Cinch
     # @api private
     attr_writer :events
 
+    # @return [Time]
+    # @since 2.0.0
+    attr_reader :time
+
     # @return [Bot]
     # @since 1.1.0
     attr_reader :bot
@@ -35,8 +48,9 @@ module Cinch
     def initialize(msg, bot)
       @raw = msg
       @bot = bot
-      @matches = {:ctcp => {}, :other => {}}
+      @matches = {:ctcp => {}, :action => {}, :other => {}}
       @events = []
+      @time = Time.now
       parse if msg
     end
 
@@ -46,7 +60,7 @@ module Cinch
       match = @raw.match(/(^:(\S+) )?(\S+)(.*)/)
       _, @prefix, @command, raw_params = match.captures
 
-      if @bot.irc.network == "ngametv"
+      if @bot.irc.network.ngametv?
         if @prefix != "ngame"
           @prefix = "%s!user@host" % [@prefix, @prefix, @prefix]
         end
@@ -69,7 +83,7 @@ module Cinch
       host = @prefix[/@(\S+)$/, 1]
 
       return nil if nick.nil?
-      @user ||= @bot.user_manager.find_ensured(user, nick, host)
+      @user ||= @bot.user_list.find_ensured(user, nick, host)
     end
 
     # @return [String, nil]
@@ -108,7 +122,7 @@ module Cinch
     end
 
     # @return [Boolean] true if the message is an action (/me)
-    # @since 1.2.0
+    # @since 2.0.0
     def action?
       ctcp_command == "ACTION"
     end
@@ -116,7 +130,7 @@ module Cinch
     # @endgroup
 
     # @return [String, nil] The action message
-    # @since 1.2.0
+    # @since 2.0.0
     def action_message
       return nil unless action?
       ctcp_message.split(" ", 2).last
@@ -132,15 +146,15 @@ module Cinch
     def channel
       @channel ||= begin
                      case command
-                     when "INVITE", RPL_CHANNELMODEIS.to_s, RPL_BANLIST.to_s
-                       @bot.channel_manager.find_ensured(params[1])
-                     when RPL_NAMEREPLY.to_s
-                       @bot.channel_manager.find_ensured(params[2])
+                     when "INVITE", Constants::RPL_CHANNELMODEIS.to_s, Constants::RPL_BANLIST.to_s
+                       @bot.channel_list.find_ensured(params[1])
+                     when Constants::RPL_NAMEREPLY.to_s
+                       @bot.channel_list.find_ensured(params[2])
                      else
                        if params.first.start_with?("#")
-                         @bot.channel_manager.find_ensured(params.first)
+                         @bot.channel_list.find_ensured(params.first)
                        elsif numeric_reply? and params[1].start_with?("#")
-                         @bot.channel_manager.find_ensured(params[1])
+                         @bot.channel_list.find_ensured(params[1])
                        end
                      end
                    end
@@ -156,6 +170,8 @@ module Cinch
     def match(regexp, type)
       if type == :ctcp
         @matches[:ctcp][regexp] ||= ctcp_message.match(regexp)
+      elsif type == :action
+        @matches[:action][regexp] ||= action_message.match(regexp)
       else
         @matches[:other][regexp] ||= message.to_s.match(regexp)
       end

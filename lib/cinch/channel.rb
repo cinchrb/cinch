@@ -9,52 +9,10 @@ module Cinch
   # @attr invite_only
   # @attr key
   #
-  # @version 1.2.0
+  # @version 2.0.0
   class Channel < Target
     include Syncable
     include Helpers
-    @channels = {}
-
-    class << self
-      # Finds or creates a channel.
-      #
-      # @param [String] name name of a channel
-      # @param [Bot] bot a bot
-      # @return [Channel]
-      # @see Helpers#Channel
-      # @deprecated See {Bot#channel_manager} and {ChannelManager#find_ensured} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def find_ensured(name, bot)
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "Channel.find_ensured")
-
-        downcased_name = name.irc_downcase(bot.irc.isupport["CASEMAPPING"])
-        @channels[downcased_name] ||= bot.channel_manager.find_ensured(name)
-      end
-
-      # Finds a channel.
-      #
-      # @param [String] name name of a channel
-      # @return [Channel, nil]
-      # @deprecated See {Bot#channel_manager} and {ChannelManager#find} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def find(name)
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "Channel.find")
-
-        @channels[name]
-      end
-
-      # @return [Array<Channel>] Returns all channels
-      # @deprecated See {Bot#channel_manager} and {CacheManager#each} instead
-      # @note This method does not work properly if running more than one bot
-      # @note This method will be removed in Cinch 2.0.0
-      def all
-        Cinch::Utilities::Deprecation.print_deprecation("1.1.0", "User.all")
-
-        @channels.values
-      end
-    end
 
     # Users are represented by a Hash, mapping individual users to an
     # array of modes (e.g. "o" for opped).
@@ -72,6 +30,11 @@ module Cinch
     attr_reader :bans
     synced_attr_reader :bans
 
+    # @return [Array<User>] all channel owners
+    # @note Only some networks implement this
+    attr_reader :owners
+    synced_attr_reader :owners
+
     # This attribute describes all modes set in the channel. They're
     # represented as a Hash, mapping the mode (e.g. "i", "k", …) to
     # either a value in the case of modes that take an option (e.g.
@@ -85,6 +48,7 @@ module Cinch
       @name  = name
       @users = Hash.new {|h,k| h[k] = []}
       @bans  = []
+      @owners = []
 
       @modes = {}
       # TODO raise if not a channel
@@ -104,6 +68,14 @@ module Cinch
             @bot.irc.send "TOPIC #@name"
           when :bans
             @bot.irc.send "MODE #@name +b"
+          when :owners
+            if @bot.irc.network.owner_list_mode
+              @bot.irc.send "MODE #@name +#{@bot.irc.network.owner_list_mode}"
+            else
+              # the current IRCd does not support channel owners, so
+              # just mark the empty array as synced
+              mark_as_synced(:owners)
+            end
           when :modes
             @bot.irc.send "MODE #@name"
           end
@@ -143,27 +115,27 @@ module Cinch
 
     # @group User groups
     # @return [Array<User>] All ops in the channel
-    # @since 1.2.0
+    # @since 2.0.0
     def ops
       @users.select {|user, modes| modes.include?("o")}.keys
     end
 
     # @return [Array<User>] All half-ops in the channel
-    # @since 1.2.0
+    # @since 2.0.0
     def half_ops
       @users.select {|user, modes| modes.include?("h")}.keys
     end
 
     # @return [Array<User>] All voiced users in the channel
-    # @since 1.2.0
+    # @since 2.0.0
     def voiced
       @users.select {|user, modes| modes.include?("v")}.keys
     end
 
     # @return [Array<User>] All admins in the channel
-    # @since 1.2.0
+    # @since 2.0.0
     def admins
-      @users.select {|user, modes| modes.include?("o")}.keys
+      @users.select {|user, modes| modes.include?("a")}.keys
     end
     # @endgroup
 
@@ -238,21 +210,33 @@ module Cinch
 
     # @api private
     # @return [void]
-    def sync_modes(all = true)
+    def sync_modes
       unsync :users
       unsync :bans
       unsync :modes
-      @bot.irc.send "NAMES #@name" if all
+      unsync :owners
+
+      if @bot.irc.isupport["WHOX"]
+        @bot.irc.send "WHO #@name %acfhnru"
+      else
+        @bot.irc.send "WHO #@name"
+      end
       @bot.irc.send "MODE #@name +b" # bans
       @bot.irc.send "MODE #@name"
+      if @bot.irc.network.owner_list_mode
+        @bot.irc.send "MODE #@name +#{@bot.irc.network.owner_list_mode}"
+      else
+        mark_as_synced :owners
+      end
     end
 
     # @group Channel Manipulation
 
     # Bans someone from the channel.
     #
-    # @param [Ban, Mask, User, String] target the mask, or an object having a mask, to ban
+    # @param [Mask, String, #mask] target the mask, or an object having a mask, to ban
     # @return [Mask] the mask used for banning
+    # @see #unban #unban for unbanning users
     def ban(target)
       mask = Mask.from(target)
 
@@ -262,8 +246,9 @@ module Cinch
 
     # Unbans someone from the channel.
     #
-    # @param [Ban, Mask, User, String] target the mask to unban
+    # @param [Mask, String, #mask] target the mask to unban
     # @return [Mask] the mask used for unbanning
+    # @see #ban #ban for banning users
     def unban(target)
       mask = Mask.from(target)
 
@@ -372,14 +357,15 @@ module Cinch
     # @endgroup
 
     # @api private
-    # @return [void]
+    # @return [User] The added user
     def add_user(user, modes = [])
       @in_channel = true if user == @bot
       @users[user] = modes
+      user
     end
 
     # @api private
-    # @return [void]
+    # @return [User, nil] The removed user
     def remove_user(user)
       @in_channel = false if user == @bot
       @users.delete(user)
@@ -392,12 +378,6 @@ module Cinch
     def clear_users
       @users.clear
     end
-
-    # @return [Boolean]
-    def ==(other)
-      @name == other.to_s
-    end
-    alias_method :eql?, "=="
 
     # @return [Fixnum]
     def hash

@@ -1,7 +1,7 @@
 require "cinch/cached_list"
 
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
   # @version 1.1.0
   # @note In prior versions, this class was called ChannelManager
   class ChannelList < CachedList
@@ -26,5 +26,4 @@ module Cinch
       @cache[downcased_name]
     end
   end
-  ChannelManager = ChannelList
 end

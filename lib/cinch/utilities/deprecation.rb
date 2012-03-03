@@ -1,5 +1,5 @@
 module Cinch
-  # @since 1.2.0
+  # @since 2.0.0
   # @api private
   module Utilities
     module Deprecation

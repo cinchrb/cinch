@@ -148,7 +148,6 @@ Authors
 -------
 
 * [Dominik Honnef](http://dominik.honnef.co)
-* [Lee Jarvis](http://injekt.net)
 
 Contribute
 ----------

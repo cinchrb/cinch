@@ -1,5 +1,16 @@
+# TODO @since for all methods
 module Cinch
+  # The Helpers module contains a number of methods whose purpose is
+  # to make writing plugins easier by hiding parts of the API. The
+  # {#Channel} helper, for example, provides an easier way for turning
+  # a String object into a {Channel} object than directly using
+  # {ChannelList}: Compare `Channel("#some_channel")` with
+  # `bot.channel_list.find_ensured("#some_channel")`.
+  #
+  # The Helpers module automatically gets included in all plugins.
   module Helpers
+    # @group Type casts
+
     # Helper method for turning a String into a {Target} object.
     #
     # @param [String] target a target name
@@ -23,7 +34,7 @@ module Cinch
     #   end
     def Channel(channel)
       return channel if channel.is_a?(Channel)
-      bot.channel_manager.find_ensured(channel)
+      bot.channel_list.find_ensured(channel)
     end
 
     # Helper method for turning a String into an {User} object.
@@ -37,7 +48,11 @@ module Cinch
     #   end
     def User(user)
       return user if user.is_a?(User)
-      bot.user_manager.find_ensured(user)
+      if user == bot.nick
+        bot
+      else
+        bot.user_list.find_ensured(user)
+      end
     end
 
     # @example Used as a class method in a plugin
@@ -49,21 +64,30 @@ module Cinch
     # @example Used as an instance method in a plugin
     #   match "start timer"
     #   def execute(m)
-    #     timer(5) { puts "timer fired" }
+    #     Timer(5) { puts "timer fired" }
     #   end
     #
     # @example Used as an instance method in a traditional `on` handler
     #   on :message, "start timer" do
-    #     timer(5) { puts "timer fired" }
+    #     Timer(5) { puts "timer fired" }
     #   end
     #
     # @param [Number] interval Interval in seconds
     # @param [Proc] block A proc to execute
-    # @option options [Symbol] :method (:timer) Method to call (only if no proc is provided)
-    # @option options [Boolean] :threaded (true) Call method in a thread?
+    # @option options [Symbol] :method (:timer) Method to call (only
+    #   if no proc is provided)
+    # @option options [Boolean] :threaded (true) Call method in a
+    #   thread?
+    # @option options [Number] :shots (Float::INFINITY) How often
+    #   should the timer fire?
+    # @option options [Boolean] :start_automatically (true) If true,
+    #   the timer will automatically start after the bot finished
+    #   connecting.
+    # @option options [Boolean] :stop_automaticall (true) If true, the
+    #   timer will automatically stop when the bot disconnects.
     # @return [Timer]
-    # @since 1.2.0
-    def timer(interval, options = {}, &block)
+    # @since 2.0.0
+    def Timer(interval, options = {}, &block)
       options = {:method => :timer, :threaded => true, :interval => interval}.merge(options)
       block ||= self.method(options[:method])
       timer = Cinch::Timer.new(bot, options, &block)
@@ -71,6 +95,10 @@ module Cinch
 
       timer
     end
+
+    # @endgroup
+
+    # @group Logging
 
     # Use this method to automatically log exceptions to the loggers.
     #
@@ -82,7 +110,7 @@ module Cinch
     #   end
     #
     # @return [void]
-    # @since 1.2.0
+    # @since 2.0.0
     def rescue_exception
       begin
         yield
@@ -91,9 +119,60 @@ module Cinch
       end
     end
 
+    # (see Logger#log)
+    def log(messages, event = :debug, level = event)
+      @bot.loggers.log(messages, event, level)
+    end
+
+    # (see Logger#debug)
+    def debug(message)
+      log(message, :debug)
+    end
+
+    # (see Logger#error)
+    def error(message)
+      log(message, :error)
+    end
+
+    # (see Logger#fatal)
+    def fatal(message)
+      log(message, :fatal)
+    end
+
+    # (see Logger#info)
+    def info(message)
+      log(message, :info)
+    end
+
+    # (see Logger#warn)
+    def warn(message)
+      log(message, :warn)
+    end
+
+    # (see Logger#incoming)
+    def incoming(message)
+      log(message, :incoming, :log)
+    end
+
+    # (see Logger#outgoing)
+    def outgoing(message)
+      log(message, :outgoing, :log)
+    end
+
+    # (see Logger#exception)
+    def exception(e)
+      log(e.message, :exception, :error)
+    end
+    # @endgroup
+
+    # @group Formatting
+
+    # (see Formatting.format)
     def Format(*args)
       Formatting.format(*args)
     end
     alias_method :Color, :Format
+
+    # @endgroup
   end
 end

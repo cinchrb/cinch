@@ -1,4 +1,9 @@
+# Extensions to Ruby's String class.
 class String
+  # Like `String#downcase`, but respecting different IRC casemaps.
+  #
+  # @param [Symbol<:rfc1459, :strict-rfc1459, :ascii>] mapping
+  # @return [String]
   def irc_downcase(mapping)
     case mapping
     when :rfc1459
@@ -11,6 +16,10 @@ class String
     end
   end
 
+  # Like `String#upcase`, but respecting different IRC casemaps.
+  #
+  # @param [Symbol<:rfc1459, :strict-rfc1459, :ascii>] mapping
+  # @return [String]
   def irc_upcase(mapping)
     case mapping
     when :ascii
