@@ -4,7 +4,7 @@ module Cinch
   module ModeParser
     # @param [String] modes The mode string as sent by the server
     # @param [Array<String>] params Parameters belonging to the modes
-    # @param [Hash<:add => Array<String>, :remove => Array<String>] param_modes
+    # @param [Hash{:add, :remove => Array<String>}] param_modes
     #   A mapping describing which modes require parameters
     def self.parse_modes(modes, params, param_modes = {})
       if modes.size == 0

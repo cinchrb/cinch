@@ -17,7 +17,7 @@ module Cinch
     # Users are represented by a Hash, mapping individual users to an
     # array of modes (e.g. "o" for opped).
     #
-    # @return [Hash<User => Array<String>>] all users in the channel
+    # @return [Hash{User => Array<String}>] all users in the channel
     # @version 1.1.0
     attr_reader :users
     synced_attr_reader :users
@@ -40,7 +40,7 @@ module Cinch
     # either a value in the case of modes that take an option (e.g.
     # "k" for the channel key) or true.
     #
-    # @return [Hash<String => Object>]
+    # @return [Hash{String => Object}]
     attr_reader :modes
     synced_attr_reader :modes
     def initialize(name, bot)

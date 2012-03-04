@@ -101,10 +101,10 @@ module Cinch
     # Logs a message.
     #
     # @param [String, Array] messages The message(s) to log
-    # @param [Symbol<:debug, :incoming, :outgoing, :info, :warn,
-    #   :exception, :error, :fatal>] event The kind of event that
+    # @param [:debug, :incoming, :outgoing, :info, :warn,
+    #   :exception, :error, :fatal] event The kind of event that
     #   triggered the message
-    # @param [Symbol<:debug, :info, :warn, :error, :fatal>] level The level of the message
+    # @param [:debug, :info, :warn, :error, :fatal] level The level of the message
     # @return [void]
     # @version 2.0.0
     def log(messages, event = :debug, level = event)
@@ -120,7 +120,7 @@ module Cinch
       end
     end
 
-    # @param [Symbol<:debug, :info, :warn, :error, :fatal>] level
+    # @param [:debug, :info, :warn, :error, :fatal] level
     # @return [Boolean] Whether the currently set logging level will
     #   allow the passed in level to be logged
     # @since 2.0.0

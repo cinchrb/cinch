@@ -15,7 +15,7 @@ module Cinch
           "DH-BLOWFISH"
         end
 
-        # @return [Array<Number, Number, Number>] p, g and y for DH
+        # @return [Array(Number, Number, Number)] p, g and y for DH
         def unpack_payload(payload)
           pgy     = []
           payload = payload.dup

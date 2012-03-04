@@ -24,10 +24,10 @@ module Cinch
     #
     # @attr plugin_name
     module ClassMethods
-      # @return [Hash<Symbol<:pre, :post> => Array<Hook>>] All hooks
+      # @return [Hash{:pre, :post => Array<Hook>}] All hooks
       attr_reader :hooks
 
-      # @return [Array<Symbol<:message, :channel, :private>>] The list of events to react on
+      # @return [Array<:message, :channel, :private>] The list of events to react on
       attr_accessor :reacting_on
 
       # The name of the plugin.
@@ -140,7 +140,7 @@ module Cinch
       #   @param [Object] value
       #   @return [void]
       # @overload set(options)
-      #   @param [Hash<Symbol => Object>] options The options, as key => value associations
+      #   @param [Hash{Symbol => Object}] options The options, as key => value associations
       #   @return [void]
       #   @example
       #     set(:help   => "the help message",
@@ -200,7 +200,7 @@ module Cinch
       #   @param [Hash] options
       #   @option options [Symbol] :method (:listen) The method to
       #     execute
-      #   @return [Array<Listener]
+      #   @return [Array<Listener>]
       def listen_to(*types)
         options = {:method => :listen}
         if types.last.is_a?(Hash)
@@ -219,7 +219,7 @@ module Cinch
       end
 
       # Set which kind of messages to react on for matchers.
-      # @param [Symbol<:message, :channel, :private>] event Which event to react on
+      # @param [:message, :channel, :private] event Which event to react on
       # @return [void]
       def react_on(event)
         self.reacting_on = event
@@ -256,7 +256,7 @@ module Cinch
       # Defines a hook which will be run before or after a handler is
       # executed, depending on the value of `type`.
       #
-      # @param [Symbol<:pre, :post>] type Run the hook before or after
+      # @param [:pre, :post] type Run the hook before or after
       #   a handler?
       # @option options [Array<:match, :listen_to, :ctcp>] :for ([:match, :listen_to, :ctcp])
       #   Which kinds of events to run the hook for.

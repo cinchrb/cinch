@@ -2,7 +2,7 @@
 class String
   # Like `String#downcase`, but respecting different IRC casemaps.
   #
-  # @param [Symbol<:rfc1459, :strict-rfc1459, :ascii>] mapping
+  # @param [:rfc1459, :"strict-rfc1459", :ascii] mapping
   # @return [String]
   def irc_downcase(mapping)
     case mapping
@@ -18,7 +18,7 @@ class String
 
   # Like `String#upcase`, but respecting different IRC casemaps.
   #
-  # @param [Symbol<:rfc1459, :strict-rfc1459, :ascii>] mapping
+  # @param [:rfc1459, :"strict-rfc1459", :ascii] mapping
   # @return [String]
   def irc_upcase(mapping)
     case mapping
