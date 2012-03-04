@@ -1,4 +1,6 @@
 # @title Encodings
+# @markup kramdown
+
 # Encodings
 
 The IRC protocol doesn't define a specific encoding that should be

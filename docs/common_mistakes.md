@@ -1,4 +1,5 @@
 # @title Common mistakes
+# @markup kramdown
 
 # I defined an initialize method in my plugin and now it doesn't work properly anymore
 

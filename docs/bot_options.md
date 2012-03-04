@@ -1,4 +1,5 @@
 # @title Bot options
+# @markup kramdown
 
 # Options
 Note: This page describes options of Cinch. It does not describe how

@@ -1,4 +1,5 @@
 # @title Events
+# @markup kramdown
 
 Cinch provides three kinds of events:
 

@@ -1,4 +1,5 @@
 # @title Logging
+# @markup kramdown
 
 TODO explain the logging facilities
 
