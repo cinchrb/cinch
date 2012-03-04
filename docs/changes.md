@@ -14,18 +14,11 @@
 1. Added support for broken IRC networks
 1. Dynamic timers
 1. Reworked logging facilities
-
 1. API improvements
    1. Helper changes
    1. Added a Cinch::Target Target class
    1. Cinch::Constants
    1. New methods
-      1. Cinch::Bot
-      1. Cinch::Channel
-      1. Cinch::Helpers
-      1. Cinch::IRC
-      1. Cinch::Message
-      1. Cinch::User
    1. Removed/Renamed methods
    1. Handlers
    1. The Plugin class
