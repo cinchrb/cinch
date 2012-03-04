@@ -2,37 +2,36 @@
 # @markup kramdown
 
 # What has changed in 2.0?
-1. **Added support for SASL**
-1. **Added support for DCC SEND**
-1. **Added a fair scheduler for outgoing messages**
-1. **Added required plugin options**
-1. **Added support for colors/formatting**
-1. **Added network discovery**
-1. **Added match groups**
-1. **Added match options overwriting plugin options**
-1. **Added support for actions (/me)**
-1. **Added support for broken IRC networks**
-1. **Dynamic timers**
-1. **Reworked logging facilities**
+1. Added support for SASL
+1. Added support for DCC SEND
+1. Added a fair scheduler for outgoing messages
+1. Added required plugin options
+1. Added support for colors/formatting
+1. Added network discovery
+1. Added match groups
+1. Added match options overwriting plugin options
+1. Added support for actions (/me)
+1. Added support for broken IRC networks
+1. Dynamic timers
+1. Reworked logging facilities
 
-1. **API improvements**
-   1. **Helper changes**
-   1. **Added a Cinch::Target Target class**
-   1. **Cinch::Constants**
-   1. **New methods**
-      1. **Cinch::Bot**
-      1. **Cinch::Channel**
-      1. **Cinch::Helpers**
-      1. **Cinch::IRC**
-      1. **Cinch::Message**
-      1. **Cinch::User**
-   1. **Removed/Renamed methods**
-   1. **Handlers**
+1. API improvements
+   1. Helper changes
+   1. Added a Cinch::Target Target class
+   1. Cinch::Constants
+   1. New methods
+      1. Cinch::Bot
+      1. Cinch::Channel
+      1. Cinch::Helpers
+      1. Cinch::IRC
+      1. Cinch::Message
+      1. Cinch::User
+   1. Removed/Renamed methods
+   1. Handlers
    1. The Plugin class
-   1. **Channel/Target/User implement Comparable**
-   1. **Renamed `*Manager` to `*List`**
-
-1. **New events**
+   1. Channel/Target/User implement Comparable
+   1. Renamed `*Manager` to `*List`
+1. New events
 
 ## Added support for SASL
 
