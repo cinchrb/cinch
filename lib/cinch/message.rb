@@ -93,7 +93,7 @@ module Cinch
       @server ||= @prefix[/^(\S+)/, 1]
     end
 
-    # @return [Number, nil] the numeric error code, if any
+    # @return [Integer, nil] the numeric error code, if any
     def error
       @error ||= (command.to_i if numeric_reply? && command[/[45]\d\d/])
     end

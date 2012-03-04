@@ -9,7 +9,7 @@ module Cinch
     module DCCableObject
       # Return the next `number` bytes of the object.
       #
-      # @param [Number] number Read `number` bytes at most
+      # @param [Integer] number Read `number` bytes at most
       # @return [String] The read data
       # @return [nil] If no more data can be read
       def read(number)
@@ -17,7 +17,7 @@ module Cinch
 
       # Seek to a specific position.
       #
-      # @param [Number] position The position in bytes to seek to
+      # @param [Integer] position The position in bytes to seek to
       # @return [void]
       def seek(position)
       end
@@ -29,7 +29,7 @@ module Cinch
       def path
       end
 
-      # @return [Number] The total size of the data, in bytes.
+      # @return [Integer] The total size of the data, in bytes.
       def size
       end
     end

@@ -139,7 +139,7 @@ module Cinch
     end
     # @endgroup
 
-    # @return [Number] The maximum number of allowed users in the
+    # @return [Integer] The maximum number of allowed users in the
     #   channel. 0 if unlimited.
     def limit
       @modes["l"].to_i

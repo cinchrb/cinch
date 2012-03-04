@@ -94,7 +94,7 @@ module Cinch
       #   timers. This class only describes a Timer that still has to
       #   be created.
       #
-      # @attr [Number] interval
+      # @attr [Numeric] interval
       # @attr [Symbol] method
       # @attr [Hash] options
       # @attr [Boolean] registered
@@ -231,10 +231,10 @@ module Cinch
       #     Channel("#cinch-bots").send(Time.now.to_s)
       #   end
       #
-      # @param [Number] interval Interval in seconds
+      # @param [Numeric] interval Interval in seconds
       # @option options [Symbol] :method (:timer) Method to call (only
       #   if no proc is provided)
-      # @option options [Number] :shots (Float::INFINITY) How often
+      # @option options [Integer] :shots (Float::INFINITY) How often
       #   should the timer fire?
       # @option options [Boolean] :threaded (true) Call method in a
       #   thread?

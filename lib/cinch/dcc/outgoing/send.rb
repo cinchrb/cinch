@@ -87,14 +87,14 @@ module Cinch
 
         # Seek to `pos` in the data.
         #
-        # @param [Number] pos
+        # @param [Integer] pos
         # @return [void]
         # @api private
         def seek(pos)
           @io.seek(pos)
         end
 
-        # @return [Number] The port used for the socket
+        # @return [Fixnum] The port used for the socket
         def port
           @port ||= @socket.addr[1]
         end

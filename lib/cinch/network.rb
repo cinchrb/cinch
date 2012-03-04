@@ -79,7 +79,7 @@ module Cinch
     # value for when no network/ircd was detected so that MessageQueue
     # doesn't break.
 
-    # @return [Number] The `messages per second` value that best suits
+    # @return [Numeric] The `messages per second` value that best suits
     #   the current network
     def default_messages_per_second
       case @network
@@ -90,7 +90,7 @@ module Cinch
       end
     end
 
-    # @return [Number] The `server queue size` value that best suits
+    # @return [Integer] The `server queue size` value that best suits
     #   the current network
     def default_server_queue_size
       case @network

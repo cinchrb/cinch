@@ -7,7 +7,7 @@ module Cinch
   # @attr_reader [String] host
   # @attr_reader [String] realname
   # @attr_reader [String] authname
-  # @attr_reader [Number] idle How long this user has been idle, in seconds.
+  # @attr_reader [Integer] idle How long this user has been idle, in seconds.
   #   This is a snapshot of the last WHOIS.
   # @attr_reader [Time] signed_on_at
   # @attr_reader [Array<Channel>] channels All channels the user is in.

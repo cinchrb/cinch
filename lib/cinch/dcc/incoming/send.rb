@@ -60,21 +60,21 @@ module Cinch
         # @return [String]
         attr_reader :filename
 
-        # @return [Number]
+        # @return [Integer]
         attr_reader :size
 
         # @return [String]
         attr_reader :ip
 
-        # @return [Number]
+        # @return [Fixnum]
         attr_reader :port
 
         # @param [Hash] opts
         # @option opts [User] user
         # @option opts [String] filename
-        # @option opts [Number] size
+        # @option opts [Integer] size
         # @option opts [String] ip
-        # @option opts [Number] port
+        # @option opts [Fixnum] port
         # @api private
         def initialize(opts)
           @user, @filename, @size, @ip, @port = opts.values_at(:user, :filename, :size, :ip, :port)

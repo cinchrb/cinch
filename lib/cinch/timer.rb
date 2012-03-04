@@ -24,7 +24,7 @@ module Cinch
     # @return [Bot]
     attr_reader :bot
 
-    # @return [Number] The interval (in seconds) of the timer
+    # @return [Numeric] The interval (in seconds) of the timer
     attr_accessor :interval
 
     # @return [Boolean] If true, each invocation will be
@@ -37,7 +37,7 @@ module Cinch
     # @return [Boolean]
     attr_reader :started
 
-    # @return [Number] The remaining number of shots before this timer
+    # @return [Integer] The remaining number of shots before this timer
     #   will stop. This value will automatically reset after
     #   restarting the timer.
     attr_accessor :shots
@@ -50,9 +50,9 @@ module Cinch
 
     # @param [Bot] bot The instance of {Bot} the timer is associated
     #   with
-    # @option options [Number] :interval The interval (in seconds) of
+    # @option options [Numeric] :interval The interval (in seconds) of
     #   the timer
-    # @option options [Number] :shots (Float::INFINITY) How often should the
+    # @option options [Integer] :shots (Float::INFINITY) How often should the
     #   timer fire?
     # @option options [Boolean] :threaded (true) If true, each invocation will be
     #   executed in a thread of its own.
