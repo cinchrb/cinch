@@ -38,9 +38,8 @@ shouldn't and usually mustn't overwrite:
 - `::plugin_name`
 - `::prefix=`
 - `::prefix`
+- `::react_on=`
 - `::react_on`
-- `::reacting_on=`
-- `::reacting_on`
 - `::required_options=`
 - `::required_options`
 - `::set`

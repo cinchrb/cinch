@@ -28,7 +28,7 @@ module Cinch
       attr_reader :hooks
 
       # @return [Array<:message, :channel, :private>] The list of events to react on
-      attr_accessor :reacting_on
+      attr_accessor :react_on
 
       # The name of the plugin.
       # @overload plugin_name
@@ -79,7 +79,7 @@ module Cinch
       # @attr [Boolean] use_suffix
       # @attr [Symbol] method
       # @attr [Symbol] group
-      Matcher = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :reacting_on)
+      Matcher = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :react_on)
 
       # Represents a Listener as created by {#listen_to}.
       #
@@ -118,7 +118,7 @@ module Cinch
           @hooks            = Hash.new{|h, k| h[k] = []}
           @prefix           = nil
           @suffix           = nil
-          @reacting_on      = :message
+          @react_on         = :message
           @required_options = []
           self.plugin_name  = nil
         end
@@ -131,7 +131,7 @@ module Cinch
       #   - {#help}
       #   - {#plugin_name}
       #   - {#prefix}
-      #   - {#reacting_on}
+      #   - {#react_on}
       #   - {#required_options}
       #   - {#suffix}
       #
@@ -177,8 +177,8 @@ module Cinch
       # @todo Document match/listener grouping
       # @todo document new options
       def match(pattern, options = {})
-        options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil, :reacting_on => nil}.merge(options)
-        matcher = Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :reacting_on))
+        options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil, :react_on => nil}.merge(options)
+        matcher = Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :react_on))
         @matchers << matcher
 
         matcher
@@ -216,13 +216,6 @@ module Cinch
       # @version 1.1.1
       def ctcp(command)
         @ctcps << command.to_s.upcase
-      end
-
-      # Set which kind of messages to react on for matchers.
-      # @param [:message, :channel, :private] event Which event to react on
-      # @return [void]
-      def react_on(event)
-        self.reacting_on = event
       end
 
       # @example
@@ -369,7 +362,7 @@ module Cinch
         _suffix = matcher.use_suffix ? matcher.suffix || suffix : nil
 
         pattern_to_register = Pattern.new(_prefix, matcher.pattern, _suffix)
-        react_on = matcher.reacting_on || self.class.reacting_on || :message
+        react_on = matcher.react_on || self.class.react_on || :message
 
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 

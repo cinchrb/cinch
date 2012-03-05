@@ -134,7 +134,7 @@ Example:
 
 ## Added match options overwriting plugin options
 
-Matchers now have their own `:prefix`, `:suffix` and `:reacting_on`
+Matchers now have their own `:prefix`, `:suffix` and `:react_on`
 options which overwrite plugin options for single matchers.
 
 
@@ -143,7 +143,7 @@ options which overwrite plugin options for single matchers.
 A new event, {`:action`} has been added and can be used for matching
 actions as follows:
 
-    match "kicks the bot", reacting_on: :action
+    match "kicks the bot", react_on: :action
     def execute(m)
       m.reply "Ouch!"
     end
