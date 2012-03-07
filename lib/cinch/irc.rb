@@ -672,6 +672,7 @@ module Cinch
       user_object = User(nick)
       user_object.sync(:user, user, true)
       user_object.sync(:host, host, true)
+      user_object.sync(:realname, realname, true)
     end
 
     def on_354(msg, events)
@@ -689,6 +690,7 @@ module Cinch
       user_object = User(nick)
       user_object.sync(:user, user, true)
       user_object.sync(:host, host, true)
+      user_object.sync(:realname, realname, true)
       user_object.sync(:authname, account == "0" ? nil : account, true)
     end
 
