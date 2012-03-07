@@ -62,7 +62,7 @@ module Cinch
 
       if @bot.irc.network.ngametv?
         if @prefix != "ngame"
-          @prefix = "%s!user@host" % [@prefix, @prefix, @prefix]
+          @prefix = "%s!%s@%s" % [@prefix, @prefix, @prefix]
         end
       end
 
