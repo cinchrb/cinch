@@ -1,5 +1,11 @@
 module Cinch
-  # @since 2.0.0
+  # This module can be used for adding colors and formatting to
+  # messages.
+  #
+  # The format codes used are those defined by mIRC, which are also
+  # the ones supported by most clients.
+  #
+  # For usage instructions and examples, see {.format}.
   #
   # List of valid colors
   # =========================
@@ -30,6 +36,8 @@ module Cinch
   # Other
   # =====
   # - reset (Resets all formatting to the client's defaults)
+  #
+  # @since 2.0.0
   module Formatting
     # @private
     Colors = {
