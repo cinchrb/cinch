@@ -8,29 +8,18 @@ module Cinch
   #
   # At the same time, it allows **responding** to messages, which
   # means sending messages to either users or channels.
-  #
-  # @attr_reader user
-  # @attr_reader error
-  # @attr_reader message
-  # @attr_reader server
-  # @attr_reader target
-  # @attr_reader channel
-  # @attr_reader action_message
-  # @attr_reader ctcp_args
-  # @attr_reader ctcp_command
-  # @attr_reader ctcp_message
   class Message
     # @return [String]
-    attr_accessor :raw
+    attr_reader :raw
 
     # @return [String]
-    attr_accessor :prefix
+    attr_reader :prefix
 
     # @return [String]
-    attr_accessor :command
+    attr_reader :command
 
     # @return [Array<String>]
-    attr_accessor :params
+    attr_reader :params
 
     # @return [Array<Symbol>]
     attr_reader :events
@@ -44,6 +33,37 @@ module Cinch
     # @return [Bot]
     # @since 1.1.0
     attr_reader :bot
+
+    # @return [User] The user who sent this message
+    attr_reader :user
+
+    # @return [String, nil]
+    attr_reader :server
+
+    # @return [Integer, nil] the numeric error code, if any
+    attr_reader :error
+
+    # @return [String, nil] the command part of an CTCP message
+    attr_reader :ctcp_command
+
+    # @return [Channel] The channel in which this message was sent
+    attr_reader :channel
+
+    # @return [String, nil] the CTCP message, without \001 control characters
+    attr_reader :ctcp_message
+
+    # @return [Array<String>, nil]
+    attr_reader :ctcp_args
+
+    # @return [String, nil]
+    attr_reader :message
+
+    # @return [String, nil] The action message
+    # @since 2.0.0
+    attr_reader :action_message
+
+    # @return [Target]
+    attr_reader :target
 
     def initialize(msg, bot)
       @raw = msg
@@ -66,36 +86,20 @@ module Cinch
         end
       end
 
-      raw_params.strip!
-      if match = raw_params.match(/(?:^:| :)(.*)$/)
-        @params = match.pre_match.split(" ")
-        @params << match[1]
-      else
-        @params = raw_params.split(" ")
-      end
-    end
+      @params  = parse_params(raw_params)
 
-    # @return [User] The user who sent this message
-    def user
-      return unless @prefix
-      nick = @prefix[/^(\S+)!/, 1]
-      user = @prefix[/^\S+!(\S+)@/, 1]
-      host = @prefix[/@(\S+)$/, 1]
+      @user    = parse_user
+      @channel = parse_channel
+      @target  = @user || @channel
+      @server  = parse_server
+      @error   = parse_error
+      @message = parse_message
 
-      return nil if nick.nil?
-      @user ||= @bot.user_list.find_ensured(user, nick, host)
-    end
+      @ctcp_message = parse_ctcp_message
+      @ctcp_command = parse_ctcp_command
+      @ctcp_args    = parse_ctcp_args
 
-    # @return [String, nil]
-    def server
-      return unless @prefix
-      return if @prefix.match(/[@!]/)
-      @server ||= @prefix[/^(\S+)/, 1]
-    end
-
-    # @return [Integer, nil] the numeric error code, if any
-    def error
-      @error ||= (command.to_i if numeric_reply? && command[/[45]\d\d/])
+      @action_message = parse_action_message
     end
 
     # @group Type checking
@@ -103,67 +107,31 @@ module Cinch
     # @return [Boolean] true if the message is an numeric reply (as
     #   opposed to a command)
     def numeric_reply?
-      !!(@numeric_reply ||= @command.match(/^\d{3}$/))
+      !!@command.match(/^\d{3}$/)
     end
 
     # @return [Boolean] true if the message describes an error
     def error?
-      !!error
+      !@error.nil?
     end
 
     # @return [Boolean] true if this message was sent in a channel
     def channel?
-      !!channel
+      !@channel.nil?
     end
 
     # @return [Boolean] true if the message is an CTCP message
     def ctcp?
-      !!(params.last =~ /\001.+\001/)
+      !!(@params.last =~ /\001.+\001/)
     end
 
     # @return [Boolean] true if the message is an action (/me)
     # @since 2.0.0
     def action?
-      ctcp_command == "ACTION"
+      @ctcp_command == "ACTION"
     end
 
     # @endgroup
-
-    # @return [String, nil] The action message
-    # @since 2.0.0
-    def action_message
-      return nil unless action?
-      ctcp_message.split(" ", 2).last
-    end
-
-    # @return [String, nil] the command part of an CTCP message
-    def ctcp_command
-      return unless ctcp?
-      ctcp_message.split(" ").first
-    end
-
-    # @return [Channel] The channel in which this message was sent
-    def channel
-      @channel ||= begin
-                     case command
-                     when "INVITE", Constants::RPL_CHANNELMODEIS.to_s, Constants::RPL_BANLIST.to_s
-                       @bot.channel_list.find_ensured(params[1])
-                     when Constants::RPL_NAMEREPLY.to_s
-                       @bot.channel_list.find_ensured(params[2])
-                     else
-                       if params.first.start_with?("#")
-                         @bot.channel_list.find_ensured(params.first)
-                       elsif numeric_reply? and params[1].start_with?("#")
-                         @bot.channel_list.find_ensured(params[1])
-                       end
-                     end
-                   end
-    end
-
-    # @return [Target]
-    def target
-      channel || user
-    end
 
     # @api private
     # @return [MatchData]
@@ -175,30 +143,6 @@ module Cinch
       else
         @matches[:other][regexp] ||= message.to_s.match(regexp)
       end
-    end
-
-    # @return [String, nil] the CTCP message, without \001 control characters
-    def ctcp_message
-      return unless ctcp?
-      params.last =~ /\001(.+)\001/
-      $1
-    end
-
-    # @return [Array<String>, nil]
-    def ctcp_args
-      return unless ctcp?
-      ctcp_message.split(" ")[1..-1]
-    end
-
-    # @return [String, nil]
-    def message
-      @message ||= begin
-                     if error?
-                       error.to_s
-                     elsif regular_command?
-                       params.last
-                     end
-                   end
     end
 
     # @group Replying
@@ -213,11 +157,11 @@ module Cinch
     # @return [void]
     def reply(text, prefix = false)
       text = text.to_s
-      if channel && prefix
+      if @channel && prefix
         text = text.split("\n").map {|l| "#{user.nick}: #{l}"}.join("\n")
       end
 
-      target.send(text)
+      @target.send(text)
     end
 
     # Like #reply, but using {Target#safe_send} instead
@@ -227,9 +171,9 @@ module Cinch
     def safe_reply(text, prefix = false)
       text = text.to_s
       if channel && prefix
-        text = "#{user.nick}: #{text}"
+        text = "#{@user.nick}: #{text}"
       end
-      target.safe_send(text)
+      @target.safe_send(text)
     end
 
     # Reply to a CTCP message
@@ -237,7 +181,7 @@ module Cinch
     # @return [void]
     def ctcp_reply(answer)
       return unless ctcp?
-      user.notice "\001#{ctcp_command} #{answer}\001"
+      @user.notice "\001#{@ctcp_command} #{answer}\001"
     end
 
     # @endgroup
@@ -245,12 +189,96 @@ module Cinch
     # @return [String]
     # @since 1.1.0
     def to_s
-      "#<Cinch::Message @raw=#{raw.chomp.inspect} @params=#{@params.inspect} channel=#{channel.inspect} user=#{user.inspect}>"
+      "#<Cinch::Message @raw=#{@raw.chomp.inspect} @params=#{@params.inspect} channel=#{@channel.inspect} user=#{@user.inspect}>"
     end
 
     private
     def regular_command?
       !numeric_reply? # a command can only be numeric or "regular"…
     end
+
+    def parse_params(raw_params)
+      raw_params = raw_params.strip
+      params     = []
+      if match = raw_params.match(/(?:^:| :)(.*)$/)
+        params = match.pre_match.split(" ")
+        params << match[1]
+      else
+        params = raw_params.split(" ")
+      end
+
+      return params
+    end
+
+    def parse_user
+      return unless @prefix
+      nick = @prefix[/^(\S+)!/, 1]
+      user = @prefix[/^\S+!(\S+)@/, 1]
+      host = @prefix[/@(\S+)$/, 1]
+
+      return nil if nick.nil?
+      return @bot.user_list.find_ensured(user, nick, host)
+    end
+
+    def parse_channel
+      # has to be called after parse_params
+      case @command
+      when "INVITE", Constants::RPL_CHANNELMODEIS.to_s, Constants::RPL_BANLIST.to_s
+        @bot.channel_list.find_ensured(@params[1])
+      when Constants::RPL_NAMEREPLY.to_s
+        @bot.channel_list.find_ensured(@params[2])
+      else
+        if @params.first.start_with?("#")
+          @bot.channel_list.find_ensured(@params.first)
+        elsif numeric_reply? and @params[1].start_with?("#")
+          @bot.channel_list.find_ensured(@params[1])
+        end
+      end
+    end
+
+    def parse_server
+      return unless @prefix
+      return if @prefix.match(/[@!]/)
+      return @prefix[/^(\S+)/, 1]
+    end
+
+    def parse_error
+      return @command.to_i if numeric_reply? && @command[/[45]\d\d/]
+    end
+
+    def parse_message
+      # has to be called after parse_params
+      if error?
+        @error.to_s
+      elsif regular_command?
+        @params.last
+      end
+    end
+
+    def parse_ctcp_message
+      # has to be called after parse_params
+      return unless ctcp?
+      @params.last =~ /\001(.+)\001/
+      $1
+    end
+
+    def parse_ctcp_command
+      # has to be called after parse_ctcp_message
+      return unless ctcp?
+      @ctcp_message.split(" ").first
+    end
+
+    def parse_ctcp_args
+      # has to be called after parse_ctcp_message
+      return unless ctcp?
+      @ctcp_message.split(" ")[1..-1]
+    end
+
+    def parse_action_message
+      # has to be called after parse_ctcp_message
+      return nil unless action?
+      @ctcp_message.split(" ", 2).last
+    end
+
   end
 end
