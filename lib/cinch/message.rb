@@ -90,7 +90,7 @@ module Cinch
 
       @user    = parse_user
       @channel = parse_channel
-      @target  = @user || @channel
+      @target  = @channel || @user
       @server  = parse_server
       @error   = parse_error
       @message = parse_message
