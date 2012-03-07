@@ -82,7 +82,7 @@ module Cinch
     # @return [Numeric] The `messages per second` value that best suits
     #   the current network
     def default_messages_per_second
-      case @network
+      case @name
       when :freenode
         0.7
       else
@@ -93,7 +93,7 @@ module Cinch
     # @return [Integer] The `server queue size` value that best suits
     #   the current network
     def default_server_queue_size
-      case @network
+      case @name
       when :quakenet
         40
       else
