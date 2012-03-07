@@ -66,11 +66,11 @@ module Cinch
     attr_reader :target
 
     def initialize(msg, bot)
-      @raw = msg
-      @bot = bot
+      @raw     = msg
+      @bot     = bot
       @matches = {:ctcp => {}, :action => {}, :other => {}}
-      @events = []
-      @time = Time.now
+      @events  = []
+      @time    = Time.now
       parse if msg
     end
 

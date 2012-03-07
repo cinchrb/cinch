@@ -44,10 +44,10 @@ module Cinch
     attr_reader :modes
     synced_attr_reader :modes
     def initialize(name, bot)
-      @bot   = bot
-      @name  = name
-      @users = Hash.new {|h,k| h[k] = []}
-      @bans  = []
+      @bot    = bot
+      @name   = name
+      @users  = Hash.new {|h, k| h[k] = []}
+      @bans   = []
       @owners = []
 
       @modes = {}

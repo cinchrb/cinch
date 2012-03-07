@@ -90,7 +90,7 @@ module Cinch
     def Timer(interval, options = {}, &block)
       options = {:method => :timer, :threaded => true, :interval => interval}.merge(options)
       block ||= self.method(options[:method])
-      timer = Cinch::Timer.new(bot, options, &block)
+      timer   = Cinch::Timer.new(bot, options, &block)
       timer.start
 
       timer
