@@ -76,7 +76,8 @@ module Cinch
     # @return [Array<Channel>] All channels the bot currently is in
     attr_reader :channels
 
-    # @return [PluginList] All registered plugins
+    # @return [PluginList] The {PluginList} giving access to
+    #   (un)loading plugins
     # @version 2.0.0
     attr_reader :plugins
 
@@ -92,10 +93,6 @@ module Cinch
     # @see ChannelList
     # @since 1.1.0
     attr_reader :channel_list
-
-    # @return [PluginList] All loaded plugins.
-    # @version 2.0.0
-    attr_reader :plugins
 
     # @return [Boolean]
     # @api private
@@ -355,6 +352,9 @@ module Cinch
       @user_list    = UserList.new(self)
       @channel_list = ChannelList.new(self)
       @plugins      = PluginList.new(self)
+
+      @join_handler = nil
+      @join_timer   = nil
 
       super(nil, self)
       instance_eval(&b) if block_given?

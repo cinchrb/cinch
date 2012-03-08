@@ -296,6 +296,7 @@ module Cinch
       @bot.irc.send("INVITE #{user} #@name")
     end
 
+    undef_method(:topic=)
     # Sets the topic.
     #
     # @param [String] new_topic the new topic

@@ -666,8 +666,8 @@ module Cinch
     def on_352(msg, events)
       # RPL_WHOREPLY
       # "<channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hopcount> <real name>"
-      _, channel, user, host, server, nick, flags, hopsrealname = msg.params
-      hops, realname = hopsrealname.split(" ", 2)
+      _, channel, user, host, _, nick, _, hopsrealname = msg.params
+      _, realname = hopsrealname.split(" ", 2)
       channel     = Channel(channel)
       user_object = User(nick)
       user_object.sync(:user, user, true)

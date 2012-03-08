@@ -87,7 +87,7 @@ module Cinch
       options.each do |option|
         name, value = option.split("=")
         if value
-          proc = @@mappings.find {|key, value| key.include?(name)}
+          proc = @@mappings.find {|key, _| key.include?(name)}
           self[name] = (proc && proc[1].call(value)) || value
         else
           self[name] = true

@@ -5,6 +5,7 @@ class Module
   #
   # @api private
   def synced_attr_reader(attribute)
+    undef_method(attribute)
     define_method(attribute) do
       attr(attribute)
     end

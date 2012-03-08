@@ -43,6 +43,8 @@ module Cinch
       #     dcc.accept(t)
       #     t.close
       #   end
+      #
+      # @attr_reader filename
       class Send
         # @private
         PRIVATE_NETS = [IPAddr.new("fc00::/7"),
@@ -56,9 +58,6 @@ module Cinch
 
         # @return [User]
         attr_reader :user
-
-        # @return [String]
-        attr_reader :filename
 
         # @return [Integer]
         attr_reader :size
