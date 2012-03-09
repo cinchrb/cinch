@@ -44,7 +44,9 @@ module Cinch
     # @return [User, nil]
     def find(nick)
       downcased_nick = nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
-      @cache[downcased_nick]
+      @mutex.synchronize do
+        return @cache[downcased_nick]
+      end
     end
 
     # @api private
