@@ -53,8 +53,8 @@ module Cinch
     # @return [void]
     def update_nick(user)
       @mutex.synchronize do
-        @cache[user.nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])] = user
         @cache.delete user.last_nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
+        @cache[user.nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])] = user
       end
     end
 
