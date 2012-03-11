@@ -5,18 +5,12 @@ module Cinch
   class Configuration
     # @since 2.0.0
     class Storage < Configuration
+      KnownOptions = [:backend]
+
       def self.default_config
         {
           :backend => Cinch::Storage::Null
         }
-      end
-
-      def [](key)
-        @table[key]
-      end
-
-      def []=(key, value)
-        modifiable[new_ostruct_member(key)] = value
       end
 
       def load(new_config, from_default)
