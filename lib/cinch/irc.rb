@@ -257,9 +257,9 @@ module Cinch
 
       if msg.error?
         events << [:error]
-      else
-        events << [msg.command.downcase.to_sym]
       end
+
+      events << [msg.command.downcase.to_sym]
 
       msg.events = events.map(&:first)
       events.each do |event, *args|
