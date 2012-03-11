@@ -178,6 +178,9 @@ module Cinch
       # @todo document new options
       def match(pattern, options = {})
         options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil, :react_on => nil}.merge(options)
+        if options[:react_on]
+          options[:react_on] = options[:react_on].to_s.to_sym
+        end
         matcher = Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :react_on))
         @matchers << matcher
 
@@ -207,7 +210,7 @@ module Cinch
           options.merge!(types.pop)
         end
 
-        listeners = types.map {|type| Listener.new(type, options[:method])}
+        listeners = types.map {|type| Listener.new(type.to_s.to_sym, options[:method])}
         @listeners.concat listeners
 
         listeners
