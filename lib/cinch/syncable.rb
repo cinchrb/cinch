@@ -13,9 +13,13 @@ module Cinch
         waited += 1
 
         if waited % 100 == 0
-          # TODO improve this message
-          bot.loggers.warn "A synced attribute ('%s') has not been available for %d seconds, still waiting" % [attr, waited / 10]
+          bot.loggers.warn "A synced attribute ('%s' for %s) has not been available for %d seconds, still waiting" % [attr, self.inspect, waited / 10]
           bot.loggers.warn caller.map {|s| "  #{s}"}
+
+          if waited / 10 >= 30
+            bot.loggers.warn "  Giving up..."
+            raise Exceptions::SyncedAttributeNotAvailable, "'%s' for %s" % [attr, self.inspect]
+          end
         end
         sleep 0.1
       end

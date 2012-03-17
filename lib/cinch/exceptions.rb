@@ -37,5 +37,10 @@ module Cinch
     # Error stating that an invalid mode string was encountered.
     class InvalidModeString < Generic
     end
+
+    # Raised when a synced attribute hasn't been available for too
+    # long.
+    class SyncedAttributeNotAvailable < Generic
+    end
   end
 end
