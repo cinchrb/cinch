@@ -468,6 +468,10 @@ module Cinch
       @bot.config.plugins.options[self.class] || {}
     end
 
+    def shared
+      @bot.config.shared
+    end
+
     # @api private
     def self.included(by)
       by.extend ClassMethods
