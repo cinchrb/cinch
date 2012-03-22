@@ -193,7 +193,7 @@ that. Alterntively you can also use the logging-related helper methods
 provided by {Cinch::Helpers}.
 
 For more information on the logging architecture as well as examples
-on how to use it, check the {file:logging.md Logging readme}.
+on how to use it, check the {file:docs/logging.md Logging readme}.
 
 ## Prefix/suffix + string semantics
 
@@ -239,12 +239,12 @@ or
 The second version is especially interesting to tools like
 {https://github.com/netfeed/cinchize Cinchize}, which load the
 configuration from a YAML file. For more information see
-{file:bot_options.md Bot options}.
+{file:docs/bot_options.md Bot options}.
 
 
 ## Various removed methods
 
-See {file:changes.md#removedrenamed-methods What's changed}
+See {file:docs/changes.md#removedrenamed-methods What's changed}
 
 
 ## `on`-handlers now only accepts one pattern

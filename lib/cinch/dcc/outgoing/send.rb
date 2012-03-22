@@ -27,7 +27,7 @@ module Cinch
       # but sending files will probably be the most common case.
       #
       # If you're behind a NAT it is necessary to explicitly set the
-      # external IP using the {file:bot_options.md#dccownip dcc.own_ip
+      # external IP using the {file:docs/bot_options.md#dccownip dcc.own_ip
       # option}.
       #
       # @example Sending a file to a user

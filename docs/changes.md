@@ -94,7 +94,7 @@ needs to be aware of available features/quirks, check out
 ## Reworked logging facilities
 
 The logging API has been drastically improved. Check the
-{file:logging.md logging documentation} for more information.
+{file:docs/logging.md logging documentation} for more information.
 
 
 ## Added match groups
@@ -234,7 +234,7 @@ moved from {Cinch} to {Cinch::Constants}
 - {Cinch::User#away}
 - {Cinch::User#dcc_send} - See {Cinch::DCC::Outgoing::Send}
 - {Cinch::User#match}
-- {Cinch::User#monitor} - See {file:common_tasks.md#checking-if-a-user-is-online Checking if a user is online}
+- {Cinch::User#monitor} - See {file:docs/common_tasks.md#checking-if-a-user-is-online Checking if a user is online}
 - {Cinch::User#monitored}
 - {Cinch::User#online?}
 - {Cinch::User#unmonitor}
@@ -297,7 +297,7 @@ instead are made available via {Cinch::Plugin::ClassMethods#set a
 `set` method} or alternatively plain attribute setters.
 
 See
-{file:migrating.md#plugin-options the migration guide} for more
+{file:docs/migrating.md#plugin-options the migration guide} for more
 information.
 
 ### Channel/Target/User implement Comparable
@@ -342,24 +342,24 @@ For more information on timers, see the {Cinch::Timer Timer documentation}.
 
 ## New options
 
-- :{file:bot_options.md#dccownip dcc.own_ip}
-- :{file:bot_options.md#modes modes}
-- :{file:bot_options.md#maxreconnectdelay max_reconnect_delay}
-- :{file:bot_options.md#localhost local_host}
-- :{file:bot_options.md#delayjoins delay_joins}
-- :{file:bot_options.md#saslusername sasl.username}
-- :{file:bot_options.md#saslpassword sasl.password}
+- :{file:docs/bot_options.md#dccownip dcc.own_ip}
+- :{file:docs/bot_options.md#modes modes}
+- :{file:docs/bot_options.md#maxreconnectdelay max_reconnect_delay}
+- :{file:docs/bot_options.md#localhost local_host}
+- :{file:docs/bot_options.md#delayjoins delay_joins}
+- :{file:docs/bot_options.md#saslusername sasl.username}
+- :{file:docs/bot_options.md#saslpassword sasl.password}
 
 ## New events
-- :{file:events.md#action action}
-- :{file:events.md#away away}
-- :{file:events.md#unaway unaway}
-- :{file:events.md#dccsend dcc_send}
-- :{file:events.md#owner owner}
-- :{file:events.md#dehalfop-deop-deowner-devoice deowner}
-- :{file:events.md#leaving leaving}
-- :{file:events.md#online online}
-- :{file:events.md#offline offline}
+- :{file:docs/events.md#action action}
+- :{file:docs/events.md#away away}
+- :{file:docs/events.md#unaway unaway}
+- :{file:docs/events.md#dccsend dcc_send}
+- :{file:docs/events.md#owner owner}
+- :{file:docs/events.md#dehalfop-deop-deowner-devoice deowner}
+- :{file:docs/events.md#leaving leaving}
+- :{file:docs/events.md#online online}
+- :{file:docs/events.md#offline offline}
 
 
 # What has changed in 1.1?
@@ -371,16 +371,16 @@ x. **Deprecated methods**
 
 ## New events
 
-- :{file:events.md#op op}
-- :{file:events.md#dehalfop-deop-deowner-devoice deop}
-- :{file:events.md#voice voice}
-- :{file:events.md#dehalfop-deop-deowner-devoice devoice}
-- :{file:events.md#halfop halfop}
-- :{file:events.md#dehalfop-deop-deowner-devoice dehalfop}
-- :{file:events.md#ban ban}
-- :{file:events.md#unban unban}
-- :{file:events.md#modechange mode_change}
-- :{file:events.md#catchall catchall}
+- :{file:docs/events.md#op op}
+- :{file:docs/events.md#dehalfop-deop-deowner-devoice deop}
+- :{file:docs/events.md#voice voice}
+- :{file:docs/events.md#dehalfop-deop-deowner-devoice devoice}
+- :{file:docs/events.md#halfop halfop}
+- :{file:docs/events.md#dehalfop-deop-deowner-devoice dehalfop}
+- :{file:docs/events.md#ban ban}
+- :{file:docs/events.md#unban unban}
+- :{file:docs/events.md#modechange mode_change}
+- :{file:docs/events.md#catchall catchall}
 
 Additionally, plugins are now able to send their own events by using
 Cinch::Bot#dispatch.
@@ -401,16 +401,16 @@ Provides a nicer representation of {Cinch::Message} objects.
 Provides an easier way of checking if a given user is in a channel
 
 ## New options
-- {file:bot_options.md#pluginssuffix plugins.suffix}
-- {file:bot_options.md#ssluse ssl.use}
-- {file:bot_options.md#sslverify ssl.verify}
-- {file:bot_options.md#sslcapath ssl.ca_path}
-- {file:bot_options.md#sslclientcert ssl.client_cert}
-- {file:bot_options.md#nicks nicks}
-- {file:bot_options.md#timeoutsread timeouts.read}
-- {file:bot_options.md#timeoutsconnect timeouts.connect}
-- {file:bot_options.md#pinginterval ping_interval}
-- {file:bot_options.md#reconnect reconnect}
+- {file:docs/bot_options.md#pluginssuffix plugins.suffix}
+- {file:docs/bot_options.md#ssluse ssl.use}
+- {file:docs/bot_options.md#sslverify ssl.verify}
+- {file:docs/bot_options.md#sslcapath ssl.ca_path}
+- {file:docs/bot_options.md#sslclientcert ssl.client_cert}
+- {file:docs/bot_options.md#nicks nicks}
+- {file:docs/bot_options.md#timeoutsread timeouts.read}
+- {file:docs/bot_options.md#timeoutsconnect timeouts.connect}
+- {file:docs/bot_options.md#pinginterval ping_interval}
+- {file:docs/bot_options.md#reconnect reconnect}
 
 
 

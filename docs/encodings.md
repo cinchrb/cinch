@@ -16,7 +16,7 @@ Cinch tries to work around this issue in two ways, while also keeping
 the usual Ruby behaviour.
 
 ## The `encoding` option
-By setting {file:bot_options.md#encoding the `encoding` option}, you
+By setting {file:docs/bot_options.md#encoding the `encoding` option}, you
 set your expectations on what encoding other users will use. Allowed
 values are instances of Encoding, names of valid encodings (as
 strings) and the special `:irc` encoding, which will be explained
@@ -26,7 +26,7 @@ further down.
 ## Encoding.default_internal
 If set, Cinch will automatically convert incoming messages to the
 encoding defined by `Encoding.default_internal`, unless the special
-encoding `:irc` is being used as the {file:bot_options.md#encoding
+encoding `:irc` is being used as the {file:docs/bot_options.md#encoding
 `encoding option`}
 
 ## The `:irc` encoding

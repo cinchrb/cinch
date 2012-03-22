@@ -72,7 +72,7 @@ Example:
       debug("User %s just went away: %s" % [m.user, m.message])
     end
 
-See also {file:events.md#unaway the `:unaway` event}.
+See also {file:docs/events.md#unaway the `:unaway` event}.
 
 
 ## `:ban`
@@ -88,7 +88,7 @@ Example:
       debug("%s just banned %s" % [ban.by, ban.mask])
     end
 
-See also {file:events.md#unban the `:unban` event}.
+See also {file:docs/events.md#unban the `:unban` event}.
 
 
 ## `:catchall`
@@ -102,7 +102,7 @@ IRC message/command, no matter what the type is.
 The `:channel` event is triggered for channel messages (the usual
 form of communication on IRC).
 
-See also {file:events.md#private the `:private` event}.
+See also {file:docs/events.md#private the `:private` event}.
 
 
 ## `:connect`
@@ -193,7 +193,7 @@ describing every change.
 ## `:offline`
 
 This event is triggered when a
-{file:common_tasks.md#checking-if-a-user-is-online monitored user}
+{file:docs/common_tasks.md#checking-if-a-user-is-online monitored user}
 goes offline.
 
 One additional argument, the user going offline, gets passed to the
@@ -203,7 +203,7 @@ handler.
 ## `:online`
 
 This event is triggered when a
-{file:common_tasks.md#checking-if-a-user-is-online monitored user}
+{file:docs/common_tasks.md#checking-if-a-user-is-online monitored user}
 comes online.
 
 One additional argument, the user coming online, gets passed to the
@@ -239,7 +239,7 @@ channel or directly at the bot. It's synonymous with `:privmsg`.
 The `:private` event is triggered for messages directly towarded at
 the bot (think /query in traditional IRC clients).
 
-See also {file:events.md#channel the `:channel` event}.
+See also {file:docs/events.md#channel the `:channel` event}.
 
 
 ## `:unaway`
@@ -254,7 +254,7 @@ Example:
       debug("User %s no longer is away." % m.user)
     end
 
-See also {file:events.md#away the `:away` event}.
+See also {file:docs/events.md#away the `:away` event}.
 
 
 ## `:unban`

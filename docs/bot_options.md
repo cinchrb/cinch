@@ -59,7 +59,7 @@ Description
 
 
 ### Notes
-- {file:encodings.md More information on how Cinch handles encoding issues}
+- {file:docs/encodings.md More information on how Cinch handles encoding issues}
 
 ## local_host
 Type
@@ -114,7 +114,7 @@ Description
 ### Notes
 - If your bot gets kicked for excess flood, try lowering the value of
   `messages_per_second`.
-- See also: {file:bot_options.md#serverqueuesize `server_queue_size`}
+- See also: {file:docs/bot_options.md#serverqueuesize `server_queue_size`}
 
 ## message_split_end
 Type
@@ -175,7 +175,7 @@ Default value
 : `nil`
 
 Description
-: This option overrules {file:bot_options.md#nick `nick`} and allows Cinch
+: This option overrules {file:docs/bot_options.md#nick `nick`} and allows Cinch
   to try multiple nicks before adding underscores.
 
 
@@ -209,7 +209,7 @@ Description
 
 ### Notes
 - The ping interval should be smaller than
-  {file:bot_options.md#timeoutsread `timeouts.read`} to prevent Cinch from
+  {file:docs/bot_options.md#timeoutsread `timeouts.read`} to prevent Cinch from
   falsely declaring a connection dead.
 
 
@@ -348,7 +348,7 @@ Description
 ### Notes
 - If your bot gets kicked for excess flood, try lowering the value of
   `server_queue_size`.
-- See also: {file:bot_options.md#messagespersecond `messages_per_second`}
+- See also: {file:docs/bot_options.md#messagespersecond `messages_per_second`}
 
 ## ssl
 
@@ -382,7 +382,7 @@ Default value
 
 Description
 : The path to a directory with certificates. This has to be set
-  properly for {file:bot_options.md#sslverify `ssl.verify`} to work.
+  properly for {file:docs/bot_options.md#sslverify `ssl.verify`} to work.
 
 
 ### ssl.client_cert
