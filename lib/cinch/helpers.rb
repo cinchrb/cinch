@@ -121,6 +121,11 @@ module Cinch
 
     # (see Logger#log)
     def log(messages, event = :debug, level = event)
+      if self.is_a?(Cinch::Plugin)
+        messages = Array(messages).map {|m|
+          "[#{self.class}] " + m
+        }
+      end
       @bot.loggers.log(messages, event, level)
     end
 
