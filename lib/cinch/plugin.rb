@@ -292,7 +292,11 @@ module Cinch
       def call_hooks(type, event, instance, args)
         stop = __hooks(type, event).find { |hook|
           # stop after the first hook that returns false
-          instance.__send__(hook.method, *args) == false
+          if hook.method.respond_to?(:call)
+            instance.instance_exec(*args, &hook.method) == false
+          else
+            instance.__send__(hook.method, *args) == false
+          end
         }
 
         !stop
