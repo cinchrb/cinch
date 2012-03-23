@@ -380,6 +380,18 @@ module Cinch
       @users.clear
     end
 
+    def msg(text, notice = false)
+      text = text.to_s
+      if @modes["c"]
+        # Remove all formatting and colors if the channel doesn't
+        # allow colors.
+        text.gsub!(/[\x02\x1F\x16\x0F]|\x03\d{2}(,\d{2})?/, "")
+      end
+      super(text, notice)
+    end
+    alias_method :send, :msg
+    alias_method :privmsg, :msg
+
     # @return [Fixnum]
     def hash
       @name.hash
