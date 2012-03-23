@@ -121,6 +121,14 @@ module Cinch
       send "\001#{message}\001"
     end
 
+    def concretize
+      if @bot.isupport["CHANTYPES"].include?(@name[0])
+        @bot.channel_list.find_ensured(@name)
+      else
+        @bot.user_list.find_ensured(@name)
+      end
+    end
+
     # @return [Boolean]
     def eql?(other)
       self == other
