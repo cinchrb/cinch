@@ -141,7 +141,7 @@ text. Cinch also provides a way for your plugins to log custom
 messages:
 
     on :message, /hello/ do |m|
-      bot.logger.debug "Someone said hello"
+      debug "Someone said hello"
     end
 
 Authors
