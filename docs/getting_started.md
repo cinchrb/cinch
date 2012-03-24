@@ -175,6 +175,7 @@ This short guide only explains the basics of using Cinch, so that you
 can get started as quickly as possible. For more advanced topics, you
 will want to read the specific documents:
 
+- {file:docs/plugins.md Plugins}
 - {file:docs/bot_options.md A list of all available bot options}
 - {file:docs/events.md A list of all available events}
 - {file:docs/encodings.md Dealing with encodings}
