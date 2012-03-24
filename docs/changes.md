@@ -225,7 +225,6 @@ moved from {Cinch} to {Cinch::Constants}
 #### {Cinch::Plugin}
 
 - {Cinch::Plugin#handlers}
-- {Cinch::Plugin#storage}
 - {Cinch::Plugin#timers}
 - {Cinch::Plugin#unregister}
 

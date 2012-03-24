@@ -1,5 +1,6 @@
 module Cinch
-  # @since 2.0.0
+  # @note The interface of this class isn't fixed yet. You shouldn't
+  #   use it yet.
   class Storage
     include Enumerable
 

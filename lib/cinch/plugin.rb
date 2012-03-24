@@ -10,7 +10,7 @@ module Cinch
   #
   # Most of the instance methods are for use by the Cinch framework
   # and part of the private API, but some will also be used by plugin
-  # authors, mainly {#config}, {#synchronize}, {#storage} and {#bot}.
+  # authors, mainly {#config}, {#synchronize} and {#bot}.
   module Plugin
     include Helpers
 
@@ -196,15 +196,7 @@ module Cinch
       # @overload listen_to(*types, options = {})
       #   @param [String, Symbol, Integer] *types Events to listen to. Available
       #     events are all IRC commands in lowercase as symbols, all numeric
-      #     replies, and the following:
-      #
-      #       - :channel (a channel message)
-      #       - :private (a private message)
-      #       - :message (both channel and private messages)
-      #       - :error   (IRC errors)
-      #       - :ctcp    (ctcp requests)
-      #       - :action  (actions, aka /me)
-      #
+      #     replies and all events listed in the {file:docs/events.md list of events}.
       #   @param [Hash] options
       #   @option options [Symbol] :method (:listen) The method to
       #     execute
@@ -441,14 +433,14 @@ module Cinch
     attr_reader :timers
 
     # @return [Storage] The per-plugin persistent storage
-    attr_reader :storage
+    # attr_reader :storage
 
     # @api private
     def initialize(bot)
       @bot = bot
       @handlers = []
       @timers   = []
-      @storage  = bot.config.storage.backend.new(@bot.config.storage, self)
+      # @storage  = bot.config.storage.backend.new(@bot.config.storage, self)
       __register
     end
 

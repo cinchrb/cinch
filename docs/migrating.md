@@ -18,7 +18,6 @@ shouldn't and usually mustn't overwrite:
 - `#bot`
 - `#config`
 - `#handlers`
-- `#storage`
 - `#synchronize`
 - `#timers`
 - `#unregister`
