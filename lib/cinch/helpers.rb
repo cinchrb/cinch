@@ -1,4 +1,3 @@
-# TODO @since for all methods
 module Cinch
   # The Helpers module contains a number of methods whose purpose is
   # to make writing plugins easier by hiding parts of the API. The
@@ -19,6 +18,7 @@ module Cinch
     #   on :message, /^message (.+)$/ do |m, target|
     #     Target(target).send "hi!"
     #   end
+    # @since 2.0.0
     def Target(target)
       return target if target.is_a?(Target)
       Target.new(target, bot)
@@ -32,6 +32,7 @@ module Cinch
     #   on :message, /^please join (#.+)$/ do |m, target|
     #     Channel(target).join
     #   end
+    # @since 1.0.0
     def Channel(channel)
       return channel if channel.is_a?(Channel)
       bot.channel_list.find_ensured(channel)
@@ -46,6 +47,7 @@ module Cinch
     #     user = User(target)
     #     m.reply "%s is named %s and connects from %s" % [user.nick, user.name, user.host]
     #   end
+    # @since 1.0.0
     def User(user)
       return user if user.is_a?(User)
       if user == bot.nick

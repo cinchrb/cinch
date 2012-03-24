@@ -172,10 +172,15 @@ module Cinch
       # @option options [Boolean] :use_suffix (true) If true, the
       #   plugin suffix will automatically be appended to the
       #   pattern.
+      # @option options [String, Regexp, Proc] prefix (nil) A prefix
+      #   overwriting the per-plugin prefix.
+      # @option options [String, Regexp, Proc] suffix (nil) A suffix
+      #   overwriting the per-plugin suffix.
+      # @option options [Symbol, Fixnum] react_on (:message) The
+      #   {file:docs/events.md event} to react on.
       # @option options [Symbol] :group (nil) The group the match belongs to.
       # @return [Matcher]
       # @todo Document match/listener grouping
-      # @todo document new options
       def match(pattern, options = {})
         options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil, :react_on => nil}.merge(options)
         if options[:react_on]
