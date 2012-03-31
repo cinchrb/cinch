@@ -517,7 +517,7 @@ module Cinch
         channel.remove_user(msg.user)
       end
       msg.user.unsync_all
-      msg.user.online = true
+      msg.user.online = false
 
       set_leaving_user(msg, msg.user, events)
 
