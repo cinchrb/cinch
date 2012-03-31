@@ -230,6 +230,7 @@ module Cinch
         if registered?
           events << [:connect]
           @bot.last_connection_was_successful = true
+          on_connect(msg, events)
         end
       end
 
@@ -387,6 +388,11 @@ module Cinch
       when "NACK"
         send_cap_end
       end
+    end
+
+    # @since 2.0.0
+    def on_connect(msg, events)
+      @bot.modes = @bot.config.modes
     end
 
     def on_join(msg, events)
