@@ -186,7 +186,7 @@ module Cinch
     #
     # @return [Handler] The handlers that have been registered
     def on(event, regexp = //, *args, &block)
-      event = event.to_sym
+      event = event.to_s.to_sym
 
       pattern = case regexp
                 when Pattern
