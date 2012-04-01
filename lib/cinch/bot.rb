@@ -430,6 +430,18 @@ module Cinch
       @irc.send "NICK #{new_nick}"
     end
 
+    # Gain oper privileges.
+    #
+    # @param [String] password
+    # @param [String] user The username to use. Defaults to the bot's
+    #   nickname
+    # @since 2.1.0
+    # @return [void]
+    def oper(password, user = nil)
+      user ||= self.nick
+      @irc.send "OPER #{user} #{password}"
+    end
+
     # Try to create a free nick, first by cycling through all
     # available alternatives and then by appending underscores.
     #
