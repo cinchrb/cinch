@@ -204,6 +204,7 @@ module Cinch
     def authed?
       !attr(:authname).nil?
     end
+    alias_method :authenticated?, :authed?
 
     # Queries the IRC server for information on the user. This will
     # set the User's state to not synced. After all information are
