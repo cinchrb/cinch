@@ -3,9 +3,16 @@
 
 # What has changed in 2.1?
 1. API improvements
+   1. New methods
    1. New aliases
 
 ## API improvements
+
+### New methods
+
+#### {Cinch::User}
+
+- {Cinch::User#oper?}
 
 ### New aliases
 
@@ -13,6 +20,7 @@
 - {Cinch::User#authenticated?} for {Cinch::User#authed?}
 - {Cinch::User#monitored?} for {Cinch::User#monitored}
 - {Cinch::User#synced?} for {Cinch::User#synced}
+
 
 # What has changed in 2.0?
 1. Added support for SASL

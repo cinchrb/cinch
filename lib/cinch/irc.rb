@@ -607,6 +607,12 @@ module Cinch
                                   })
     end
 
+    def on_313(msg, events)
+      # RPL_WHOISOPERATOR
+      user = User(msg.params[1])
+      @whois_updates[user].merge!({:oper? => true})
+    end
+
     def on_317(msg, events)
       # RPL_WHOISIDLE
       user = User(msg.params[1])

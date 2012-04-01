@@ -12,6 +12,7 @@ module Cinch
   # @attr_reader [Integer] idle How long this user has been idle, in seconds.
   #   This is a snapshot of the last WHOIS.
   # @attr_reader [Boolean] online True if the user is online.
+  # @attr_reader [Boolean] oper True if the user is an IRC operator.
   # @attr_reader [String] realname
   # @attr_reader [Boolean] secure True if the user is using a secure
   #   connection, i.e. SSL.
@@ -85,6 +86,12 @@ module Cinch
     end
     alias_method :secure?, :secure
 
+    # @since 2.1.0
+    def oper
+      attr(:oper?, true, false)
+    end
+    alias_method :oper?, :oper
+
     # @private
     def user_unsynced
       attr(:user, true, true)
@@ -138,6 +145,13 @@ module Cinch
     end
     alias_method "secure?_unsynced", "secure_unsynced"
 
+    # @private
+    # @since 2.1.0
+    def oper_unsynced
+      attr(:oper?, true, true)
+    end
+    alias_method "oper?_unsynced", "oper_unsynced"
+
     # By default, you can use methods like {#user}, {#host} and
     # alike – If you however fear that another thread might change
     # data while you're using it and if this means a critical issue to
@@ -178,6 +192,7 @@ module Cinch
         :channels     => [],
         :secure?      => false,
         :away         => nil,
+        :oper?        => false,
       }
       case args.size
       when 2
@@ -271,8 +286,9 @@ module Cinch
 
       {
         :authname => nil,
-        :idle => 0,
-        :secure? => false,
+        :idle     => 0,
+        :secure?  => false,
+        :oper?    => false,
       }.merge(values).each do |attr, value|
         sync(attr, value, true)
       end
