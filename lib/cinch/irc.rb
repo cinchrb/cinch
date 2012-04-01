@@ -230,6 +230,7 @@ module Cinch
         if registered?
           events << [:connect]
           @bot.last_connection_was_successful = true
+          on_connect(msg, events)
         end
       end
 
@@ -389,6 +390,11 @@ module Cinch
       end
     end
 
+    # @since 2.0.0
+    def on_connect(msg, events)
+      @bot.modes = @bot.config.modes
+    end
+
     def on_join(msg, events)
       if msg.user == @bot
         @bot.channels << msg.channel
@@ -517,7 +523,7 @@ module Cinch
         channel.remove_user(msg.user)
       end
       msg.user.unsync_all
-      msg.user.online = true
+      msg.user.online = false
 
       set_leaving_user(msg, msg.user, events)
 
