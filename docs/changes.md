@@ -1,6 +1,18 @@
 # @title What has changed?
 # @markup kramdown
 
+# What has changed in 2.1?
+1. API improvements
+   1. New methods
+
+## API improvements
+
+### New methods
+
+#### {Cinch::User}
+
+- {Cinch::User#oper?}
+
 # What has changed in 2.0?
 1. Added support for SASL
 1. Added support for DCC SEND

@@ -64,6 +64,15 @@ module Cinch
       self.secure?
     end
 
+    attr_reader :oper
+    alias_method :oper?, :oper
+    undef_method "oper?"
+    undef_method "oper"
+    # @since 2.1.0
+    def oper
+      self.oper?
+    end
+
     # By default, you can use methods like User#user, User#host and
     # alike – If you however fear that another thread might change
     # data while you're using it and if this means a critical issue to
@@ -101,6 +110,7 @@ module Cinch
         :channels     => [],
         :secure?      => false,
         :away         => nil,
+        :oper?        => false,
       }
       case args.size
       when 2
@@ -192,8 +202,9 @@ module Cinch
 
       {
         :authname => nil,
-        :idle => 0,
-        :secure? => false,
+        :idle     => 0,
+        :secure?  => false,
+        :oper?    => false,
       }.merge(values).each do |attr, value|
         sync(attr, value, true)
       end
