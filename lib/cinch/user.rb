@@ -155,6 +155,7 @@ module Cinch
     # @see #unmonitor
     # @note The attribute writer is in fact part of the private API
     attr_reader :monitored
+    # @since 2.1.0
     alias_method :monitored?, :monitored
 
     # @api private
@@ -206,6 +207,7 @@ module Cinch
     def authed?
       !attr(:authname).nil?
     end
+    # @since 2.1.0
     alias_method :authenticated?, :authed?
 
     # Queries the IRC server for information on the user. This will

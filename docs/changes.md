@@ -1,6 +1,19 @@
 # @title What has changed?
 # @markup kramdown
 
+# What has changed in 2.1?
+1. API improvements
+   1. New aliases
+
+## API improvements
+
+### New aliases
+
+#### {Cinch::User}
+- {Cinch::User#authenticated?} for {Cinch::User#authed?}
+- {Cinch::User#monitored?} for {Cinch::User#monitored}
+- {Cinch::User#synced?} for {Cinch::User#synced}
+
 # What has changed in 2.0?
 1. Added support for SASL
 1. Added support for DCC SEND
