@@ -289,6 +289,7 @@ module Cinch
         :idle     => 0,
         :secure?  => false,
         :oper?    => false,
+        :channels => [],
       }.merge(values).each do |attr, value|
         sync(attr, value, true)
       end
