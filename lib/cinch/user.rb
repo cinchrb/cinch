@@ -194,6 +194,7 @@ module Cinch
         :authname => nil,
         :idle => 0,
         :secure? => false,
+        :channels => [],
       }.merge(values).each do |attr, value|
         sync(attr, value, true)
       end
