@@ -95,6 +95,10 @@ module Cinch
       timer   = Cinch::Timer.new(bot, options, &block)
       timer.start
 
+      if self.respond_to?(:timers)
+        timers << timer
+      end
+
       timer
     end
 
