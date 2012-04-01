@@ -10,6 +10,10 @@
 
 ### New methods
 
+#### {Cinch::Bot}
+
+- {Cinch::Bot#oper}
+
 #### {Cinch::User}
 
 - {Cinch::User#oper?}
