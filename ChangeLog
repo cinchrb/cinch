@@ -1,3 +1,10 @@
+* Cinch 2.0.2, 01 April 2012
+  - Correctly mark quitting users as offline
+  - Register dynamic timers so they can be unloaded (gh-70)
+  - Set bot modes when connecting (gh-71)
+  - Support fixnums in Bot#on (gh-72)
+* Cinch 2.0.1, 24 March 2012
+  - Include .yardopts in gem so documentation gets built correctly
 * Cinch 2.0.0, 24 March 2012
   For detailed information check docs/changes.md
 * Cinch 1.1.3, 12 May 2011
