@@ -153,7 +153,9 @@ module Cinch
     # @return [Boolean] True if the user is being monitored
     # @see #monitor
     # @see #unmonitor
+    # @note The attribute writer is in fact part of the private API
     attr_reader :monitored
+    alias_method :monitored?, :monitored
 
     # @api private
     attr_writer :monitored
