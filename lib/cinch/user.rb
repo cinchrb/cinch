@@ -191,7 +191,7 @@ module Cinch
       @synced_attributes  = Set.new
 
       @when_requesting_synced_attribute = lambda {|attr|
-        unless synced?(attr)
+        unless attribute_synced?(attr)
           @data[:unknown?] = false
           unsync :unknown?
 
