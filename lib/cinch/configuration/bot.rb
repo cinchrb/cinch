@@ -40,7 +40,7 @@ module Cinch
           # :storage => Configuration::Storage.new,
           :dcc => Configuration::DCC.new,
           :sasl => Configuration::SASL.new,
-          :shared => {},
+          :shared => {}
         }
       end
     end
