@@ -8,7 +8,7 @@ class RandomNumberGenerator
   def start
     while true
       sleep 5 # pretend that we are waiting for some kind of entropy
-      @bot.dispatch(:random_number, nil, Kernel.rand)
+      @bot.handlers.dispatch(:random_number, nil, Kernel.rand)
     end
   end
 end
