@@ -134,6 +134,11 @@ module Cinch
       !attr(:authname).nil?
     end
 
+    # @see Syncable#attr
+    def attr(attribute, data = true, unsync = false)
+      super
+    end
+
     # Queries the IRC server for information on the user. This will
     # set the User's state to not synced. After all information are
     # received, the object will be set back to synced.
