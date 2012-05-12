@@ -228,6 +228,11 @@ module Cinch
     # @since 2.1.0
     alias_method :authenticated?, :authed?
 
+    # @see Syncable#attr
+    def attr(attribute, data = true, unsync = false)
+      super
+    end
+
     # Queries the IRC server for information on the user. This will
     # set the User's state to not synced. After all information are
     # received, the object will be set back to synced.
