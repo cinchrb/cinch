@@ -490,11 +490,14 @@ module Cinch
 
     def on_nick(msg, events)
       if msg.user == @bot
-        @bot.set_nick msg.params.last
+        # @bot.set_nick msg.params.last
+        target = @bot
+      else
+        target = msg.user
       end
 
-      msg.user.update_nick(msg.params.last)
-      msg.user.online = true
+      target.update_nick(msg.params.last)
+      target.online = true
     end
 
     def on_part(msg, events)
