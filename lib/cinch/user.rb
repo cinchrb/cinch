@@ -373,7 +373,8 @@ module Cinch
         refresh
         @monitored_timer = Timer.new(@bot, interval: 30) {
           refresh
-        }.start
+        }
+        @monitored_timer.start
       end
 
       @monitored = true
