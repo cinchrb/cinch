@@ -228,9 +228,10 @@ module Cinch
       when Constants::RPL_NAMEREPLY.to_s
         @bot.channel_list.find_ensured(@params[2])
       else
-        if @params.first.start_with?("#")
+        chantypes = @bot.irc.isupport["CHANTYPES"]
+        if chantypes.include?(@params.first[0])
           @bot.channel_list.find_ensured(@params.first)
-        elsif numeric_reply? and @params[1].start_with?("#")
+        elsif numeric_reply? and chantypes.include?(@params[1][0])
           @bot.channel_list.find_ensured(@params[1])
         end
       end
