@@ -1,3 +1,11 @@
+* Cinch 2.0.3, 27 June 2012
+  - Fix monitoring of users
+  - Support all types of channels (#, &, !) in Message#channel
+  - Make c.delay_joins actually work
+  - Don't break when the bot's nick changes
+  - Fix User#authed?
+  - Do not fire :notice event twice for a single message
+  - Do not block on whois requests if a user isn't in any channels
 * Cinch 2.0.2, 01 April 2012
   - Correctly mark quitting users as offline
   - Register dynamic timers so they can be unloaded (gh-70)
