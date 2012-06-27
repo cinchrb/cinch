@@ -258,7 +258,7 @@ module Cinch
           @join_handler = join_handler = on(@config.delay_joins) {
             join_handler.unregister
             join_lambda.call
-          }.first
+          }
         else
           @join_timer = Timer.new(self, interval: @config.delay_joins, shots: 1) {
             join_lambda.call
