@@ -294,7 +294,7 @@ module Cinch
       if @bot.irc.isupport["MONITOR"] > 0
         @bot.irc.send "MONITOR - #@name"
       else
-        @monitored_timer.stop
+        @monitored_timer.stop if @monitored_timer
       end
 
       @monitored = false
