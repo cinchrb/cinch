@@ -35,6 +35,12 @@ module Cinch
         # @param [String] payload
         # @return [String]
         def generate(user, password, payload)
+          # duplicate the passed strings because we are modifying them
+          # later and they might come from the configuration store or
+          # similar
+          user     = user.dup
+          password = password.dup
+
           data = Base64.decode64(payload).force_encoding("ASCII-8BIT")
 
           p, g, y = unpack_payload(data)
