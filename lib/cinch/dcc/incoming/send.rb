@@ -103,7 +103,8 @@ module Cinch
         def accept(io)
           socket = TCPSocket.new(@ip, @port)
           total = 0
-          while buf = socket.read(1024)
+
+          while buf = socket.readpartial(8192)
             total += buf.bytesize
 
             begin
@@ -119,6 +120,7 @@ module Cinch
             # connection on the final ACK.
             break if total == @size
           end
+        rescue EOFError
         end
 
         # @return [Boolean] True if the DCC originates from a private ip
