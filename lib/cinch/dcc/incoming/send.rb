@@ -106,8 +106,18 @@ module Cinch
           while buf = socket.read(1024)
             total += buf.bytesize
 
-            socket.write [total].pack("N")
+            begin
+              socket.write_nonblock [total].pack("N")
+            rescue Errno::EWOULDBLOCK, Errno::AGAIN
+              # Nobody cares about ACKs, really. And if the sender
+              # couldn't receive it at this point, he probably doesn't
+              # care, either.
+            end
             io << buf
+
+            # Break here in case the sender doesn't close the
+            # connection on the final ACK.
+            break if total == @size
           end
         end
 
