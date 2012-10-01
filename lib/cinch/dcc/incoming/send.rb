@@ -122,6 +122,7 @@ module Cinch
             break if total == @size
           end
 
+          socket.close
           return true
         rescue EOFError
           return false
