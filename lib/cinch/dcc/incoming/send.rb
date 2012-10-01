@@ -90,7 +90,8 @@ module Cinch
         # of IO or String).
         #
         # @param [#<<] io The object to write the data to.
-        # @return [void]
+        # @return [Boolean] True if the transfer finished
+        #   successfully, false otherwise.
         # @note This method blocks.
         # @example Saving to a file
         #   f = File.open("/tmp/foo", "w")
@@ -120,7 +121,10 @@ module Cinch
             # connection on the final ACK.
             break if total == @size
           end
+
+          return true
         rescue EOFError
+          return false
         end
 
         # @return [Boolean] True if the DCC originates from a private ip
