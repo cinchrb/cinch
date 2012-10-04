@@ -63,6 +63,9 @@ module Cinch
       # @return [String, nil] The help message
       attr_accessor :help
 
+      # @return [Array<String>] All chans
+      attr_accessor :on_chans
+
       # @return [String, Regexp, Proc] The prefix
       attr_accessor :prefix
 
@@ -115,6 +118,7 @@ module Cinch
           @listeners        = []
           @timers           = []
           @help             = nil
+          @on_chans         = []
           @hooks            = Hash.new{|h, k| h[k] = []}
           @prefix           = nil
           @suffix           = nil
@@ -133,6 +137,7 @@ module Cinch
       #   - {#prefix}
       #   - {#react_on}
       #   - {#required_options}
+      #   - {#on_chans}
       #   - {#suffix}
       #
       # @overload set(key, value)
@@ -371,18 +376,20 @@ module Cinch
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
         new_handler = Handler.new(@bot, react_on, pattern_to_register, group: matcher.group) do |message, *args|
-          method = method(matcher.method)
-          arity = method.arity - 1
-          if arity > 0
-            args = args[0..arity - 1]
-          elsif arity == 0
-            args = []
-          end
-          if self.class.call_hooks(:pre, :match, self, [message])
-            method.call(message, *args)
-            self.class.call_hooks(:post, :match, self, [message])
-          else
-            @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
+          if (self.class.on_chans.empty? || self.class.on_chans.include?(message.channel.name))
+            method = method(matcher.method)
+            arity = method.arity - 1
+            if arity > 0
+              args = args[0..arity - 1]
+            elsif arity == 0
+              args = []
+            end
+            if self.class.call_hooks(:pre, :match, self, [message])
+              method.call(message, *args)
+              self.class.call_hooks(:post, :match, self, [message])
+            else
+              @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
+            end
           end
         end
         @handlers << new_handler
