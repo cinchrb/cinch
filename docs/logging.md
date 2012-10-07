@@ -41,7 +41,7 @@ The level can be changed for single loggers or all loggers at once, by either us
 Example:
 
     bot = Cinch::Bot.new { }
-    bot.loggers << Cinch::Loggers::FormattedLogger.new(File.open("/tmp/log.log", "a"))
+    bot.loggers << Cinch::Logger::FormattedLogger.new(File.open("/tmp/log.log", "a"))
     bot.loggers.level = :debug
     bot.loggers.first.level  = :info
 
