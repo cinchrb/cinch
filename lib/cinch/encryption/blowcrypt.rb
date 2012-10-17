@@ -6,10 +6,11 @@ module Cinch
 
         def self.encode(data)
           res = ""
+          data = data.dup.force_encoding("BINARY")
 
-          data.scan(/.{8}/) do |slice|
+          data.chars.each_slice(8) do |slice|
+            slice = slice.join
             left, right = slice.unpack('L>L>')
-
             6.times do
               res << Alphabet[right & 0x3f]
               right >>= 6
@@ -26,7 +27,9 @@ module Cinch
 
         def self.decode(data)
           res = ""
-          data.scan(/.{12}/) do |slice|
+          data = data.dup.force_encoding("BINARY")
+          data.chars.each_slice(12) do |slice|
+            slice = slice.join
             left = right = 0
 
             slice[0..5].each_char.with_index do |p, i|
