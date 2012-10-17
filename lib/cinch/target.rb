@@ -29,6 +29,16 @@ module Cinch
     # @see #safe_msg
     def msg(text, notice = false)
       text = text.to_s
+
+      encryption = @bot.config.encryption.targets[@name]
+
+      # FIXME splitting long messages needs the prefix for every part
+      # TODO where do we take care of the encoding?
+      if encryption
+        encrypted = Encryption.get_mechanism(encryption[:mechanism]).new(encryption[:key]).encrypt(text)
+        text = encrypted
+      end
+
       split_start = @bot.config.message_split_start || ""
       split_end   = @bot.config.message_split_end   || ""
       command = notice ? "NOTICE" : "PRIVMSG"

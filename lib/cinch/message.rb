@@ -250,9 +250,22 @@ module Cinch
     def parse_message
       # has to be called after parse_params
       if error?
-        @error.to_s
-      elsif regular_command?
-        @params.last
+        return @error.to_s
+      end
+
+      if regular_command?
+        # TODO we'll need to support topics, too, so maybe move this
+        # to its own method
+        if !["PRIVMSG", "NOTICE"].include?(@command) ||
+            @target.nil? ||
+            !Encryption::Blowcrypt.valid?(@params.last)
+          return @params.last
+        end
+
+
+        encryption = @bot.config.encryption.targets[@target.name]
+        return @params.last unless encryption
+        return Encryption::get_mechanism(encryption[:mechanism]).new(encryption[:key]).decrypt(@params.last)
       end
     end
 

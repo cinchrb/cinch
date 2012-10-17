@@ -50,6 +50,10 @@ require "cinch/configuration/timeouts"
 # require "cinch/configuration/storage"
 require "cinch/configuration/dcc"
 require "cinch/configuration/sasl"
+require "cinch/configuration/encryption"
+
+require "cinch/encryption"
+require "cinch/encryption/blowcrypt"
 
 module Cinch
   # @attr nick
