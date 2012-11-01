@@ -9,7 +9,7 @@ class DirectAddressing
   #
   # The reason we are using a lambda is that the bot's nick can change
   # and the prefix has to be up to date.
-  prefix lambda{ |m| Regexp.new("^" + Regexp.escape(m.bot.nick + ": " ))}
+  set :prefix, lambda{ |m| Regexp.new("^" + Regexp.escape(m.bot.nick + ": " ))}
 
   match "hello", method: :greet
   def greet(m)
