@@ -14,16 +14,17 @@ bot = Cinch::Bot.new do
     # Extremely basic method, grabs the first result returned by Google
     # or "No results found" otherwise
     def google(query)
-      url = "http://www.google.com/search?q=#{CGI.escape(query)}"
-      res = Nokogiri::HTML(open(url)).at("h3.r")
+      url = "https://www.google.com/search?q=#{CGI.escape(query)}"
+      res = Nokogiri::HTML(open(url)).at(".s")
 
-      title = res.text
-      link = res.at('a')[:href]
-      desc = res.at("./following::div").children.first.text
+      title = res.at('cite b').text
+      link = res.at('cite').text
+      desc = res.at('.st').text
+      CGI.unescape_html "#{title} - #{desc} (#{link})".dup.force_encoding('binary')
     rescue
       "No results found"
     else
-      CGI.unescape_html "#{title} - #{desc} (#{link})"
+      CGI.unescape_html "#{title} - #{desc} (#{link})".dup.force_encoding('binary')
     end
   end
 
