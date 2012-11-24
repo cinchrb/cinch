@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# NOTE: This example does not currently work. The current release of
+# Cinch does not include the storage API.
+
 require 'cinch'
 require 'cinch/storage/yaml'
 
