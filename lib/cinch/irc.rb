@@ -544,8 +544,8 @@ module Cinch
       end
 
 
-      if msg.message =~ /^\001DCC SEND (\S+) (\d+) (\d+)(?: (\d+))?\001$/
-        process_dcc_send($1, $2, $3, $4, msg, events)
+      if msg.message =~ /^\001DCC SEND (?:"([^"]+)"|(\S+)) (\d+) (\d+)(?: (\d+))?\001$/
+        process_dcc_send($1 || $2, $3, $4, $5, msg, events)
       end
     end
 
