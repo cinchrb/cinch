@@ -265,7 +265,12 @@ module Cinch
 
         encryption = @bot.config.encryption.targets[@target.name]
         return @params.last unless encryption
-        return Encryption::get_mechanism(encryption[:mechanism]).new(encryption[:key]).decrypt(@params.last)
+        decrypted = Encryption::get_mechanism(encryption[:mechanism]).new(encryption[:key]).decrypt(@params.last)
+
+        # Encode the message again, because the original message was
+        # base64 encoded and thus not correctly encoded on the socket
+        # level
+        return Cinch::Utilities::Encoding.encode_incoming(decrypted, @bot.config.encoding)
       end
     end
 
