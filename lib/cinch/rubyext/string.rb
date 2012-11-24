@@ -26,7 +26,7 @@ class String
       self.tr("a-z", "A-Z")
     when :rfc1459
       self.tr("a-z{}|~", "A-Z[]\\\\^")
-    when :strict-rfc1459
+    when :"strict-rfc1459"
       self.tr("a-z{}|", "A-Z[]\\\\")
     end
   end
