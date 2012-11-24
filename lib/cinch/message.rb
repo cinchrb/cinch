@@ -176,6 +176,24 @@ module Cinch
       @target.safe_send(text)
     end
 
+    # Reply to a message with an action.
+    #
+    # @param [String] text the action message
+    # @return [void]
+    def action_reply(text)
+      text = text.to_s
+      @target.action(text)
+    end
+
+    # Like #action_reply, but using {Target#safe_action} instead
+    #
+    # @param (see #action_reply)
+    # @return (see #action_reply)
+    def safe_action_reply(text)
+      text = text.to_s
+      @target.safe_action(text)
+    end
+
     # Reply to a CTCP message
     #
     # @return [void]
