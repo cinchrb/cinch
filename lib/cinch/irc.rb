@@ -18,9 +18,13 @@ module Cinch
     # @return [Network] The detected network
     attr_reader :network
 
+    # @return [String] The specific server we are connected to
+    attr_reader :server
+
     def initialize(bot)
       @bot      = bot
       @isupport = ISupport.new
+      @server = nil
     end
 
     # @return [TCPSocket]
@@ -566,6 +570,7 @@ module Cinch
     def on_001(msg, events)
       # Ensure that we know our real, possibly truncated or otherwise
       # modified nick.
+      @server = msg.prefix
       @bot.set_nick msg.params.first
     end
 

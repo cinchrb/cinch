@@ -154,7 +154,7 @@ module Cinch
       if @bot.irc.network.whois_only_one_argument?
         @bot.irc.send "WHOIS #@name"
       else
-        @bot.irc.send "WHOIS #@name #@name"
+        @bot.irc.send "WHOIS #{@bot.irc.server} #@name"
       end
     end
     alias_method :refresh, :whois
