@@ -1,3 +1,13 @@
+* Cinch 2.0.4, 05 February 2013
+  - Make User#unmonitor more robust
+  - Do not unset SASL password after first authentication
+  - Improve DCC SEND
+    - Do not block when sending ACKs
+    - Support spaces in file names
+    - Better transfer handling
+    - Return value to signal (un)successful file transfers when receiving a transfer
+  - Fix PluginList#unregister_all
+
 * Cinch 2.0.3, 27 June 2012
   - Fix monitoring of users
   - Support all types of channels (#, &, !) in Message#channel
