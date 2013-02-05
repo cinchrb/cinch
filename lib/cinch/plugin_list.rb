@@ -24,6 +24,9 @@ module Cinch
 
     # @since 2.0.0
     def unregister_plugins(plugins)
+      if plugins == self
+        plugins = self.dup
+      end
       plugins.each { |plugin| unregister_plugin(plugin) }
     end
 
