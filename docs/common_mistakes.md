@@ -34,3 +34,19 @@ The following is not possible:
         # ...
       end
     end
+
+# My handlers won't run, even though the Regexp matches.
+
+Cinch plugins have a default prefix (`/^!/`). This allows for flexible prefixes 
+across the whole bot. This default prefix can be changed in Bot#configure.
+
+    x = Cinch::Bot.new do
+      configure do |c|
+        # ...
+        c.plugins.prefix = /^%/
+      end
+    end
+
+You can also choose to not use a prefix for some handlers.
+
+    match /hi/, use_prefix: false
