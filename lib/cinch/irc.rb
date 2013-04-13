@@ -480,7 +480,7 @@ module Cinch
         modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1])
         modes.each do |direction, mode, _|
           if direction == :add
-            @bot.modes << mode
+            @bot.modes << mode unless @bot.modes.include?(mode)
           else
             @bot.modes.delete(mode)
           end

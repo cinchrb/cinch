@@ -265,6 +265,8 @@ module Cinch
           }
         end
 
+        @modes = []
+
         @loggers.info "Connecting to #{@config.server}:#{@config.port}"
         @irc = IRC.new(self)
         @irc.start
