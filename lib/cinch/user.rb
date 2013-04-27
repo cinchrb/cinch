@@ -11,6 +11,7 @@ module Cinch
   # @attr_reader [String] host
   # @attr_reader [Integer] idle How long this user has been idle, in seconds.
   #   This is a snapshot of the last WHOIS.
+  # @attr_reader [String] nick The user's nickname
   # @attr_reader [Boolean] online True if the user is online.
   # @attr_reader [Boolean] oper True if the user is an IRC operator.
   # @attr_reader [String] realname
