@@ -26,7 +26,9 @@ module Cinch
   class User < Target
     include Syncable
 
-    alias_method :nick, :name
+    def nick
+      name
+    end
 
     # @return [String]
     # @since 1.1.0
