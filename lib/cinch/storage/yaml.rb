@@ -24,7 +24,7 @@ module Cinch
         @yaml[key]
       end
 
-      # (see Strage#[]=)
+      # (see Storage#[]=)
       def []=(key, value)
         @yaml[key] = value
       end
