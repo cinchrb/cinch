@@ -51,8 +51,10 @@ module Cinch
     #   and attached to the event, or nil.
     # @param [Array] *arguments A list of additional arguments to pass
     #   to event handlers
-    # @return [void]
+    # @return [Array<Thread>]
     def dispatch(event, msg = nil, *arguments)
+      threads = []
+
       if handlers = find(event, msg)
         already_run = Set.new
         handlers.each do |handler|
@@ -66,9 +68,11 @@ module Cinch
             captures = []
           end
 
-          handler.call(msg, captures, arguments)
+          threads << handler.call(msg, captures, arguments)
         end
       end
+
+      threads
     end
 
     # @yield [handler] Yields all registered handlers

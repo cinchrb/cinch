@@ -74,11 +74,11 @@ module Cinch
     # @param [Message] message Message that caused the invocation
     # @param [Array] captures Capture groups of the pattern that are
     #   being passed as arguments
-    # @return [void]
+    # @return [Thread]
     def call(message, captures, arguments)
       bargs = captures + arguments
 
-      @thread_group.add Thread.new {
+      thread = Thread.new {
         @bot.loggers.debug "[New thread] For #{self}: #{Thread.current} -- #{@thread_group.list.size} in total."
 
         begin
@@ -93,6 +93,9 @@ module Cinch
           @bot.loggers.debug "[Thread done] For #{self}: #{Thread.current} -- #{@thread_group.list.size - 1} remaining."
         end
       }
+
+      @thread_group.add(thread)
+      thread
     end
 
     # @return [String]
