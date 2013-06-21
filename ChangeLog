@@ -1,3 +1,6 @@
+* Cinch 2.0.5, 21 June 2013
+  - Fix internal handling of AWAY
+
 * Cinch 2.0.4, 05 February 2013
   - Make User#unmonitor more robust
   - Do not unset SASL password after first authentication
@@ -16,15 +19,19 @@
   - Fix User#authed?
   - Do not fire :notice event twice for a single message
   - Do not block on whois requests if a user isn't in any channels
+
 * Cinch 2.0.2, 01 April 2012
   - Correctly mark quitting users as offline
   - Register dynamic timers so they can be unloaded (gh-70)
   - Set bot modes when connecting (gh-71)
   - Support fixnums in Bot#on (gh-72)
+
 * Cinch 2.0.1, 24 March 2012
   - Include .yardopts in gem so documentation gets built correctly
+
 * Cinch 2.0.0, 24 March 2012
   For detailed information check docs/changes.md
+
 * Cinch 1.1.3, 12 May 2011
   - PRIVMSGs can now be matched with the event :privmsg (additionally
     to :message, :private and :channel)
