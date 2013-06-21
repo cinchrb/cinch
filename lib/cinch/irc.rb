@@ -362,11 +362,11 @@ module Cinch
     def on_away(msg, events)
       if msg.message.to_s.empty?
         # unaway
-        m.user.sync(:away, nil, true)
+        msg.user.sync(:away, nil, true)
         events << [:unaway]
       else
         # away
-        m.user.sync(:away, msg.message, true)
+        msg.user.sync(:away, msg.message, true)
         events << [:away]
       end
     end
