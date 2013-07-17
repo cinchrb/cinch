@@ -543,16 +543,24 @@ module Cinch
         msg.user.online = true
       end
 
-
-      if msg.message =~ /^\001DCC SEND (?:"([^"]+)"|(\S+)) (\d+) (\d+)(?: (\d+))?\001$/
+      if msg.message =~ /^\001DCC SEND (?:"([^"]+)"|(\S+)) (\S+) (\d+)(?: (\d+))?\001$/
         process_dcc_send($1 || $2, $3, $4, $5, msg, events)
       end
     end
 
     # @since 2.0.0
     def process_dcc_send(filename, ip, port, size, m, events)
-      ip   = ip.to_i
-      ip   = [24, 16, 8, 0].collect {|b| (ip >> b) & 255}.join('.')
+      # if its an integer as in the DCC "specification" 
+      if ip =~ /^[0-9]+$/
+        ip = ip.to_i
+        ip = [24, 16, 8, 0].collect {|b| (ip >> b) & 255}.join('.')
+
+      # if not an integer nor an ipv4 or ipv6 address, raise an exception
+      elsif not ip =~ /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}/ and 
+            not ip =~ /^(((?=.*(::))(?!.*\3.+\3))\3?|[\dA-F]{1,4}:)([\dA-F]{1,4}(\3|:\b)|\2){5}(([\dA-F]{1,4}(\3|:\b|$)|\2){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})\z/i
+          raise ArgumentError, "Unknown IP Address #{ip}"
+      end
+
       port = port.to_i
       size = size.to_i
 
