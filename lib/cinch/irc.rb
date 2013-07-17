@@ -638,8 +638,8 @@ module Cinch
     def on_319(msg, events)
       # RPL_WHOISCHANNELS
       user     = User(msg.params[1])
-      channels = msg.params[2].scan(/#{@isupport["CHANTYPES"].join}[^ ]+/o).map {|c| Channel(c) }
-      user.sync(:channels, channels, true)
+      channels = msg.params[2].scan(/[#{@isupport["CHANTYPES"].join}][^ ]+/o).map {|c| Channel(c) }
+      @whois_updates[user].merge!({:channels => channels})
     end
 
     def on_324(msg, events)
