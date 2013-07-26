@@ -544,15 +544,23 @@ module Cinch
       end
 
 
-      if msg.message =~ /^\001DCC SEND (?:"([^"]+)"|(\S+)) (\d+) (\d+)(?: (\d+))?\001$/
+      if msg.message =~ /^\001DCC SEND (?:"([^"]+)"|(\S+)) (\S+) (\d+)(?: (\d+))?\001$/
         process_dcc_send($1 || $2, $3, $4, $5, msg, events)
       end
     end
 
     # @since 2.0.0
     def process_dcc_send(filename, ip, port, size, m, events)
-      ip   = ip.to_i
-      ip   = [24, 16, 8, 0].collect {|b| (ip >> b) & 255}.join('.')
+      if ip =~ /^\d$/
+        # If ip is a single integer, assume it's a specification
+        # compliant IPv4 address in network byte order. If it's any
+        # other string, assume that it's a valid IPv4 or IPv6 address.
+        # If it's not valid, let someone higher up the chain notice
+        # that.
+        ip   = ip.to_i
+        ip   = [24, 16, 8, 0].collect {|b| (ip >> b) & 255}.join('.')
+      end
+
       port = port.to_i
       size = size.to_i
 
