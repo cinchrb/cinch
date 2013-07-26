@@ -2,6 +2,7 @@
   - Correctly handle empty channel topics
   - Reset bot's channel list on reconnect
   - Fix example plugins that set options
+  - Support IPv6 addresses in incoming DCC SEND
 
 * Cinch 2.0.5, 21 June 2013
   - Fix internal handling of AWAY
