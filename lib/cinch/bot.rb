@@ -249,6 +249,8 @@ module Cinch
           channel.unsync_all
         end # reset state of all channels
 
+        @channels = [] # reset list of channels the bot is in
+
         @join_handler.unregister if @join_handler
         @join_timer.stop if @join_timer
 
