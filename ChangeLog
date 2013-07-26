@@ -1,6 +1,7 @@
 * Cinch 2.0.6, 26 July 2013
   - Correctly handle empty channel topics
   - Reset bot's channel list on reconnect
+  - Fix example plugins that set options
 
 * Cinch 2.0.5, 21 June 2013
   - Fix internal handling of AWAY
