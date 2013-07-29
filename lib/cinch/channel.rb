@@ -59,7 +59,7 @@ module Cinch
 
       @synced_attributes  = Set.new
       @when_requesting_synced_attribute = lambda {|attr|
-        if @in_channel && attr == :topic && !attribute_synced?(:topic)
+        if @in_channel && attr == :topic && !synced?(:topic)
           # Even if we are in the channel, if there's no topic set,
           # the attribute won't be synchronised yet. Explicitly
           # request the topic.
