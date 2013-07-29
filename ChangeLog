@@ -1,3 +1,7 @@
+* Cinch 2.0.7, 29 July 2013
+  - Fix regression introduced by 2.0.6 where requesting channel
+    attributes would lead to an exception
+
 * Cinch 2.0.6, 26 July 2013
   - Correctly handle empty channel topics
   - Reset bot's channel list on reconnect

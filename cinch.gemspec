@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'cinch'
-  s.version = '2.0.6'
+  s.version = '2.0.7'
   s.summary = 'An IRC Bot Building Framework'
   s.description = 'A simple, friendly DSL for creating IRC bots'
   s.authors = ['Dominik Honnef']
@@ -9,4 +9,5 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9.1'
   s.files = Dir['LICENSE', 'README.md', '.yardopts', '{docs,lib,examples}/**/*']
   s.has_rdoc = "yard"
+  s.license = "MIT"
 end
