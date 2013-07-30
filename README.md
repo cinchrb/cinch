@@ -128,6 +128,8 @@ end
 bot.start
 ```
 
+Call this with `!hello`, there is a prefix of `!` on plugins
+
 More information can be found in the {Cinch::Plugin} documentation.
 
 ### Numeric Replies
