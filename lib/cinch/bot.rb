@@ -219,6 +219,52 @@ module Cinch
       yield @config
     end
 
+    # Autoloads plugins from a directory. The file name of each plugin must be
+    # the underscored name of the plugin class. If a configuration file is
+    # needed, create a YAML file of the same name.
+    #
+    # The plugins directory should look like this:
+    #
+    #   plugins/
+    #     |-- plugin_name1.rb
+    #     |-- plugin_name1.yml
+    #     |-- plugin_name2.rb
+    #     |-- plugin_name3.rb
+    #     ...
+    #
+    # @param [String] prefix The plugin prefix.
+    # @param [String] path The path to the plugins directory.
+    # @return [Array<Class>] The plugins that were loaded.
+    #
+    # @example:
+    #   bot.auto_load_plugins
+    #
+    def auto_load_plugins(prefix = nil, path = "./plugins")
+      plugins = []
+      Dir["#{path}/*.rb"].each do |file|
+        file = File.expand_path(file)
+
+        name = file.match(/\/(\w+)\.rb$/)[1]
+        class_name = name.split('_').map {|word| word.capitalize }.join
+
+        require file
+        plugin = Module.const_get(class_name)
+
+        # Load plugin configuration file, if it exists.
+        file.gsub!(/\.rb$/, ".yml")
+        if File.exists? file
+          plugin.send(:define_method, :plugin_config, ->{ read_config(file) })
+        end
+
+        plugins.push plugin
+      end
+
+      config.plugins.prefix = prefix
+      config.plugins.plugins = plugins
+
+      return plugins
+    end
+
     # Disconnects from the server.
     #
     # @param [String] message The quit message to send while quitting
