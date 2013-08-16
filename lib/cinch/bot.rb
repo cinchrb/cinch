@@ -221,7 +221,8 @@ module Cinch
 
     # Autoloads plugins from a directory. The file name of each plugin must be
     # the underscored name of the plugin class. If a configuration file is
-    # needed, create a YAML file of the same name.
+    # needed, create a YAML file of the same name (the configuration data will
+    # be available to the plugin as a method called `plugin_config`).
     #
     # The plugins directory should look like this:
     #
@@ -236,8 +237,19 @@ module Cinch
     # @param [String] path The path to the plugins directory.
     # @return [Array<Class>] The plugins that were loaded.
     #
-    # @example:
+    # @example: (invoking the autoloader)
     #   bot.auto_load_plugins
+    #
+    # @example: (accessing plugin config data from the plugin)
+    #   class SayGoodbye
+    #     include Cinch::Plugin
+    #
+    #     listen_to :leaving
+    #
+    #     def listen(m, user)
+    #       m.reply(plugin_config[:goodbye_message] % user)
+    #     end
+    #   end
     #
     def auto_load_plugins(prefix = nil, path = "./plugins")
       plugins = []
