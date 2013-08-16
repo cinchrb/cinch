@@ -1,3 +1,6 @@
+require 'yaml'
+require 'erb'
+
 module Cinch
   # The Helpers module contains a number of methods whose purpose is
   # to make writing plugins easier by hiding parts of the API. The
@@ -185,5 +188,27 @@ module Cinch
     alias_method :Color, :Format
 
     # @endgroup
+
+    # Reads and parses a YAML configuration file.
+    #
+    # @param [String] file Path to a YAML configuration file.
+    # @return [Hash or Array] The parsed YAML data.
+    #
+    def read_config(file)
+      symbolize_keys = lambda do |data|
+        if data.is_a? Hash
+          data.keys.each do |key|
+            data[key] = symbolize_keys.call(data[key])
+            data[key.to_sym] = data.delete(key)
+          end
+        elsif data.is_a? Array
+          data.map! {|value| symbolize_keys.call(value) }
+        end
+        return data
+      end
+
+      return symbolize_keys.call(YAML.load(ERB.new(File.read(file)).result))
+    end
+
   end
 end
