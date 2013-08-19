@@ -1,3 +1,5 @@
+require "cinch/helpers"
+
 # TODO more details in "message dropped" debug output
 module Cinch
   # This class represents the core of the plugin functionality of
@@ -253,7 +255,7 @@ module Cinch
       #   a handler?
       # @option options [Array<:match, :listen_to, :ctcp>] :for ([:match, :listen_to, :ctcp])
       #   Which kinds of events to run the hook for.
-      # @option options [Symbol] :method (true) The method to execute.
+      # @option options [Symbol] :method (:hook) The method to execute.
       # @return [Hook]
       # @since 1.1.0
       def hook(type, options = {})
@@ -432,15 +434,11 @@ module Cinch
     # @return [Array<Cinch::Timer>]
     attr_reader :timers
 
-    # @return [Storage] The per-plugin persistent storage
-    # attr_reader :storage
-
     # @api private
     def initialize(bot)
       @bot = bot
       @handlers = []
       @timers   = []
-      # @storage  = bot.config.storage.backend.new(@bot.config.storage, self)
       __register
     end
 

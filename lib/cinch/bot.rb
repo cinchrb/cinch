@@ -47,7 +47,6 @@ require "cinch/configuration/bot"
 require "cinch/configuration/plugins"
 require "cinch/configuration/ssl"
 require "cinch/configuration/timeouts"
-# require "cinch/configuration/storage"
 require "cinch/configuration/dcc"
 require "cinch/configuration/sasl"
 
@@ -267,6 +266,8 @@ module Cinch
           }
         end
 
+        @modes = []
+
         @loggers.info "Connecting to #{@config.server}:#{@config.port}"
         @irc = IRC.new(self)
         @irc.start
@@ -293,10 +294,6 @@ module Cinch
     end
 
     def stop
-      # @plugins.each do |plugin|
-      #   plugin.storage.save
-      #   plugin.storage.unload
-      # end
     end
 
     # @endgroup
@@ -430,6 +427,18 @@ module Cinch
       end
       @config.nick = new_nick
       @irc.send "NICK #{new_nick}"
+    end
+
+    # Gain oper privileges.
+    #
+    # @param [String] password
+    # @param [String] user The username to use. Defaults to the bot's
+    #   nickname
+    # @since 2.1.0
+    # @return [void]
+    def oper(password, user = nil)
+      user ||= self.nick
+      @irc.send "OPER #{user} #{password}"
     end
 
     # Try to create a free nick, first by cycling through all

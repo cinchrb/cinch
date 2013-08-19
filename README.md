@@ -24,33 +24,39 @@ Installation
 
 You can install the latest Cinch gem using RubyGems
 
-    gem install cinch
+```
+gem install cinch
+```
 
 ### GitHub
 
 Alternatively you can check out the latest code directly from Github
 
-    git clone http://github.com/cinchrb/cinch.git
+```
+git clone http://github.com/cinchrb/cinch.git
+```
 
 Example
 -------
 
 Your typical Hello, World application in Cinch would go something like this:
 
-    require 'cinch'
+```ruby
+require 'cinch'
 
-    bot = Cinch::Bot.new do
-      configure do |c|
-        c.server = "irc.freenode.org"
-        c.channels = ["#cinch-bots"]
-      end
+bot = Cinch::Bot.new do
+  configure do |c|
+    c.server = "irc.freenode.org"
+    c.channels = ["#cinch-bots"]
+  end
 
-      on :message, "hello" do |m|
-        m.reply "Hello, #{m.user.nick}"
-      end
-    end
+  on :message, "hello" do |m|
+    m.reply "Hello, #{m.user.nick}"
+  end
+end
 
-    bot.start
+bot.start
+```
 
 More examples can be found in the `examples` directory.
 
@@ -98,27 +104,29 @@ your own plugins for others to use
 
 Want to see the same Hello, World application in plugin form? Sure you do!
 
-    require 'cinch'
+```ruby
+require 'cinch'
 
-    class Hello
-      include Cinch::Plugin
+class Hello
+  include Cinch::Plugin
 
-      match "hello"
+  match "hello"
 
-      def execute(m)
-        m.reply "Hello, #{m.user.nick}"
-      end
-    end
+  def execute(m)
+    m.reply "Hello, #{m.user.nick}"
+  end
+end
 
-    bot = Cinch::Bot.new do
-      configure do |c|
-        c.server = "irc.freenode.org"
-        c.channels = ["#cinch-bots"]
-        c.plugins.plugins = [Hello]
-      end
-    end
+bot = Cinch::Bot.new do
+  configure do |c|
+    c.server = "irc.freenode.org"
+    c.channels = ["#cinch-bots"]
+    c.plugins.plugins = [Hello]
+  end
+end
 
-    bot.start
+bot.start
+```
 
 More information can be found in the {Cinch::Plugin} documentation.
 
@@ -140,9 +148,11 @@ terminal, meaning you get some pretty damn awesome readable coloured
 text. Cinch also provides a way for your plugins to log custom
 messages:
 
-    on :message, /hello/ do |m|
-      debug "Someone said hello"
-    end
+```ruby
+on :message, /hello/ do |m|
+  debug "Someone said hello"
+end
+```
 
 Authors
 -------

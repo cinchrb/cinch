@@ -46,3 +46,12 @@ example:
         @bot.loggers.info "I miss my master :("
       end
     end
+
+# Sending messages to users and channels beside `m.user` and `m.channel`
+
+Cinch provides {Cinch::Helpers helper methods} to get instances of Channel
+and User objects that you can work with:
+
+    User('user').send("Hello!")        # Sends a message to user 'user'
+    Channel('#channel').send("Hello!") # Sends a message to channel '#channel'
+

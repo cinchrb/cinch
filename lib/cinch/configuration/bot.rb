@@ -37,7 +37,6 @@ module Cinch
           :timeouts => Configuration::Timeouts.new,
           :ping_interval => 120,
           :delay_joins => 0,
-          # :storage => Configuration::Storage.new,
           :dcc => Configuration::DCC.new,
           :sasl => Configuration::SASL.new,
           :shared => {},

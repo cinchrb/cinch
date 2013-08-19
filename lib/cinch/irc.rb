@@ -480,7 +480,7 @@ module Cinch
         modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1])
         modes.each do |direction, mode, _|
           if direction == :add
-            @bot.modes << mode
+            @bot.modes << mode unless @bot.modes.include?(mode)
           else
             @bot.modes.delete(mode)
           end
@@ -614,6 +614,12 @@ module Cinch
                                     :host => msg.params[3],
                                     :realname => msg.params[5],
                                   })
+    end
+
+    def on_313(msg, events)
+      # RPL_WHOISOPERATOR
+      user = User(msg.params[1])
+      @whois_updates[user].merge!({:oper? => true})
     end
 
     def on_317(msg, events)
