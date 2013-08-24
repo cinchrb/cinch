@@ -218,6 +218,12 @@ One additional argument, the user being opped, gets passed to the
 handler.
 
 
+## `:no_channel_op`
+
+This event gets triggered when the server responds with a
+[You're not a channel operator] message when the bot attempts to use a
+channel command while not current @op'd.
+
 ## `:owner`
 
 
