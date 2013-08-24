@@ -225,6 +225,10 @@ module Cinch
       msg          = Message.new(input, @bot)
       events       = [[:catchall]]
 
+      if ("482").include? msg.command
+        events << [:no_channel_op]
+      end
+
       if ("001".."004").include? msg.command
         @registration << msg.command
         if registered?
