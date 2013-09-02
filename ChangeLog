@@ -1,6 +1,8 @@
 * Cinch 2.0.8, 02 September 2013
   - Correctly expect NAK instead of NACK during client capability
     negotiation
+  - Remove all references to the Storage API that has never officially
+    been part of Cinch
 
 * Cinch 2.0.7, 29 July 2013
   - Fix regression introduced by 2.0.6 where requesting channel
