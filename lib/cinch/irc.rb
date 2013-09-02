@@ -551,7 +551,7 @@ module Cinch
 
     # @since 2.0.0
     def process_dcc_send(filename, ip, port, size, m, events)
-      if ip =~ /^\d$/
+      if ip =~ /^\d+$/
         # If ip is a single integer, assume it's a specification
         # compliant IPv4 address in network byte order. If it's any
         # other string, assume that it's a valid IPv4 or IPv6 address.
