@@ -434,15 +434,11 @@ module Cinch
     # @return [Array<Cinch::Timer>]
     attr_reader :timers
 
-    # @return [Storage] The per-plugin persistent storage
-    # attr_reader :storage
-
     # @api private
     def initialize(bot)
       @bot = bot
       @handlers = []
       @timers   = []
-      # @storage  = bot.config.storage.backend.new(@bot.config.storage, self)
       __register
     end
 

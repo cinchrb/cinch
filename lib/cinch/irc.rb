@@ -383,7 +383,7 @@ module Cinch
         else
           send_cap_end
         end
-      when "NACK"
+      when "NAK"
         send_cap_end
       end
     end
