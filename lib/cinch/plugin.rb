@@ -286,11 +286,7 @@ module Cinch
           hooks.select! { |hook| (events & hook.for).size > 0 }
         end
 
-        if group.nil?
-          return hooks.select { |hook| hook.group.nil? }
-        else
-          return hooks.select { |hook| hook.group.nil? || hook.group == group }
-        end
+        return hooks.select { |hook| hook.group.nil? || hook.group == group }
       end
 
       # @return [Boolean] True if processing should continue
