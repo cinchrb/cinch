@@ -107,7 +107,7 @@ module Cinch
       # @attr [Symbol] type
       # @attr [Array<Symbol>] for
       # @attr [Symbol] method
-      Hook = Struct.new(:type, :for, :method)
+      Hook = Struct.new(:type, :for, :method, :group)
 
       # @api private
       def self.extended(by)
@@ -256,11 +256,14 @@ module Cinch
       # @option options [Array<:match, :listen_to, :ctcp>] :for ([:match, :listen_to, :ctcp])
       #   Which kinds of events to run the hook for.
       # @option options [Symbol] :method (:hook) The method to execute.
+      # @option options [Symbol] :group (nil) The match group to
+      #   execute the hook for. Hooks belonging to the `nil` group
+      #   will execute for all matches.
       # @return [Hook]
       # @since 1.1.0
       def hook(type, options = {})
-        options = {:for => [:match, :listen_to, :ctcp], :method => :hook}.merge(options)
-        hook = Hook.new(type, options[:for], options[:method])
+        options = {:for => [:match, :listen_to, :ctcp], :method => :hook, :group => nil}.merge(options)
+        hook = Hook.new(type, options[:for], options[:method], options[:group])
         __hooks(type) << hook
 
         hook
@@ -268,7 +271,7 @@ module Cinch
 
       # @return [Hash]
       # @api private
-      def __hooks(type = nil, events = nil)
+      def __hooks(type = nil, events = nil, group = nil)
         if type.nil?
           hooks = @hooks
         else
@@ -282,14 +285,16 @@ module Cinch
           if hooks.is_a?(Hash)
             hooks = hooks.map { |k, v| v }
           end
-          return hooks.select { |hook| (events & hook.for).size > 0 }
+          hooks.select! { |hook| (events & hook.for).size > 0 }
         end
+
+        return hooks.select { |hook| hook.group.nil? || hook.group == group }
       end
 
       # @return [Boolean] True if processing should continue
       # @api private
-      def call_hooks(type, event, instance, args)
-        stop = __hooks(type, event).find { |hook|
+      def call_hooks(type, event, group, instance, args)
+        stop = __hooks(type, event, group).find { |hook|
           # stop after the first hook that returns false
           if hook.method.respond_to?(:call)
             instance.instance_exec(*args, &hook.method) == false
@@ -316,9 +321,9 @@ module Cinch
       self.class.listeners.each do |listener|
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering listener for type `#{listener.event}`"
         new_handler = Handler.new(@bot, listener.event, Pattern.new(nil, //, nil)) do |message, *args|
-          if self.class.call_hooks(:pre, :listen_to, self, [message])
+          if self.class.call_hooks(:pre, :listen_to, nil, self, [message])
             __send__(listener.method, message, *args)
-            self.class.call_hooks(:post, :listen_to, self, [message])
+            self.class.call_hooks(:post, :listen_to, nil, self, [message])
           else
             @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
           end
@@ -334,9 +339,9 @@ module Cinch
       self.class.ctcps.each do |ctcp|
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering CTCP `#{ctcp}`"
         new_handler = Handler.new(@bot, :ctcp, Pattern.generate(:ctcp, ctcp)) do |message, *args|
-          if self.class.call_hooks(:pre, :ctcp, self, [message])
+          if self.class.call_hooks(:pre, :ctcp, nil, self, [message])
             __send__("ctcp_#{ctcp.downcase}", message, *args)
-            self.class.call_hooks(:post, :ctcp, self, [message])
+            self.class.call_hooks(:post, :ctcp, nil, self, [message])
           else
             @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
           end
@@ -380,9 +385,9 @@ module Cinch
           elsif arity == 0
             args = []
           end
-          if self.class.call_hooks(:pre, :match, self, [message])
+          if self.class.call_hooks(:pre, :match, matcher.group, self, [message])
             method.call(message, *args)
-            self.class.call_hooks(:post, :match, self, [message])
+            self.class.call_hooks(:post, :match, matcher.group, self, [message])
           else
             @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Dropping message due to hook"
           end
