@@ -256,7 +256,9 @@ module Cinch
       # @option options [Array<:match, :listen_to, :ctcp>] :for ([:match, :listen_to, :ctcp])
       #   Which kinds of events to run the hook for.
       # @option options [Symbol] :method (:hook) The method to execute.
-      # @option options [Symbol] :group (nil) The matcher group to execute the hook for.
+      # @option options [Symbol] :group (nil) The match group to
+      #   execute the hook for. Hooks belonging to the `nil` group
+      #   will execute for all matches.
       # @return [Hook]
       # @since 1.1.0
       def hook(type, options = {})
