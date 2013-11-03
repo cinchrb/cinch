@@ -1,3 +1,6 @@
+* Cinch 2.0.10, 03 November 2013
+  - Fix registration process for InspIRCd 2.x servers
+
 * Cinch 2.0.9, 02 September 2013
   - Fix support for IPv4 addresses in incoming DCC SEND (2.0.6 broke
     it)
