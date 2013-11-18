@@ -81,7 +81,15 @@ module Cinch
       # @attr [Boolean] use_suffix
       # @attr [Symbol] method
       # @attr [Symbol] group
-      Matcher = Struct.new(:pattern, :use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :react_on)
+      Matcher = Struct.new(:pattern,
+                           :use_prefix,
+                           :use_suffix,
+                           :method,
+                           :group,
+                           :prefix,
+                           :suffix,
+                           :react_on,
+                           :strip_colors)
 
       # Represents a Listener as created by {#listen_to}.
       #
@@ -181,14 +189,32 @@ module Cinch
       # @option options [Symbol, Fixnum] react_on (:message) The
       #   {file:docs/events.md event} to react on.
       # @option options [Symbol] :group (nil) The group the match belongs to.
+      # @option options [Boolean] :strip_colors (false) Strip colors
+      #   from message before attempting match
       # @return [Matcher]
       # @todo Document match/listener grouping
       def match(pattern, options = {})
-        options = {:use_prefix => true, :use_suffix => true, :method => :execute, :group => nil, :prefix => nil, :suffix => nil, :react_on => nil}.merge(options)
+        options = {
+          :use_prefix => true,
+          :use_suffix => true,
+          :method => :execute,
+          :group => nil,
+          :prefix => nil,
+          :suffix => nil,
+          :react_on => nil,
+          :strip_colors => false,
+        }.merge(options)
         if options[:react_on]
           options[:react_on] = options[:react_on].to_s.to_sym
         end
-        matcher = Matcher.new(pattern, *options.values_at(:use_prefix, :use_suffix, :method, :group, :prefix, :suffix, :react_on))
+        matcher = Matcher.new(pattern, *options.values_at(:use_prefix,
+                                                          :use_suffix,
+                                                          :method,
+                                                          :group,
+                                                          :prefix,
+                                                          :suffix,
+                                                          :react_on,
+                                                          :strip_colors))
         @matchers << matcher
 
         matcher
@@ -377,7 +403,11 @@ module Cinch
 
         @bot.loggers.debug "[plugin] #{self.class.plugin_name}: Registering executor with pattern `#{pattern_to_register.inspect}`, reacting on `#{react_on}`"
 
-        new_handler = Handler.new(@bot, react_on, pattern_to_register, group: matcher.group) do |message, *args|
+        new_handler = Handler.new(@bot,
+                                  react_on,
+                                  pattern_to_register,
+                                  group: matcher.group,
+                                  strip_colors: matcher.strip_colors) do |message, *args|
           method = method(matcher.method)
           arity = method.arity - 1
           if arity > 0

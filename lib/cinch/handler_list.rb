@@ -39,7 +39,7 @@ module Cinch
         end
 
         handlers = handlers.select { |handler|
-          msg.match(handler.pattern.to_r(msg), type)
+          msg.match(handler.pattern.to_r(msg), type, handler.strip_colors)
         }.group_by {|handler| handler.group}
 
         handlers.values_at(*(handlers.keys - [nil])).map(&:first) + (handlers[nil] || [])
@@ -63,7 +63,7 @@ module Cinch
           # calling Message#match multiple times is not a problem
           # because we cache the result
           if msg
-            captures = msg.match(handler.pattern.to_r(msg), event).captures
+            captures = msg.match(handler.pattern.to_r(msg), event, handler.strip_colors).captures
           else
             captures = []
           end

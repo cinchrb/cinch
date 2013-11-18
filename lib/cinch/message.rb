@@ -135,14 +135,23 @@ module Cinch
 
     # @api private
     # @return [MatchData]
-    def match(regexp, type)
-      if type == :ctcp
-        @matches[:ctcp][regexp] ||= ctcp_message.match(regexp)
-      elsif type == :action
-        @matches[:action][regexp] ||= action_message.match(regexp)
+    def match(regexp, type, strip_colors)
+      text = ""
+      case type
+      when :ctcp
+        text = ctcp_message
+      when :action
+        text = action_message
       else
-        @matches[:other][regexp] ||= message.to_s.match(regexp)
+        text = message.to_s
+        type = :other
       end
+
+      if strip_colors
+        text.gsub!(/[\x02\x0f\x16\x1f\x12]|\x03([01]\d?(,[01]\d?)?)?/, '')
+      end
+
+      @matches[type][regexp] ||= text.match(regexp)
     end
 
     # @group Replying
