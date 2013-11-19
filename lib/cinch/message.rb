@@ -148,7 +148,7 @@ module Cinch
       end
 
       if strip_colors
-        text.gsub!(/[\x02\x0f\x16\x1f\x12]|\x03([01]\d?(,[01]\d?)?)?/, '')
+        text.gsub!(/[\x02\x0f\x16\x1f\x12]|\x03(\d{1,2}(,\d{1,2})?)?/, '')
       end
 
       @matches[type][regexp] ||= text.match(regexp)
