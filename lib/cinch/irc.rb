@@ -36,7 +36,7 @@ module Cinch
     def setup
       @registration  = []
       @network       = Network.new(:unknown, :unknown)
-      @whois_updates = Hash.new {|h, k| h[k] = {}}
+      @whois_updates = {}
       @in_lists      = Set.new
     end
 
@@ -366,6 +366,11 @@ module Cinch
       end
     end
 
+    def update_whois(user, data)
+      @whois_updates[user] ||= {}
+      @whois_updates[user].merge!(data)
+    end
+
     # @since 2.0.0
     def on_away(msg, events)
       if msg.message.to_s.empty?
@@ -603,7 +608,7 @@ module Cinch
       away = msg.message
 
       if @whois_updates[user]
-        @whois_updates[user].merge!({:away => away})
+        update_whois(user, {:away => away})
       end
     end
 
@@ -611,36 +616,38 @@ module Cinch
     def on_307(msg, events)
       # RPL_WHOISREGNICK
       user = User(msg.params[1])
-      @whois_updates[user].merge!({:authname => user.nick})
+      update_whois(user, {:authname => user.nick})
     end
 
     def on_311(msg, events)
       # RPL_WHOISUSER
       user = User(msg.params[1])
-      @whois_updates[user].merge!({
-                                    :user => msg.params[2],
-                                    :host => msg.params[3],
-                                    :realname => msg.params[5],
-                                  })
+      update_whois(user, {
+                     :user => msg.params[2],
+                     :host => msg.params[3],
+                     :realname => msg.params[5],
+                   })
     end
 
     def on_317(msg, events)
       # RPL_WHOISIDLE
       user = User(msg.params[1])
-      @whois_updates[user].merge!({
-                                    :idle => msg.params[2].to_i,
-                                    :signed_on_at => Time.at(msg.params[3].to_i),
-                                  })
+      update_whois(user, {
+                     :idle => msg.params[2].to_i,
+                     :signed_on_at => Time.at(msg.params[3].to_i),
+                   })
     end
 
     def on_318(msg, events)
       # RPL_ENDOFWHOIS
       user = User(msg.params[1])
 
-      if @whois_updates[user].empty? && !user.attr(:unknown?, true, true)
-        user.end_of_whois(nil)
-      else
-        user.end_of_whois(@whois_updates[user])
+      if @whois_updates[user]
+        if @whois_updates[user].empty? && !user.attr(:unknown?, true, true)
+          user.end_of_whois(nil)
+        else
+          user.end_of_whois(@whois_updates[user])
+        end
         @whois_updates.delete user
       end
     end
@@ -815,10 +822,7 @@ module Cinch
 
     def on_401(msg, events)
       # ERR_NOSUCHNICK
-      user = User(msg.params[1])
-      user.sync(:unknown?, true, true)
-      msg.user.online = false
-      if @whois_updates.key?(user)
+      if user = @bot.user_list.find(msg.params[1])
         user.end_of_whois(nil, true)
         @whois_updates.delete user
       end
