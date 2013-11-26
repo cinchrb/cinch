@@ -22,6 +22,7 @@ module Cinch
     # @return [User]
     # @see Bot#User
     def find_ensured(*args)
+      user, host = nil, nil
       case args.size
       when 1
         nick = args.first
@@ -29,12 +30,20 @@ module Cinch
       when 3
         nick = args[1]
         bargs = args
+        user, _, host = bargs
       else
         raise ArgumentError
       end
       downcased_nick = nick.irc_downcase(@bot.irc.isupport["CASEMAPPING"])
       @mutex.synchronize do
-        @cache[downcased_nick] ||= User.new(*bargs, @bot)
+        user_obj = @cache[downcased_nick] ||= User.new(*bargs, @bot)
+        if user && host
+          # Explicitly set user and host whenever we request a User
+          # object to update them on e.g. JOIN.
+          user_obj.sync(:user, user, true)
+          user_obj.sync(:host, host, true)
+        end
+        user_obj
       end
     end
 
