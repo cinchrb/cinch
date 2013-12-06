@@ -231,7 +231,7 @@ module Cinch
         chantypes = @bot.irc.isupport["CHANTYPES"]
         if chantypes.include?(@params.first[0])
           @bot.channel_list.find_ensured(@params.first)
-        elsif numeric_reply? and chantypes.include?(@params[1][0])
+        elsif numeric_reply? and @params.size > 1 and chantypes.include?(@params[1][0])
           @bot.channel_list.find_ensured(@params[1])
         end
       end
