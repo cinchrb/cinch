@@ -1,3 +1,9 @@
+* Cinch 2.0.11, 09 December 2013
+  - Unsync authname on nick change
+  - Work around bugs in Hector that prevented connecting
+  - Update a user's host and username whenever we see it, to avoid
+    unnecessary WHOIS calls
+  - Correctly handle NOSUCHNICK in WHOIS requests
 * Cinch 2.0.10, 03 November 2013
   - Fix registration process for InspIRCd 2.x servers
 
