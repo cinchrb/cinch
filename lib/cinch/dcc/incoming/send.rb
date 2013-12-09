@@ -112,7 +112,7 @@ module Cinch
               socket.write_nonblock [total].pack("N")
             rescue Errno::EWOULDBLOCK, Errno::AGAIN
               # Nobody cares about ACKs, really. And if the sender
-              # couldn't receive it at this point, he probably doesn't
+              # couldn't receive it at this point, they probably don't
               # care, either.
             end
             io << buf

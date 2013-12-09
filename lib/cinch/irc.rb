@@ -36,7 +36,7 @@ module Cinch
     def setup
       @registration  = []
       @network       = Network.new(:unknown, :unknown)
-      @whois_updates = Hash.new {|h, k| h[k] = {}}
+      @whois_updates = {}
       @in_lists      = Set.new
     end
 
@@ -233,7 +233,7 @@ module Cinch
       msg          = Message.new(input, @bot)
       events       = [[:catchall]]
 
-      if ("001".."004").include? msg.command
+      if ["001", "002", "003", "004", "422"].include?(msg.command)
         @registration << msg.command
         if registered?
           events << [:connect]
@@ -276,7 +276,7 @@ module Cinch
 
     # @return [Boolean] true if we successfully registered yet
     def registered?
-      (("001".."004").to_a - @registration).empty?
+      (("001".."004").to_a - @registration).empty? || @registration.include?("422")
     end
 
     # Send a message to the server.
@@ -364,6 +364,11 @@ module Cinch
         msg.channel.owners_unsynced.delete(owner)
         events << [:deowner, owner]
       end
+    end
+
+    def update_whois(user, data)
+      @whois_updates[user] ||= {}
+      @whois_updates[user].merge!(data)
     end
 
     # @since 2.0.0
@@ -538,10 +543,10 @@ module Cinch
 
       if msg.message.downcase == "excess flood" && msg.user == @bot
         @bot.warn ["Looks like your bot has been kicked because of excess flood.",
-                    "If you haven't modified the throttling options manually, please file a bug report at https://github.com/cinchrb/cinch/issues and include the following information:",
-                    "- Server: #{@bot.config.server}",
-                    "- Messages per second: #{@bot.config.messages_per_second}",
-                    "- Server queue size: #{@bot.config.server_queue_size}"]
+                   "If you haven't modified the throttling options manually, please file a bug report at https://github.com/cinchrb/cinch/issues and include the following information:",
+                   "- Server: #{@bot.config.server}",
+                   "- Messages per second: #{@bot.config.messages_per_second}",
+                   "- Server queue size: #{@bot.config.server_queue_size}"]
       end
     end
 
@@ -603,7 +608,7 @@ module Cinch
       away = msg.message
 
       if @whois_updates[user]
-        @whois_updates[user].merge!({:away => away})
+        update_whois(user, {:away => away})
       end
     end
 
@@ -611,17 +616,17 @@ module Cinch
     def on_307(msg, events)
       # RPL_WHOISREGNICK
       user = User(msg.params[1])
-      @whois_updates[user].merge!({:authname => user.nick})
+      update_whois(user, {:authname => user.nick})
     end
 
     def on_311(msg, events)
       # RPL_WHOISUSER
       user = User(msg.params[1])
-      @whois_updates[user].merge!({
-                                    :user => msg.params[2],
-                                    :host => msg.params[3],
-                                    :realname => msg.params[5],
-                                  })
+      update_whois(user, {
+                     :user => msg.params[2],
+                     :host => msg.params[3],
+                     :realname => msg.params[5],
+                   })
     end
 
     def on_313(msg, events)
@@ -633,20 +638,22 @@ module Cinch
     def on_317(msg, events)
       # RPL_WHOISIDLE
       user = User(msg.params[1])
-      @whois_updates[user].merge!({
-                                    :idle => msg.params[2].to_i,
-                                    :signed_on_at => Time.at(msg.params[3].to_i),
-                                  })
+      update_whois(user, {
+                     :idle => msg.params[2].to_i,
+                     :signed_on_at => Time.at(msg.params[3].to_i),
+                   })
     end
 
     def on_318(msg, events)
       # RPL_ENDOFWHOIS
       user = User(msg.params[1])
 
-      if @whois_updates[user].empty? && !user.attr(:unknown?, true, true)
-        user.end_of_whois(nil)
-      else
-        user.end_of_whois(@whois_updates[user])
+      if @whois_updates[user]
+        if @whois_updates[user].empty? && !user.attr(:unknown?, true, true)
+          user.end_of_whois(nil)
+        else
+          user.end_of_whois(@whois_updates[user])
+        end
         @whois_updates.delete user
       end
     end
@@ -821,10 +828,7 @@ module Cinch
 
     def on_401(msg, events)
       # ERR_NOSUCHNICK
-      user = User(msg.params[1])
-      user.sync(:unknown?, true, true)
-      msg.user.online = false
-      if @whois_updates.key?(user)
+      if user = @bot.user_list.find(msg.params[1])
         user.end_of_whois(nil, true)
         @whois_updates.delete user
       end
