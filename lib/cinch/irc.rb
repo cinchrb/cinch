@@ -233,7 +233,7 @@ module Cinch
       msg          = Message.new(input, @bot)
       events       = [[:catchall]]
 
-      if ("001".."004").include? msg.command
+      if ["001", "002", "003", "004", "422"].include?(msg.command)
         @registration << msg.command
         if registered?
           events << [:connect]
@@ -276,7 +276,7 @@ module Cinch
 
     # @return [Boolean] true if we successfully registered yet
     def registered?
-      (("001".."004").to_a - @registration).empty?
+      (("001".."004").to_a - @registration).empty? || @registration.include?("422")
     end
 
     # Send a message to the server.
