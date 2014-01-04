@@ -128,6 +128,8 @@ end
 bot.start
 ```
 
+Note: Plugins take a default prefix of `/^!/` which means the actual match is `!hello`.
+
 More information can be found in the {Cinch::Plugin} documentation.
 
 ### Numeric Replies
