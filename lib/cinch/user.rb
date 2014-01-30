@@ -387,7 +387,7 @@ module Cinch
     end
 
     # @since 1.1.2
-    def respond_to?(m)
+    def respond_to?(m, include_all = false)
       if m.to_s =~ /^(.+)_unsynced$/
         m = $1.to_sym
       end
