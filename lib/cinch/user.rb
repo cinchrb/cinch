@@ -228,8 +228,6 @@ module Cinch
     def authed?
       !attr(:authname).nil?
     end
-    # @since 2.1.0
-    alias_method :authenticated?, :authed?
 
     # @see Syncable#attr
     def attr(attribute, data = true, unsync = false)

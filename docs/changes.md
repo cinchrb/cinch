@@ -21,7 +21,6 @@
 ### New aliases
 
 #### {Cinch::User}
-- {Cinch::User#authenticated?} for {Cinch::User#authed?}
 - {Cinch::User#monitored?} for {Cinch::User#monitored}
 - {Cinch::User#synced?} for {Cinch::User#synced}
 
