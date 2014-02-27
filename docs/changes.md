@@ -2,9 +2,23 @@
 # @markup kramdown
 
 # What has changed in 2.1?
+1. Stripping of color codes before matching
+1. Per group hooks
 1. API improvements
    1. New methods
+   1. Changed methods
    1. New aliases
+
+## Stripping of color codes before matching
+
+A new option, `strip_colors`, was added to plugin matchers. Setting
+this option to `true` will cause Cinch to temporarily remove color
+codes from incoming messages while trying to match them.
+
+## Per group hooks
+
+A new option `group` for hooks allows registering hooks for specific
+groups.
 
 ## API improvements
 
@@ -18,11 +32,31 @@
 
 - {Cinch::User#oper?}
 
+#### {Cinch::Message}
+
+- {Cinch::Message#action_reply}
+- {Cinch::Message#safe_action_reply}
+
+### Changed methods
+
+#### {Cinch::Handler}
+
+- {Cinch::Handler#call} now returns the started thread.
+
+#### {Cinch::HandlerList}
+
+- {Cinch::HandlerList#dispatch} now returns the started threads.
+
 ### New aliases
+
+Due to some unfortunate naming mistakes in Cinch 2.0, Cinch 2.1 adds
+several aliases. All of the new aliases deprecate the original method
+names, which will be removed in Cinch 3.0.
 
 #### {Cinch::User}
 - {Cinch::User#monitored?} for {Cinch::User#monitored}
 - {Cinch::User#synced?} for {Cinch::User#synced}
+
 
 
 # What has changed in 2.0?
