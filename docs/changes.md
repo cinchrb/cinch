@@ -1,6 +1,67 @@
 # @title What has changed?
 # @markup kramdown
 
+# What has changed in 2.1?
+1. Color stripping
+1. Per group hooks
+1. API improvements
+   1. New methods
+   1. Changed methods
+   1. New aliases
+
+## Color stripping
+
+The new method {Cinch::Utilities::String.strip_colors} allows removal
+of mIRC color codes from messages.
+
+Additionally, a new match option called `strip_colors` makes it
+possible to automatically and temporarily strip color codes before
+attemping to match a message.
+
+## Per group hooks
+
+A new option `group` for hooks allows registering hooks for specific
+groups.
+
+## API improvements
+
+### New methods
+
+#### {Cinch::Bot}
+
+- {Cinch::Bot#oper}
+
+#### {Cinch::User}
+
+- {Cinch::User#oper?}
+
+#### {Cinch::Message}
+
+- {Cinch::Message#action_reply}
+- {Cinch::Message#safe_action_reply}
+
+### Changed methods
+
+#### {Cinch::Handler}
+
+- {Cinch::Handler#call} now returns the started thread.
+
+#### {Cinch::HandlerList}
+
+- {Cinch::HandlerList#dispatch} now returns the started threads.
+
+### New aliases
+
+Due to some unfortunate naming mistakes in Cinch 2.0, Cinch 2.1 adds
+several aliases. All of the new aliases deprecate the original method
+names, which will be removed in Cinch 3.0.
+
+#### {Cinch::User}
+- {Cinch::User#monitored?} for {Cinch::User#monitored}
+- {Cinch::User#synced?} for {Cinch::User#synced}
+
+
+
 # What has changed in 2.0?
 1. Added support for SASL
 1. Added support for DCC SEND
@@ -181,7 +242,6 @@ moved from {Cinch} to {Cinch::Constants}
 - {Cinch::Bot#modes}
 - {Cinch::Bot#modes=}
 - {Cinch::Bot#set_mode}
-- {Cinch::Bot#stop}
 - {Cinch::Bot#unset_mode}
 - {Cinch::Bot#user_list}
 

@@ -59,7 +59,7 @@ module Cinch
 
       @synced_attributes  = Set.new
       @when_requesting_synced_attribute = lambda {|attr|
-        if @in_channel && attr == :topic && !synced?(:topic)
+        if @in_channel && attr == :topic && !attribute_synced?(:topic)
           # Even if we are in the channel, if there's no topic set,
           # the attribute won't be synchronised yet. Explicitly
           # request the topic.
@@ -321,7 +321,7 @@ module Cinch
     # Kicks a user from the channel.
     #
     # @param [String, User] user the user to kick
-    # @param [String] a reason for the kick
+    # @param [String] reason a reason for the kick
     # @raise [Exceptions::KickReasonTooLong]
     # @return [void]
     def kick(user, reason = nil)

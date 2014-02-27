@@ -19,7 +19,7 @@ module Cinch
       end
     end
 
-    # @param [Handler, Array<Handler>] *handlers The handlers to unregister
+    # @param [Handler, Array<Handler>] handlers The handlers to unregister
     # @return [void]
     # @see Handler#unregister
     def unregister(*handlers)
@@ -39,7 +39,7 @@ module Cinch
         end
 
         handlers = handlers.select { |handler|
-          msg.match(handler.pattern.to_r(msg), type)
+          msg.match(handler.pattern.to_r(msg), type, handler.strip_colors)
         }.group_by {|handler| handler.group}
 
         handlers.values_at(*(handlers.keys - [nil])).map(&:first) + (handlers[nil] || [])
@@ -49,10 +49,12 @@ module Cinch
     # @param [Symbol] event The event type
     # @param [Message, nil] msg The message which is responsible for
     #   and attached to the event, or nil.
-    # @param [Array] *arguments A list of additional arguments to pass
+    # @param [Array] arguments A list of additional arguments to pass
     #   to event handlers
-    # @return [void]
+    # @return [Array<Thread>]
     def dispatch(event, msg = nil, *arguments)
+      threads = []
+
       if handlers = find(event, msg)
         already_run = Set.new
         handlers.each do |handler|
@@ -61,14 +63,16 @@ module Cinch
           # calling Message#match multiple times is not a problem
           # because we cache the result
           if msg
-            captures = msg.match(handler.pattern.to_r(msg), event).captures
+            captures = msg.match(handler.pattern.to_r(msg), event, handler.strip_colors).captures
           else
             captures = []
           end
 
-          handler.call(msg, captures, arguments)
+          threads << handler.call(msg, captures, arguments)
         end
       end
+
+      threads
     end
 
     # @yield [handler] Yields all registered handlers

@@ -177,10 +177,10 @@ module Cinch
     #   right event will be checked against this argument and the event
     #   will only be called if it matches
     #
-    # @param [Array<Object>] *args Arguments that should be passed to
+    # @param [Array<Object>] args Arguments that should be passed to
     #   the block, additionally to capture groups of the regexp.
     #
-    # @yieldparam [String] *args each capture group of the regex will
+    # @yieldparam [Array<String>] args each capture group of the regex will
     #   be one argument to the block.
     #
     # @return [Handler] The handlers that have been registered
@@ -265,6 +265,8 @@ module Cinch
             join_lambda.call
           }
         end
+
+        @modes = []
 
         @loggers.info "Connecting to #{@config.server}:#{@config.port}"
         @irc = IRC.new(self)
@@ -422,6 +424,18 @@ module Cinch
       end
       @config.nick = new_nick
       @irc.send "NICK #{new_nick}"
+    end
+
+    # Gain oper privileges.
+    #
+    # @param [String] password
+    # @param [String] user The username to use. Defaults to the bot's
+    #   nickname
+    # @since 2.1.0
+    # @return [void]
+    def oper(password, user = nil)
+      user ||= self.nick
+      @irc.send "OPER #{user} #{password}"
     end
 
     # Try to create a free nick, first by cycling through all

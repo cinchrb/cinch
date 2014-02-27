@@ -1,5 +1,20 @@
+* Cinch 2.1.0, 27 Februrary 2014
+  - Add User#monitored? and User#synced? as aliases for User#monitored
+    and User#synced
+  - Add Bot#oper to OPER the bot
+  - Add User#oper? to check if a user is an OPER
+  - Add Utilities::String.strip_colors
+  - New matcher option `strip_colors`
+  - Correctly re-apply bot modes on reconnect
+  - Do not store duplicated bot modes
+  - Add Message#action_reply and Message#safe_action_reply
+  - Return started thread from Handler#call
+  - Return started threads from HandlerList#dispatch
+  - Per group hooks
+
 * Cinch 2.0.12, 30 January 2013
   - Support second optional argument to User#respond_to?
+
 * Cinch 2.0.11, 09 December 2013
   - Unsync authname on nick change
   - Work around bugs in Hector that prevented connecting

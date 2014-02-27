@@ -55,8 +55,8 @@ module Cinch
     end
 
     # (see Logger#exception)
-    def exception(message)
-      each {|l| l.exception(message)}
+    def exception(e)
+      each {|l| l.exception(e)}
     end
   end
 end

@@ -19,6 +19,9 @@ module Cinch
     # @return [Symbol]
     attr_reader :group
 
+    # @return [Boolean]
+    attr_reader :strip_colors
+
     # @return [ThreadGroup]
     # @api private
     attr_reader :thread_group
@@ -31,15 +34,23 @@ module Cinch
     #   to.
     # @option options [Boolean] :execute_in_callback (false) Whether
     #   to execute the handler in an instance of {Callback}
+    # @option options [Boolean] :strip_colors (false) Strip colors
+    #   from message before attemping match
     # @option options [Array] :args ([]) Additional arguments to pass
     #   to the block
     def initialize(bot, event, pattern, options = {}, &block)
-      options              = {:group => nil, :execute_in_callback => false, :args => []}.merge(options)
+      options              = {
+        :group => nil,
+        :execute_in_callback => false,
+        :strip_colors => false,
+        :args => []
+      }.merge(options)
       @bot                 = bot
       @event               = event
       @pattern             = pattern
       @group               = options[:group]
       @execute_in_callback = options[:execute_in_callback]
+      @strip_colors        = options[:strip_colors]
       @args                = options[:args]
       @block               = block
 
@@ -74,11 +85,11 @@ module Cinch
     # @param [Message] message Message that caused the invocation
     # @param [Array] captures Capture groups of the pattern that are
     #   being passed as arguments
-    # @return [void]
+    # @return [Thread]
     def call(message, captures, arguments)
       bargs = captures + arguments
 
-      @thread_group.add Thread.new {
+      thread = Thread.new {
         @bot.loggers.debug "[New thread] For #{self}: #{Thread.current} -- #{@thread_group.list.size} in total."
 
         begin
@@ -93,6 +104,9 @@ module Cinch
           @bot.loggers.debug "[Thread done] For #{self}: #{Thread.current} -- #{@thread_group.list.size - 1} remaining."
         end
       }
+
+      @thread_group.add(thread)
+      thread
     end
 
     # @return [String]

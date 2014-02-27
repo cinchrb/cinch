@@ -179,8 +179,8 @@ module Cinch
     # @group Formatting
 
     # (see Formatting.format)
-    def Format(*args)
-      Formatting.format(*args)
+    def Format(*settings, string)
+      Formatting.format(*settings, string)
     end
     alias_method :Color, :Format
 

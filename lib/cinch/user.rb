@@ -3,22 +3,32 @@ require "cinch/target"
 require "timeout"
 
 module Cinch
-  # @attr_reader [String] user
-  # @attr_reader [String] host
-  # @attr_reader [String] realname
   # @attr_reader [String] authname
-  # @attr_reader [Integer] idle How long this user has been idle, in seconds.
-  #   This is a snapshot of the last WHOIS.
-  # @attr_reader [Time] signed_on_at
-  # @attr_reader [Array<Channel>] channels All channels the user is in.
   # @attr_reader [String, nil] away The user's away message, or
   #   `nil` if not away.
+  # @attr_reader [Array<Channel>] channels All channels the user is
+  #   in.
+  # @attr_reader [String] host
+  # @attr_reader [Integer] idle How long this user has been idle, in seconds.
+  #   This is a snapshot of the last WHOIS.
+  # @attr_reader [String] nick The user's nickname
+  # @attr_reader [Boolean] online True if the user is online.
+  # @attr_reader [Boolean] oper True if the user is an IRC operator.
+  # @attr_reader [String] realname
+  # @attr_reader [Boolean] secure True if the user is using a secure
+  #   connection, i.e. SSL.
+  # @attr_reader [Time] signed_on_at
+  # @attr_reader [Boolean] unknown True if the instance references an user who
+  #   cannot be found on the server.
+  # @attr_reader [String] user
   #
   # @version 2.0.0
   class User < Target
     include Syncable
 
-    alias_method :nick, :name
+    def nick
+      name
+    end
 
     # @return [String]
     # @since 1.1.0
@@ -26,45 +36,126 @@ module Cinch
 
     # @return [Boolean]
     attr_reader :synced
+    # @since 2.1.0
+    alias_method :synced?, :synced
 
     # @return [Boolean]
-    attr_reader :in_whois
-
     # @api private
-    attr_writer :in_whois
+    attr_accessor :in_whois
 
-    # @return [Boolean] True if the instance references an user who
-    #   cannot be found on the server.
-    attr_reader :unknown
-    alias_method :unknown?, :unknown
-    undef_method "unknown?"
-    undef_method "unknown"
-    def unknown
-      self.unknown?
+    def user
+      attr(:user, true, false)
     end
 
-    # @return [Boolean] True if the user is online.
+    def host
+      attr(:host, true, false)
+    end
+
+    def realname
+      attr(:realname, true, false)
+    end
+
+    def authname
+      attr(:authname, true, false)
+    end
+
+    def idle
+      attr(:idle, true, false)
+    end
+
+    def signed_on_at
+      attr(:signed_on_at, true, false)
+    end
+
+    def unknown
+      attr(:unknown?, true, false)
+    end
+    alias_method :unknown?, :unknown
+
     # @note This attribute will be updated by various events, but
     # unless {#monitor} is being used, this information cannot be
     # ensured to be always correct.
-    attr_reader :online
-    alias_method :online?, :online
-    undef_method "online?"
-    undef_method "online"
     def online
-      self.online?
+      attr(:online?, true, false)
+    end
+    alias_method :online?, :online
+
+    def channels
+      attr(:channels, true, false)
     end
 
-    # @return [Boolean] True if the user is using a secure connection, i.e. SSL.
-    attr_reader :secure
-    alias_method :secure?, :secure
-    undef_method "secure?"
-    undef_method "secure"
     def secure
-      self.secure?
+      attr(:secure?, true, false)
+    end
+    alias_method :secure?, :secure
+
+    # @since 2.1.0
+    def oper
+      attr(:oper?, true, false)
+    end
+    alias_method :oper?, :oper
+
+    # @private
+    def user_unsynced
+      attr(:user, true, true)
     end
 
-    # By default, you can use methods like User#user, User#host and
+    # @private
+    def host_unsynced
+      attr(:host, true, true)
+    end
+
+    # @private
+    def realname_unsynced
+      attr(:realname, true, true)
+    end
+
+    # @private
+    def authname_unynced
+      attr(:authname, true, true)
+    end
+
+    # @private
+    def idle_unsynced
+      attr(:idle, true, true)
+    end
+
+    # @private
+    def signed_on_at_unsynced
+      attr(:signed_on_at, true, true)
+    end
+
+    # @private
+    def unknown_unsynced
+      attr(:unknown?, true, true)
+    end
+    alias_method "unknown?_unsynced", "unknown_unsynced"
+
+    # @private
+    def online_unsynced
+      attr(:online?, true, true)
+    end
+    alias_method "online?_unsynced", "online_unsynced"
+
+    # @private
+    def channels_unsynced
+      attr(:channels, true, true)
+    end
+
+    # @private
+    def secure_unsynced
+      attr(:secure?, true, true)
+    end
+    alias_method "secure?_unsynced", "secure_unsynced"
+
+    # @private
+    # @since 2.1.0
+    def oper_unsynced
+      attr(:oper?, true, true)
+    end
+    alias_method "oper?_unsynced", "oper_unsynced"
+
+    # By default, you can use methods like {#user}, {#host} and
     # alike – If you however fear that another thread might change
     # data while you're using it and if this means a critical issue to
     # your code, you can store a clone of the result of this method
@@ -82,7 +173,10 @@ module Cinch
     # @return [Boolean] True if the user is being monitored
     # @see #monitor
     # @see #unmonitor
+    # @note The attribute writer is in fact part of the private API
     attr_reader :monitored
+    # @since 2.1.0
+    alias_method :monitored?, :monitored
 
     # @api private
     attr_writer :monitored
@@ -101,6 +195,7 @@ module Cinch
         :channels     => [],
         :secure?      => false,
         :away         => nil,
+        :oper?        => false,
       }
       case args.size
       when 2
@@ -114,7 +209,7 @@ module Cinch
       @synced_attributes  = Set.new
 
       @when_requesting_synced_attribute = lambda {|attr|
-        unless synced?(attr)
+        unless attribute_synced?(attr)
           @data[:unknown?] = false
           unsync :unknown?
 
@@ -197,8 +292,9 @@ module Cinch
 
       {
         :authname => nil,
-        :idle => 0,
-        :secure? => false,
+        :idle     => 0,
+        :secure?  => false,
+        :oper?    => false,
         :channels => [],
       }.merge(values).each do |attr, value|
         sync(attr, value, true)
@@ -370,29 +466,6 @@ module Cinch
       # changing his nick
       unsync(:authname)
       @bot.user_list.update_nick(self)
-    end
-
-    # Provides synced access to user attributes.
-    def method_missing(m, *args)
-      if m.to_s =~ /^(.+)_unsynced$/
-        m = $1.to_sym
-        unsync = true
-      end
-
-      if @data.has_key?(m)
-        attr(m, true, unsync)
-      else
-        super
-      end
-    end
-
-    # @since 1.1.2
-    def respond_to?(m, include_all = false)
-      if m.to_s =~ /^(.+)_unsynced$/
-        m = $1.to_sym
-      end
-
-      return @data.has_key?(m) || super
     end
   end
 end

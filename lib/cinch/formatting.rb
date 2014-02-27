@@ -70,7 +70,7 @@ module Cinch
       :reset      => 15.chr,
     }
 
-    # @param [Array<Symbol>] *settings The colors and attributes to apply.
+    # @param [Array<Symbol>] settings The colors and attributes to apply.
     #   When supplying two colors, the first will be used for the
     #   foreground and the second for the background.
     # @param [String] string The string to format.

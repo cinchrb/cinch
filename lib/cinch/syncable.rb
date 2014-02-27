@@ -9,7 +9,7 @@ module Cinch
       attr = attr.to_sym
       waited = 0
       while true
-        return if synced?(attr)
+        return if attribute_synced?(attr)
         waited += 1
 
         if waited % 100 == 0
@@ -38,7 +38,7 @@ module Cinch
 
     # @return [Boolean]
     # @api private
-    def synced?(attribute)
+    def attribute_synced?(attribute)
       @synced_attributes.include?(attribute)
     end
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require "time"
+require "cinch/utilities/string"
 
 module Cinch
   # This class serves two purposes. For one, it simply
@@ -135,14 +136,23 @@ module Cinch
 
     # @api private
     # @return [MatchData]
-    def match(regexp, type)
-      if type == :ctcp
-        @matches[:ctcp][regexp] ||= ctcp_message.match(regexp)
-      elsif type == :action
-        @matches[:action][regexp] ||= action_message.match(regexp)
+    def match(regexp, type, strip_colors)
+      text = ""
+      case type
+      when :ctcp
+        text = ctcp_message
+      when :action
+        text = action_message
       else
-        @matches[:other][regexp] ||= message.to_s.match(regexp)
+        text = message.to_s
+        type = :other
       end
+
+      if strip_colors
+        text = Cinch::Utilities::String.strip_colors(text)
+      end
+
+      @matches[type][regexp] ||= text.match(regexp)
     end
 
     # @group Replying
@@ -174,6 +184,24 @@ module Cinch
         text = "#{@user.nick}: #{text}"
       end
       @target.safe_send(text)
+    end
+
+    # Reply to a message with an action.
+    #
+    # @param [String] text the action message
+    # @return [void]
+    def action_reply(text)
+      text = text.to_s
+      @target.action(text)
+    end
+
+    # Like #action_reply, but using {Target#safe_action} instead
+    #
+    # @param (see #action_reply)
+    # @return (see #action_reply)
+    def safe_action_reply(text)
+      text = text.to_s
+      @target.safe_action(text)
     end
 
     # Reply to a CTCP message
