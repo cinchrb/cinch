@@ -491,8 +491,8 @@ module Cinch
     end
 
     # (see Bot#synchronize)
-    def synchronize(*args, &block)
-      @bot.synchronize(*args, &block)
+    def synchronize(name, &block)
+      @bot.synchronize(name, &block)
     end
 
     # Provides access to plugin-specific options.

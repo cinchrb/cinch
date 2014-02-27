@@ -50,7 +50,7 @@ module Cinch
       @mask.dup
     end
 
-    # @param [String, #mask]
+    # @param [String, #mask] target
     # @return [target] if already a Mask
     # @return [Mask]
     # @version 2.0.0

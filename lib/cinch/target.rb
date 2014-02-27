@@ -134,7 +134,7 @@ module Cinch
       self == other
     end
 
-    # @param [Target, String]
+    # @param [Target, String] other
     # @return [-1, 0, 1, nil]
     def <=>(other)
       casemapping = @bot.irc.isupport["CASEMAPPING"]

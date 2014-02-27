@@ -177,10 +177,10 @@ module Cinch
     #   right event will be checked against this argument and the event
     #   will only be called if it matches
     #
-    # @param [Array<Object>] *args Arguments that should be passed to
+    # @param [Array<Object>] args Arguments that should be passed to
     #   the block, additionally to capture groups of the regexp.
     #
-    # @yieldparam [String] *args each capture group of the regex will
+    # @yieldparam [Array<String>] args each capture group of the regex will
     #   be one argument to the block.
     #
     # @return [Handler] The handlers that have been registered

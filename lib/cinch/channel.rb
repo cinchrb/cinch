@@ -321,7 +321,7 @@ module Cinch
     # Kicks a user from the channel.
     #
     # @param [String, User] user the user to kick
-    # @param [String] a reason for the kick
+    # @param [String] reason a reason for the kick
     # @raise [Exceptions::KickReasonTooLong]
     # @return [void]
     def kick(user, reason = nil)

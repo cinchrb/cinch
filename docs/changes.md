@@ -242,7 +242,6 @@ moved from {Cinch} to {Cinch::Constants}
 - {Cinch::Bot#modes}
 - {Cinch::Bot#modes=}
 - {Cinch::Bot#set_mode}
-- {Cinch::Bot#stop}
 - {Cinch::Bot#unset_mode}
 - {Cinch::Bot#user_list}
 

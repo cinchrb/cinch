@@ -19,7 +19,7 @@ module Cinch
       end
     end
 
-    # @param [Handler, Array<Handler>] *handlers The handlers to unregister
+    # @param [Handler, Array<Handler>] handlers The handlers to unregister
     # @return [void]
     # @see Handler#unregister
     def unregister(*handlers)
@@ -49,7 +49,7 @@ module Cinch
     # @param [Symbol] event The event type
     # @param [Message, nil] msg The message which is responsible for
     #   and attached to the event, or nil.
-    # @param [Array] *arguments A list of additional arguments to pass
+    # @param [Array] arguments A list of additional arguments to pass
     #   to event handlers
     # @return [Array<Thread>]
     def dispatch(event, msg = nil, *arguments)
