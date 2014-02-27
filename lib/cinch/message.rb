@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require "time"
+require "cinch/utilities/string"
 
 module Cinch
   # This class serves two purposes. For one, it simply
@@ -148,7 +149,7 @@ module Cinch
       end
 
       if strip_colors
-        text.gsub!(/[\x02\x0f\x16\x1f\x12]|\x03(\d{1,2}(,\d{1,2})?)?/, '')
+        text = Cinch::Utilities::String.strip_colors(text)
       end
 
       @matches[type][regexp] ||= text.match(regexp)

@@ -2,18 +2,21 @@
 # @markup kramdown
 
 # What has changed in 2.1?
-1. Stripping of color codes before matching
+1. Color stripping
 1. Per group hooks
 1. API improvements
    1. New methods
    1. Changed methods
    1. New aliases
 
-## Stripping of color codes before matching
+## Color stripping
 
-A new option, `strip_colors`, was added to plugin matchers. Setting
-this option to `true` will cause Cinch to temporarily remove color
-codes from incoming messages while trying to match them.
+The new method {Cinch::Utilities::String.strip_colors} allows removal
+of mIRC color codes from messages.
+
+Additionally, a new match option called `strip_colors` makes it
+possible to automatically and temporarily strip color codes before
+attemping to match a message.
 
 ## Per group hooks
 

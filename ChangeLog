@@ -3,6 +3,7 @@
     and User#synced
   - Add Bot#oper to OPER the bot
   - Add User#oper? to check if a user is an OPER
+  - Add Utilities::String.strip_colors
   - New matcher option `strip_colors`
   - Correctly re-apply bot modes on reconnect
   - Do not store duplicated bot modes
