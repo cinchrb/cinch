@@ -475,6 +475,8 @@ module Cinch
               process_ban_mode(msg, events, param, direction)
             when "q"
               process_owner_mode(msg, events, param, direction) if @network.owner_list_mode
+            when "R"
+              # Just ignore +R option
             else
               raise Exceptions::UnsupportedMode, mode
             end
