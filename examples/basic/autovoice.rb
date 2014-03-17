@@ -5,6 +5,8 @@ require 'cinch'
 #
 # Enable with !autovoice on
 # Disable with !autovoice off
+#
+# It starts out disabled.
 
 bot = Cinch::Bot.new do
   configure do |c|
@@ -12,8 +14,6 @@ bot = Cinch::Bot.new do
     c.server          = "irc.freenode.org"
     c.verbose         = true
     c.channels        = ["#cinch-bots"]
-
-    @autovoice        = true
   end
 
   on :join do |m|
