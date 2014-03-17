@@ -332,6 +332,21 @@ module Cinch
       @bot.irc.send("KICK #@name #{user} :#{reason}")
     end
 
+    # Removes a user from the channel.
+    #
+    # This uses the REMOVE command, which is a non-standardized
+    # extension. Unlike a kick, it makes a user part. This prevents
+    # auto-rejoin scripts from firing and might also be perceived as
+    # less aggressive by some. Not all IRC networks support this
+    # command.
+    #
+    # @param [User] user the user to remove
+    # @param [String] reason a reason for the removal
+    # @return [void]
+    def remove(user, reason = nil)
+      @bot.irc.send("REMOVE #@name #{user} :#{reason}")
+    end
+
     # Sets or unsets modes. Most of the time you won't need this but
     # use setter methods like {Channel#invite_only=}.
     #
