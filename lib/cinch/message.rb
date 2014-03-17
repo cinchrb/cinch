@@ -250,12 +250,19 @@ module Cinch
 
     def parse_channel
       # has to be called after parse_params
+      return nil if @params.empty?
+
       case @command
       when "INVITE", Constants::RPL_CHANNELMODEIS.to_s, Constants::RPL_BANLIST.to_s
         @bot.channel_list.find_ensured(@params[1])
       when Constants::RPL_NAMEREPLY.to_s
         @bot.channel_list.find_ensured(@params[2])
       else
+        # Note that this will also find channels for messages that
+        # don't actually include a channel parameter. For example
+        # `QUIT :#sometext` will be interpreted as a channel. The
+        # alternative to the currently used heuristic would be to
+        # hardcode a list of commands that provide a channel argument.
         chantypes = @bot.irc.isupport["CHANTYPES"]
         if chantypes.include?(@params.first[0])
           @bot.channel_list.find_ensured(@params.first)
