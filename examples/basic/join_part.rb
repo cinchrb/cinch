@@ -7,12 +7,12 @@ bot = Cinch::Bot.new do
     c.channels = ["#cinch-bots"]
 
     # Who should be able to access these plugins
-    @admin = "injekt"
+    @@admin = "injekt"
   end
 
   helpers do
     def is_admin?(user)
-      true if user.nick == @admin
+      true if user.nick == @@admin
     end
   end
 
