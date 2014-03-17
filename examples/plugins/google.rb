@@ -8,13 +8,13 @@ class Google
   match /google (.+)/
 
   def search(query)
-    url = "http://www.google.com/search?q=#{CGI.escape(query)}"
-    res = Nokogiri::HTML(open(url)).at("h3.r")
+    url = "https://www.google.com/search?q=#{CGI.escape(query)}"
+    res = Nokogiri::HTML(open(url)).at(".s")
 
-    title = res.text
-    link = res.at('a')[:href]
-    desc = res.at("./following::div").children.first.text
-    CGI.unescape_html "#{title} - #{desc} (#{link})"
+    title = res.at('cite b').text
+    link = res.at('cite').text
+    desc = res.at('.st').text
+    CGI.unescape_html "#{title} - #{desc} (#{link})".dup.force_encoding('binary')
   rescue
     "No results found"
   end
