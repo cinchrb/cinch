@@ -1,7 +1,7 @@
 module Cinch
-  # @since 2.0.0
-  # @api private
   module Utilities
+    # @since 2.0.0
+    # @api private
     module Encoding
       def self.encode_incoming(string, encoding)
         string = string.dup

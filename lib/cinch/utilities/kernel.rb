@@ -1,7 +1,7 @@
 module Cinch
-  # @since 2.0.0
-  # @api private
   module Utilities
+    # @since 2.0.0
+    # @api private
     module Kernel
       # @return [Object]
       def self.string_to_const(s)

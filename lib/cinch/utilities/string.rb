@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 module Cinch
-  # @since 2.0.0
-  # @api private
   module Utilities
+    # @since 2.0.0
     module String
       # Deletes all characters in the range 0–31 as well as the
       # character 127, that is all non-printable characters, newlines

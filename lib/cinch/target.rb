@@ -66,12 +66,13 @@ module Cinch
     # sources, like other users or feeds.
     #
     # Note: this will **break** any mIRC color codes embedded in the
-    # string.
+    # string. For more fine-grained control, use
+    # {Utilities::String.filter_string} and
+    # {Utilities::String.strip_colors} directly.
     #
     # @return (see #msg)
     # @param (see #msg)
     # @see #msg
-    # @todo Handle mIRC color codes more gracefully.
     def safe_msg(text, notice = false)
       msg(Cinch::Utilities::String.filter_string(text), notice)
     end
@@ -84,7 +85,6 @@ module Cinch
     # @param (see #safe_msg)
     # @see #safe_notice
     # @see #notice
-    # @todo (see #safe_msg)
     def safe_notice(text)
       safe_msg(text, true)
     end
@@ -103,12 +103,13 @@ module Cinch
     # untrusted sources, like other users or feeds.
     #
     # Note: this will **break** any mIRC color codes embedded in the
-    # string.
+    # string. For more fine-grained control, use
+    # {Utilities::String.filter_string} and
+    # {Utilities::String.strip_colors} directly.
     #
     # @param (see #action)
     # @return (see #action)
     # @see #action
-    # @todo Handle mIRC color codes more gracefully.
     def safe_action(text)
       action(Cinch::Utilities::String.filter_string(text))
     end
