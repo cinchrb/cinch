@@ -6,7 +6,7 @@ module Cinch
       # @return [String]
       # @todo Handle mIRC color codes more gracefully.
       def self.filter_string(string)
-        string.gsub(/[\x00-\x1f]/, '')
+        string.gsub(/[\x00-\x1f\x7f]/, '')
       end
 
       def self.strip_colors(string)
