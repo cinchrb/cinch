@@ -74,7 +74,7 @@ module Cinch
     #   When supplying two colors, the first will be used for the
     #   foreground and the second for the background.
     # @param [String] string The string to format.
-    # @return [String] The formatted string
+    # @return [String] the formatted string
     # @since 2.0.0
     # @raise [ArgumentError] When passing more than two colors as arguments.
     # @see Helpers#Format Helpers#Format for easier access to this method.

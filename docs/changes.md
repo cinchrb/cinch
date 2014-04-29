@@ -11,8 +11,9 @@
 
 ## Color stripping
 
-The new method {Cinch::Utilities::String.strip_colors} allows removal
-of mIRC color codes from messages.
+The new method <del>`Cinch::Utilities::String.strip_colors`</del>
+{Cinch::Formatting.unformat} allows removal of mIRC color codes from
+messages.
 
 Additionally, a new match option called `strip_colors` makes it
 possible to automatically and temporarily strip color codes before

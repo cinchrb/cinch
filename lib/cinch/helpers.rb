@@ -205,6 +205,7 @@ module Cinch
     #
     # @param [String] string The string to filter
     # @return [String] The filtered string
+    # @since 2.2.0
     def Sanitize(string)
       string.gsub(/[\x00-\x08\x10-\x1f\x7f]/, '')
     end

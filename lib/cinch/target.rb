@@ -67,7 +67,7 @@ module Cinch
     #
     # Note: this will **break** any mIRC color codes embedded in the
     # string. For more fine-grained control, use
-    # {Helpers.Sanitize} and
+    # {Helpers#Sanitize} and
     # {Formatting.unformat} directly.
     #
     # @return (see #msg)
@@ -104,7 +104,7 @@ module Cinch
     #
     # Note: this will **break** any mIRC color codes embedded in the
     # string. For more fine-grained control, use
-    # {Helpers.Sanitize} and
+    # {Helpers#Sanitize} and
     # {Formatting.unformat} directly.
     #
     # @param (see #action)
