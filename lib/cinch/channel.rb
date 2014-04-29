@@ -408,7 +408,7 @@ module Cinch
       if @modes["c"]
         # Remove all formatting and colors if the channel doesn't
         # allow colors.
-        text = Cinch::Utilities::String.strip_colors(text)
+        text = Cinch::Formatting.unformat(text)
       end
       super(text, notice)
     end

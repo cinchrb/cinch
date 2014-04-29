@@ -67,14 +67,14 @@ module Cinch
     #
     # Note: this will **break** any mIRC color codes embedded in the
     # string. For more fine-grained control, use
-    # {Utilities::String.filter_string} and
-    # {Utilities::String.strip_colors} directly.
+    # {Helpers.Sanitize} and
+    # {Formatting.unformat} directly.
     #
     # @return (see #msg)
     # @param (see #msg)
     # @see #msg
     def safe_msg(text, notice = false)
-      msg(Cinch::Utilities::String.filter_string(text), notice)
+      msg(Cinch::Helpers.Sanitize(text), notice)
     end
     alias_method :safe_privmsg, :safe_msg
     alias_method :safe_send, :safe_msg
@@ -104,14 +104,14 @@ module Cinch
     #
     # Note: this will **break** any mIRC color codes embedded in the
     # string. For more fine-grained control, use
-    # {Utilities::String.filter_string} and
-    # {Utilities::String.strip_colors} directly.
+    # {Helpers.Sanitize} and
+    # {Formatting.unformat} directly.
     #
     # @param (see #action)
     # @return (see #action)
     # @see #action
     def safe_action(text)
-      action(Cinch::Utilities::String.filter_string(text))
+      action(Cinch::Helpers.Sanitize(text))
     end
 
     # Send a CTCP to the target.

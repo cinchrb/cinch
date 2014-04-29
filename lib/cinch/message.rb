@@ -149,7 +149,7 @@ module Cinch
       end
 
       if strip_colors
-        text = Cinch::Utilities::String.strip_colors(text)
+        text = Cinch::Formatting.unformat(text)
       end
 
       @matches[type][regexp] ||= text.match(regexp)

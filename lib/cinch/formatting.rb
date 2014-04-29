@@ -1,6 +1,6 @@
 module Cinch
-  # This module can be used for adding colors and formatting to
-  # messages.
+  # This module can be used for adding and removing colors and
+  # formatting to/from messages.
   #
   # The format codes used are those defined by mIRC, which are also
   # the ones supported by most clients.
@@ -109,6 +109,17 @@ module Cinch
       # formattings of the outer string.
       string.gsub!(/#{Attributes[:reset]}/, Attributes[:reset] + prepend)
       return prepend + string + append
+    end
+
+    # Deletes all mIRC formatting codes from the string. This strips
+    # formatting for bold, underline and so on, as well as color
+    # codes. This does include removing the numeric arguments.
+    #
+    # @param [String] string The string to filter
+    # @return [String] The filtered string
+    # @since 2.2.0
+    def self.unformat(string)
+      string.gsub(/[\x02\x0f\x16\x1f\x12]|\x03(\d{1,2}(,\d{1,2})?)?/, '')
     end
   end
 end
