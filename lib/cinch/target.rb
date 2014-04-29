@@ -74,7 +74,7 @@ module Cinch
     # @param (see #msg)
     # @see #msg
     def safe_msg(text, notice = false)
-      msg(Cinch::Helpers.Sanitize(text), notice)
+      msg(Cinch::Helpers.sanitize(text), notice)
     end
     alias_method :safe_privmsg, :safe_msg
     alias_method :safe_send, :safe_msg
