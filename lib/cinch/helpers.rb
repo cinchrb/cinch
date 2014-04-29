@@ -185,9 +185,9 @@ module Cinch
     end
     alias_method :Color, :Format
 
-    # Deletes all characters in the range 0–31 as well as the
-    # character 127, that is all non-printable characters, newlines
-    # and tab stops.
+    # Deletes all characters in the ranges 0–8, 10–31 as well as the
+    # character 127, that is all non-printable characters and
+    # newlines.
     #
     # This method is useful for filtering text from external sources
     # before sending it to IRC.
@@ -206,7 +206,7 @@ module Cinch
     # @param [String] string The string to filter
     # @return [String] The filtered string
     def Sanitize(string)
-      string.gsub(/[\x00-\x1f\x7f]/, '')
+      string.gsub(/[\x00-\x08\x10-\x1f\x7f]/, '')
     end
 
     # (see Formatting.unformat)
