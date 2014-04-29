@@ -408,7 +408,7 @@ module Cinch
       if @modes["c"]
         # Remove all formatting and colors if the channel doesn't
         # allow colors.
-        text.gsub!(/[\x02\x1F\x16\x0F]|\x03\d{2}(,\d{2})?/, "")
+        text = Cinch::Utilities::String.strip_colors(text)
       end
       super(text, notice)
     end
