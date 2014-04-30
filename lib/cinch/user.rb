@@ -239,7 +239,9 @@ module Cinch
     # received, the object will be set back to synced.
     #
     # @return [void]
-    def whois
+    # @note The alias `whois` is deprecated and will be removed in a
+    #   future version.
+    def refresh
       return if @in_whois
       @data.keys.each do |attr|
         unsync attr
@@ -252,7 +254,14 @@ module Cinch
         @bot.irc.send "WHOIS #@name #@name"
       end
     end
-    alias_method :refresh, :whois
+    alias_method :whois, :refresh # deprecated
+    undef_method(:whois) # yardoc hack
+
+    # @deprecated
+    def whois
+      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "User#whois", "User#refresh")
+      refresh
+    end
 
     # @param [Hash, nil] values A hash of values gathered from WHOIS,
     #   or `nil` if no data was returned

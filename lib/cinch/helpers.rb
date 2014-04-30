@@ -183,7 +183,13 @@ module Cinch
     def Format(*settings, string)
       Formatting.format(*settings, string)
     end
-    alias_method :Color, :Format
+    alias_method :Color, :Format # deprecated
+    undef_method(:Color) # yardoc hack
+
+    def Color(*args)
+      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "Helpers.Color", "Helpers.Format")
+      Format(*args)
+    end
 
     # (see .sanitize)
     def Sanitize(string)

@@ -3,8 +3,12 @@ module Cinch
     # @since 2.0.0
     # @api private
     module Deprecation
-      def self.print_deprecation(version, method)
-        $stderr.puts "Deprecation warning: Beginning with version #{version}, #{method} should not be used anymore."
+      def self.print_deprecation(version, method, instead)
+        s = "Deprecation warning: Beginning with version #{version}, #{method} should not be used anymore."
+        if instead != nil
+          s << " Use ${instead} instead."
+        end
+        $stderr.puts s
         $stderr.puts caller
       end
     end

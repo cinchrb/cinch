@@ -403,7 +403,10 @@ module Cinch
       @users.clear
     end
 
-    def msg(text, notice = false)
+    # @note The aliases `msg` and `privmsg` are deprecated and will be
+    #   removed in a future version.
+    def send(text, notice = false)
+      # TODO deprecate 'notice' argument
       text = text.to_s
       if @modes["c"]
         # Remove all formatting and colors if the channel doesn't
@@ -412,8 +415,22 @@ module Cinch
       end
       super(text, notice)
     end
-    alias_method :send, :msg
-    alias_method :privmsg, :msg
+    alias_method :msg, :send # deprecated
+    alias_method :privmsg, :send # deprecated
+    undef_method(:msg) # yardoc hack
+    undef_method(:privmsg) # yardoc hack
+
+    # @deprecated
+    def msg(*args)
+      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "Channel#msg")
+      send(*args)
+    end
+
+    # @deprecated
+    def privmsg(*args)
+      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "Channel#privmsg")
+      send(*args)
+    end
 
     # @return [Fixnum]
     def hash
@@ -421,10 +438,19 @@ module Cinch
     end
 
     # @return [String]
+    # @note The alias `to_str` is deprecated and will be removed in a
+    #   future version. Channel objects should not be treated like
+    #   strings.
     def to_s
       @name
     end
-    alias_method :to_str, :to_s
+    alias_method :to_str, :to_s # deprecated
+    undef_method(:to_str) # yardoc hack
+
+    def to_str
+      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "Channel#to_str")
+      to_s
+    end
 
     # @return [String]
     def inspect
