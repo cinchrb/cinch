@@ -437,6 +437,14 @@ module Cinch
       user ||= self.nick
       @irc.send "OPER #{user} #{password}"
     end
+    
+    # Send a raw message to the server.
+    #
+    # @param [String] command The command to send directly to the ircd
+    # @return [void]
+    def raw(command)
+      @irc.send command
+    end
 
     # Try to create a free nick, first by cycling through all
     # available alternatives and then by appending underscores.
