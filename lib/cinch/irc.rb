@@ -621,7 +621,13 @@ module Cinch
 
     def on_311(msg, events)
       # RPL_WHOISUSER
-      user = User(msg.params[1])
+      verbatim_nick = msg.params[1]
+      user = User(verbatim_nick)
+      if user.nick != verbatim_nick
+        # indicates that a nick has become out of sync with our cache due to
+        # a case-only change while offline or not in a channel with the bot
+        user.update_nick(verbatim_nick)
+      end
       update_whois(user, {
                      :user => msg.params[2],
                      :host => msg.params[3],
