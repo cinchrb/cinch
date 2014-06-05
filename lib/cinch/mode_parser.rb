@@ -50,7 +50,7 @@ module Cinch
       end
 
       if params.size > 0
-        raise Exceptions::InvalidModeString, 'Too many parameters: %s %s' % [modes, params].inspect
+        raise Exceptions::InvalidModeString, 'Too many parameters: %s %s' % [modes.inspect, params.inspect]
       end
 
       if count == 0
