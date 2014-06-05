@@ -50,11 +50,11 @@ module Cinch
       end
 
       if params.size > 0
-        raise Exceptions::InvalidModeString, 'Too many parameters: %s %s' % [modes, params].inspect
+        raise Exceptions::InvalidModeString, 'Too many parameters: %s %s' % [modes, params]
       end
 
       if count == 0
-        raise Exceptions::InvalidModeString, 'Empty mode sequence: %r' % modes
+        raise Exceptions::InvalidModeString, 'Empty mode sequence: %s' % modes
       end
 
       return changes
