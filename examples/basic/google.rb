@@ -1,7 +1,7 @@
+require "json"
+require 'cgi'
 require 'cinch'
 require 'open-uri'
-require 'nokogiri'
-require 'cgi'
 
 bot = Cinch::Bot.new do
   configure do |c|
@@ -11,19 +11,19 @@ bot = Cinch::Bot.new do
   end
 
   helpers do
-    # Extremely basic method, grabs the first result returned by Google
-    # or "No results found" otherwise
-    def google(query)
-      url = "http://www.google.com/search?q=#{CGI.escape(query)}"
-      res = Nokogiri::HTML(open(url)).at("h3.r")
+    def google(search_term)
+      argument_string = CGI.escape(search_term)
+      open("http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=#{argument_string}") do |http|
+        json = JSON.parse(http.read)
+        results = json["responseData"]["results"]
+        result = results.find {|r| r["GsearchResultClass"] == "GwebSearch"}
 
-      title = res.text
-      link = res.at('a')[:href]
-      desc = res.at("./following::div").children.first.text
-    rescue
-      "No results found"
-    else
-      CGI.unescape_html "#{title} - #{desc} (#{link})"
+        if result.nil?
+          return "(no results)"
+        end
+
+        return "[%s] %s - %s" % [search_term, result["unescapedUrl"], result["titleNoFormatting"]]
+      end
     end
   end
 

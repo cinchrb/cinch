@@ -1,3 +1,6 @@
+* Cinch 2.1.1, FILLMEIN
+  - Correctly raise exceptions for invalid mode strings
+
 * Cinch 2.1.0, 27 Februrary 2014
   - Add User#monitored? and User#synced? as aliases for User#monitored
     and User#synced

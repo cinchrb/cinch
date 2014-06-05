@@ -1,26 +1,26 @@
+require "json"
+require 'cgi'
 require 'cinch'
 require 'open-uri'
-require 'nokogiri'
-require 'cgi'
 
 class Google
   include Cinch::Plugin
-  match /google (.+)/
 
-  def search(query)
-    url = "http://www.google.com/search?q=#{CGI.escape(query)}"
-    res = Nokogiri::HTML(open(url)).at("h3.r")
+  match(/google (.+)/)
+  def execute(m, search_term)
+    argument_string = CGI.escape(search_term)
+    open("http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=#{argument_string}") do |http|
+      json = JSON.parse(http.read)
+      results = json["responseData"]["results"]
+      result = results.find {|r| r["GsearchResultClass"] == "GwebSearch"}
 
-    title = res.text
-    link = res.at('a')[:href]
-    desc = res.at("./following::div").children.first.text
-    CGI.unescape_html "#{title} - #{desc} (#{link})"
-  rescue
-    "No results found"
-  end
+      if result.nil?
+        m.reply "(no results)"
+        return
+      end
 
-  def execute(m, query)
-    m.reply(search(query))
+      m.safe_reply "[%s] %s - %s" % [search_term, result["unescapedUrl"], result["titleNoFormatting"]]
+    end
   end
 end
 

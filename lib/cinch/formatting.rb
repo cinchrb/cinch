@@ -66,7 +66,7 @@ module Cinch
       :underline  => 31.chr,
       :reversed   => 22.chr,
       :reverse    => 22.chr,
-      :italic     => 22.chr,
+      :italic     => 29.chr,
       :reset      => 15.chr,
     }
 

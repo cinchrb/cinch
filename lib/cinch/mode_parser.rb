@@ -1,3 +1,5 @@
+require "cinch/exceptions"
+
 module Cinch
   # @api private
   # @since 1.1.0
@@ -8,11 +10,11 @@ module Cinch
     #   A mapping describing which modes require parameters
     def self.parse_modes(modes, params, param_modes = {})
       if modes.size == 0
-        raise InvalidModeString, 'Empty mode string'
+        raise Exceptions::InvalidModeString, 'Empty mode string'
       end
 
       if modes[0] !~ /[+-]/
-        raise InvalidModeString, "Malformed modes string: %s" % modes
+        raise Exceptions::InvalidModeString, "Malformed modes string: %s" % modes
       end
 
       changes = []
@@ -23,7 +25,7 @@ module Cinch
       modes.each_char do |ch|
         if ch =~ /[+-]/
           if count == 0
-            raise InvalidModeString, 'Empty mode sequence: %s' % modes
+            raise Exceptions::InvalidModeString, 'Empty mode sequence: %s' % modes
           end
 
           direction = case ch
@@ -39,7 +41,7 @@ module Cinch
             if params.size > 0
               param = params.shift
             else
-              raise InvalidModeString, 'Not enough parameters: %s' % ch.inspect
+              raise Exceptions::InvalidModeString, 'Not enough parameters: %s' % ch.inspect
             end
           end
           changes << [direction, ch, param]
@@ -48,11 +50,11 @@ module Cinch
       end
 
       if params.size > 0
-        raise InvalidModeString, 'Too many parameters: %s %s' % [modes, params].inspect
+        raise Exceptions::InvalidModeString, 'Too many parameters: %s %s' % [modes.inspect, params.inspect]
       end
 
       if count == 0
-        raise InvalidModeString, 'Empty mode sequence: %r' % modes
+        raise Exceptions::InvalidModeString, 'Empty mode sequence: %r' % modes
       end
 
       return changes
