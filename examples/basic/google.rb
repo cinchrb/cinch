@@ -15,7 +15,7 @@ bot = Cinch::Bot.new do
     # or "No results found" otherwise
     def google(query)
       url = "http://www.google.com/search?q=#{CGI.escape(query)}"
-      res = Nokogiri::HTML(open(url)).at("h3.r")
+      res = Nokogiri.parse(open(url).read).at("h3.r")
 
       title = res.text
       link = res.at('a')[:href]
