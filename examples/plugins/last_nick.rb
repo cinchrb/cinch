@@ -5,8 +5,8 @@ class Nickchange
   listen_to :nick
 
   def listen(m)
-    # This will send a PM to the user who changed his nick and inform
-    # him of his old nick.
+    # This will send a PM to the user who changed their nick and inform
+    # them of their old nick.
     m.reply "Your old nick was: #{m.user.last_nick}" ,true
   end
 end
