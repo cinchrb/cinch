@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 require "time"
-require "cinch/utilities/string"
+require "cinch/formatting"
 
 module Cinch
   # This class serves two purposes. For one, it simply
