@@ -43,6 +43,8 @@ module Cinch
             else
               raise Exceptions::InvalidModeString, 'Not enough parameters: %s' % ch.inspect
             end
+          else
+            params.shift
           end
           changes << [direction, ch, param]
           count += 1
