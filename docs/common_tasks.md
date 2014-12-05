@@ -4,7 +4,7 @@
 # Checking if a user is online
 
 Cinch by itself tries to keep track of the online state of users.
-Whenever it sees someone speak, change his nick or be in a channel the
+Whenever it sees someone speak, change their nick or be in a channel the
 bot is also in, it'll set the user to being online. And when a user
 quits, gets killed or cannot be whoised/contacted, its state will be
 set to offline.
