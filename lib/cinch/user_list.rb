@@ -7,12 +7,12 @@ module Cinch
   class UserList < CachedList
     # Finds or creates a user.
     # @overload find_ensured(nick)
-    #   Finds or creates a user based on his nick.
+    #   Finds or creates a user based on their nick.
     #
     #   @param [String] nick The user's nickname
     #   @return [User]
     # @overload find_ensured(user, nick, host)
-    #   Finds or creates a user based on his nick but already
+    #   Finds or creates a user based on their nick but already
     #   setting user and host.
     #
     #   @param [String] user The username

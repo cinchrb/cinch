@@ -472,7 +472,7 @@ module Cinch
       @last_nick, @name = @name, new_nick
       # Unsync authname because some networks tie authentication to
       # the nick, so the user might not be authenticated anymore after
-      # changing his nick
+      # changing their nick
       unsync(:authname)
       @bot.user_list.update_nick(self)
     end

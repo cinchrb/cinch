@@ -430,5 +430,5 @@ Default value
 : `10`
 
 Description
-: Give up connecting after his amount of seconds.
+: Give up connecting after this amount of seconds.
 
