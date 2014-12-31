@@ -175,11 +175,3 @@ of supporting Ruby versions below 1.9.1.
 Fork the project, implement your awesome feature in its own branch, and send
 a pull request to one of the Cinch collaborators. We'll be more than happy
 to check it out.
-
-### Contributors
-- darix &lt;darix [at] nordisch.org&gt; (wrote the message splitting algorithm)
-- robgleeson (thanks for testing, contributing a lot of ideas,
-  discussing design decisions etc)
-- Emil Loer (http://github.com/thedjinn) for improving the handling of
-  unexpected disconnects and reconnects.
-- Check the list of authors for smaller contributions
