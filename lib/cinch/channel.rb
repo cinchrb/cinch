@@ -422,13 +422,13 @@ module Cinch
 
     # @deprecated
     def msg(*args)
-      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "Channel#msg")
+      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "Channel#msg", "Channel#send")
       send(*args)
     end
 
     # @deprecated
     def privmsg(*args)
-      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "Channel#privmsg")
+      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "Channel#privmsg", "Channel#send")
       send(*args)
     end
 
@@ -448,7 +448,7 @@ module Cinch
     undef_method(:to_str) # yardoc hack
 
     def to_str
-      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "Channel#to_str")
+      Cinch::Utilities::Deprecation.print_deprecation("2.2.0", "Channel#to_str", "Channel#to_s")
       to_s
     end
 
