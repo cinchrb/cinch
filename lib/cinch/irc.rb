@@ -648,14 +648,14 @@ module Cinch
       # RPL_ENDOFWHOIS
       user = User(msg.params[1])
 
-      if @whois_updates[user]
-        if @whois_updates[user].empty? && !user.attr(:unknown?, true, true)
-          user.end_of_whois(nil)
-        else
-          user.end_of_whois(@whois_updates[user])
-        end
-        @whois_updates.delete user
+      if @whois_updates[user].nil? ||
+         (@whois_updates[user].empty? && !user.attr(:unknown?, true, true))
+        user.end_of_whois(nil)
+        return
       end
+
+      user.end_of_whois(@whois_updates[user])
+      @whois_updates.delete user
     end
 
     def on_319(msg, events)
