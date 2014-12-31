@@ -156,11 +156,6 @@ on :message, /hello/ do |m|
 end
 ```
 
-Authors
--------
-
-* [Dominik Honnef](http://dominik.honnef.co)
-
 Contribute
 ----------
 
