@@ -1,6 +1,54 @@
 # @title What has changed?
 # @markup kramdown
 
+# What has changed in 2.2?
+
+## Getting rid of CP1252 in favour of UTF-8
+
+In versions before 2.2, when using the `irc` encoding (the default),
+Cinch would use CP1252 for outgoing messages, only falling back to
+UTF-8 if a message wouldn't fit into CP1252. This is a so called
+hybrid encoding, which is used by X-Chat and the like.
+
+This encoding, however, is based on the state of 10 years ago, where
+the most popular IRC clients, such as mIRC, weren't capable of
+handling UTF-8. Nowadays, there are more clients that support UTF-8
+than there are clients that can deal with this hybrid encoding, or
+CP1252 itself. That's why, from now on, we will always use UTF-8.
+
+If you depend on outgoing messages being encoded in CP1252, please see
+{file:docs/encodings.md} on how to change the encoding.
+
+## API improvements
+
+### New methods
+
+- {Cinch::Channel#remove} has been added to support the non-standard
+REMOVE command, a friendlier alternative to kicking people.
+
+- {Cinch::Helpers.sanitize} and {Cinch::Formatting.unformat} have been
+  added to help with removing unprintable characters and mIRC
+  formatting codes from strings.
+
+### Deprecated methods
+
+In order to reduce the amount of aliases, the following ones have been
+deprecated and will be removed in a future release:
+
+- {Cinch::Channel#msg}
+- {Cinch::Channel#privmsg}
+- {Cinch::Target#msg}
+- {Cinch::Target#privmsg}
+- {Cinch::Target#safe_msg}
+- {Cinch::Target#safe_privmsg}
+- {Cinch::User#whois}
+- {Cinch::Helpers#Color}
+
+Additionally, the following method is deprecated and will be removed
+in the future:
+
+- {Cinch::Channel#to_str}
+
 # What has changed in 2.1?
 1. Color stripping
 1. Per group hooks
@@ -17,7 +65,7 @@ messages.
 
 Additionally, a new match option called `strip_colors` makes it
 possible to automatically and temporarily strip color codes before
-attemping to match a message.
+attempting to match a message.
 
 ## Per group hooks
 

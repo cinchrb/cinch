@@ -1,3 +1,22 @@
+* Cinch 2.2.0, 31 December 2014
+  - Deprecate several methods and aliases:
+    - Channel#msg
+    - Channel#privmsg
+    - Channel#to_str
+    - Target#msg
+    - Target#privmsg
+    - Target#safe_msg
+    - Target#safe_privmsg
+    - User#whois
+    - Helpers.Color
+  - Do not strip trailing whitespace in incoming messages
+  - Fix handling of rate-limited WHOIS
+  - Always send UTF-8 when using "irc" encoding
+  - Add Helpers.sanitize
+  - Add Formatting.unformat
+  - Add Channel#remove
+  - Fix (wrong) exceptions in mode parser
+
 * Cinch 2.1.0, 27 Februrary 2014
   - Add User#monitored? and User#synced? as aliases for User#monitored
     and User#synced
