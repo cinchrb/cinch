@@ -632,7 +632,7 @@ module Cinch
     def on_313(msg, events)
       # RPL_WHOISOPERATOR
       user = User(msg.params[1])
-      @whois_updates[user].merge!({:oper? => true})
+      update_whois(user, {:oper? => true})
     end
 
     def on_317(msg, events)
@@ -662,7 +662,7 @@ module Cinch
       # RPL_WHOISCHANNELS
       user     = User(msg.params[1])
       channels = msg.params[2].scan(/[#{@isupport["CHANTYPES"].join}][^ ]+/o).map {|c| Channel(c) }
-      @whois_updates[user].merge!({:channels => channels})
+      update_whois(user, {:channels => channels})
     end
 
     def on_324(msg, events)
@@ -685,8 +685,7 @@ module Cinch
       # RPL_WHOISACCOUNT
       user     = User(msg.params[1])
       authname = msg.params[2]
-
-      @whois_updates[user].merge!({:authname => authname})
+      update_user(user, {:authname => authname})
     end
 
     def on_331(msg, events)
@@ -851,7 +850,7 @@ module Cinch
 
     def on_671(msg, events)
       user = User(msg.params[1])
-      @whois_updates[user].merge!({:secure? => true})
+      update_whois(user, {:secure? => true})
     end
 
     # @since 2.0.0
