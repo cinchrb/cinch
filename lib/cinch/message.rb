@@ -226,7 +226,6 @@ module Cinch
     end
 
     def parse_params(raw_params)
-      raw_params = raw_params.strip
       params     = []
       if match = raw_params.match(/(?:^:| :)(.*)$/)
         params = match.pre_match.split(" ")
