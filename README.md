@@ -12,10 +12,8 @@ profits flourish.
 Cinch will do all of the hard work for you, so you can spend time creating cool
 plugins and extensions to wow your internet peers.
 
-If you'd like to test your own Cinch experiments you can do so in the
-\#cinch-bots IRC channel on
-[irc.freenode.org](irc://irc.freenode.org/cinch-bots). For general
-support, join [#cinch](irc://irc.freenode.org/cinch).
+For general support, join [#cinch](irc://irc.freenode.org/cinch) – but
+please don't bring any bots.
 
 Installation
 ------------
