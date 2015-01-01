@@ -1,3 +1,8 @@
+* Cinch 2.2.1, 01 January 2015
+  - Fix message of deprecation warning
+  - Make sure italic formatting is indeed italic, and not reverse
+    video
+
 * Cinch 2.2.0, 31 December 2014
   - Deprecate several methods and aliases:
     - Channel#msg
