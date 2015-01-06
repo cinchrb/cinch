@@ -213,7 +213,7 @@ module Cinch
           @data[:unknown?] = false
           unsync :unknown?
 
-          whois
+          refresh
         end
       }
 
@@ -294,7 +294,7 @@ module Cinch
         # reason is freenode throttling WHOIS
         Thread.new do
           sleep 2
-          whois
+          refresh
         end
         return
       end
