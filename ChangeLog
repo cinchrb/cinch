@@ -1,3 +1,9 @@
+* Cinch 2.2.3, 10 January 2015
+  - Fix processing of RPL_WHOISACCOUNT, broken in 2.2.0
+
+* Cinch 2.2.2, 06 January 2015
+  - Do not cause deprecation warnings in our own code
+
 * Cinch 2.2.1, 01 January 2015
   - Fix message of deprecation warning
   - Make sure italic formatting is indeed italic, and not reverse
