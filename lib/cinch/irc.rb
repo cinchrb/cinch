@@ -685,7 +685,7 @@ module Cinch
       # RPL_WHOISACCOUNT
       user     = User(msg.params[1])
       authname = msg.params[2]
-      update_user(user, {:authname => authname})
+      update_whois(user, {:authname => authname})
     end
 
     def on_331(msg, events)
