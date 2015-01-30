@@ -18,7 +18,7 @@ module Cinch
     # @return [void]
     # @see #safe_notice
     def notice(text)
-      msg(text, true)
+      send(text, true)
     end
 
     # Sends a PRIVMSG to the target.
