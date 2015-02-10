@@ -604,8 +604,8 @@ module Cinch
     # @since 2.0.0
     def on_301(msg, events)
       # RPL_AWAY
-      user = User(msg.params.first)
-      away = msg.message
+      user = User(msg.params[1])
+      away = msg.params.last
 
       if @whois_updates[user]
         update_whois(user, {:away => away})

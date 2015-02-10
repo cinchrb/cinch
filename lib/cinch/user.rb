@@ -59,6 +59,10 @@ module Cinch
       attr(:authname, true, false)
     end
 
+    def away
+      attr(:away, true, false)
+    end
+
     def idle
       attr(:idle, true, false)
     end
@@ -304,6 +308,7 @@ module Cinch
         :idle     => 0,
         :secure?  => false,
         :oper?    => false,
+        :away     => nil,
         :channels => [],
       }.merge(values).each do |attr, value|
         sync(attr, value, true)
