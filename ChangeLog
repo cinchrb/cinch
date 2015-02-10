@@ -1,3 +1,6 @@
+* Cinch 2.2.4, 10 Feburary 2015
+  - Fix User#away
+
 * Cinch 2.2.3, 10 January 2015
   - Fix processing of RPL_WHOISACCOUNT, broken in 2.2.0
 
