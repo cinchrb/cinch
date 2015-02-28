@@ -36,31 +36,10 @@ module Cinch
       split_start = @bot.config.message_split_start || ""
       split_end   = @bot.config.message_split_end   || ""
       command = notice ? "NOTICE" : "PRIVMSG"
-      max_bytesize = 510 - ":#{@bot.mask} #{command} #{@name} :".bytesize
-      max_bytesize_without_end = max_bytesize - split_end.bytesize
+      prefix = ":#{@bot.mask} #{command} #{@name} :"
 
       text.lines.map(&:chomp).each do |line|
-        if line.bytesize <= max_bytesize
-          @bot.irc.send("#{command} #@name :#{line}")
-          next
-        end
-
-        splitted = []
-        acc = 0
-        acc_rune_sizes = line.each_char.map {|ch|
-          acc += ch.bytesize
-        }
-        while line.bytesize > max_bytesize_without_end
-          max_rune = acc_rune_sizes.rindex {|bs| bs <= max_bytesize_without_end}
-          max_rune ||= 0
-          r = line.rindex(/\s/, max_rune) || max_rune
-          if r == 0
-            r = 1
-          end
-          splitted << (line[0...r] + split_end.tr(" ", "\u00A0"))
-          line = split_start.tr(" ", "\u00A0") + line[r..-1].lstrip
-        end
-        splitted << line
+        splitted = split_message(line, prefix, split_start, split_end)
 
         splitted[0, (@bot.config.max_messages || splitted.size)].each do |string|
           string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
@@ -187,6 +166,29 @@ module Cinch
       else
         nil
       end
+    end
+
+    private
+    def split_message(msg, prefix, split_start, split_end)
+      max_bytesize = 510 - prefix.bytesize
+      max_bytesize_without_end = max_bytesize - split_end.bytesize
+
+      if msg.bytesize <= max_bytesize
+        return [msg]
+      end
+
+      splitted = []
+      acc = 0
+      acc_rune_sizes = msg.each_char.map {|ch|
+        acc += ch.bytesize
+      }
+      while msg.bytesize > max_bytesize_without_end
+        max_rune = acc_rune_sizes.rindex {|bs| bs <= max_bytesize_without_end} || 0
+        r = [msg.rindex(/\s/, max_rune) || max_rune, 1].max
+        splitted << (msg[0...r] + split_end.tr(" ", "\u00A0"))
+        msg = split_start.tr(" ", "\u00A0") + msg[r..-1].lstrip
+      end
+      splitted << msg
     end
   end
 end
