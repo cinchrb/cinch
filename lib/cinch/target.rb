@@ -46,24 +46,17 @@ module Cinch
         end
 
         splitted = []
-        rest = line
         acc = 0
-        accumulated_bytesizes = line.each_char.map {|ch|
+        acc_rune_sizes = line.each_char.map {|ch|
           acc += ch.bytesize
         }
-        while rest.bytesize > max_bytesize_without_end
-          max_slice_length = accumulated_bytesizes.rindex {|bytesize| bytesize <= max_bytesize_without_end}
-          max_slice_bytesize = accumulated_bytesizes[max_slice_length]
-          last_space_index = rest.rindex(/\s/, max_slice_length)
-          r = max_slice_bytesize
-          if last_space_index
-            r = accumulated_bytesizes[last_space_index] - 1
-          end
-
-          splitted << (rest.byteslice(0...r) + split_end.tr(" ", "\u00A0"))
-          rest = split_start.tr(" ", "\u00A0") + rest.byteslice(r...rest.bytesize).lstrip
+        while line.bytesize > max_bytesize_without_end
+          max_runes = acc_rune_sizes.rindex {|bs| bs <= max_bytesize_without_end}
+          r = line.rindex(/\s/, max_runes) || max_runes
+          splitted << (line[0...r] + split_end.tr(" ", "\u00A0"))
+          line = split_start.tr(" ", "\u00A0") + line[r..-1].lstrip
         end
-        splitted << rest
+        splitted << line
 
         splitted[0, (@bot.config.max_messages || splitted.size)].each do |string|
           string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
