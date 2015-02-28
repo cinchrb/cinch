@@ -36,23 +36,37 @@ module Cinch
       split_start = @bot.config.message_split_start || ""
       split_end   = @bot.config.message_split_end   || ""
       command = notice ? "NOTICE" : "PRIVMSG"
+      max_bytesize = 510 - ":#{@bot.mask} #{command} #{@name} :".bytesize
+      max_bytesize_without_end = max_bytesize - split_end.bytesize
 
-      text.split(/\r\n|\r|\n/).each do |line|
-        maxlength = 510 - (":" + " #{command} " + " :").size
-        maxlength = maxlength - @bot.mask.to_s.length - @name.to_s.length
-        maxlength_without_end = maxlength - split_end.bytesize
-
-        if line.bytesize > maxlength
+      text.lines.map(&:chomp).each do |line|
+        if line.bytesize > max_bytesize
           splitted = []
 
-          while line.bytesize > maxlength_without_end
-            pos = line.rindex(/\s/, maxlength_without_end)
-            r = pos || maxlength_without_end
-            splitted << line.slice!(0, r) + split_end.tr(" ", "\u00A0")
-            line = split_start.tr(" ", "\u00A0") + line.lstrip
-          end
+          rest = line
+          while rest.bytesize > max_bytesize_without_end
+            accumulated_bytesize = line.each_char.reduce([]) do |acc, ch|
+              acc << ((acc.last || 0) + ch.bytesize)
+            end
+            max_slice_bytesize, max_slice_length = accumulated_bytesize.
+              select { |bytesize| bytesize <= max_bytesize_without_end }.
+              each_with_index.
+              to_a.
+              last
+            last_space_index = rest.rindex(/\s/, max_slice_length)
+            r = if last_space_index
+                  accumulated_bytesize[last_space_index] - 1
+                else
+                  max_slice_bytesize
+                end
 
-          splitted << line
+            splitted << (rest.byteslice(0...r) +
+                         split_end.tr(" ", "\u00A0"))
+            rest = split_start.tr(" ", "\u00A0") +
+              rest.byteslice(r...rest.bytesize).lstrip
+          end
+          splitted << rest
+
           splitted[0, (@bot.config.max_messages || splitted.size)].each do |string|
             string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
             @bot.irc.send("#{command} #@name :#{string}")
