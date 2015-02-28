@@ -51,8 +51,12 @@ module Cinch
           acc += ch.bytesize
         }
         while line.bytesize > max_bytesize_without_end
-          max_runes = acc_rune_sizes.rindex {|bs| bs <= max_bytesize_without_end}
-          r = line.rindex(/\s/, max_runes) || max_runes
+          max_rune = acc_rune_sizes.rindex {|bs| bs <= max_bytesize_without_end}
+          max_rune ||= 0
+          r = line.rindex(/\s/, max_rune) || max_rune
+          if r == 0
+            r = 1
+          end
           splitted << (line[0...r] + split_end.tr(" ", "\u00A0"))
           line = split_start.tr(" ", "\u00A0") + line[r..-1].lstrip
         end
