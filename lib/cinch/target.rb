@@ -40,39 +40,34 @@ module Cinch
       max_bytesize_without_end = max_bytesize - split_end.bytesize
 
       text.lines.map(&:chomp).each do |line|
-        if line.bytesize > max_bytesize
-          splitted = []
-
-          rest = line
-          while rest.bytesize > max_bytesize_without_end
-            accumulated_bytesize = line.each_char.reduce([]) do |acc, ch|
-              acc << ((acc.last || 0) + ch.bytesize)
-            end
-            max_slice_bytesize, max_slice_length = accumulated_bytesize.
-              select { |bytesize| bytesize <= max_bytesize_without_end }.
-              each_with_index.
-              to_a.
-              last
-            last_space_index = rest.rindex(/\s/, max_slice_length)
-            r = if last_space_index
-                  accumulated_bytesize[last_space_index] - 1
-                else
-                  max_slice_bytesize
-                end
-
-            splitted << (rest.byteslice(0...r) +
-                         split_end.tr(" ", "\u00A0"))
-            rest = split_start.tr(" ", "\u00A0") +
-              rest.byteslice(r...rest.bytesize).lstrip
-          end
-          splitted << rest
-
-          splitted[0, (@bot.config.max_messages || splitted.size)].each do |string|
-            string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
-            @bot.irc.send("#{command} #@name :#{string}")
-          end
-        else
+        if line.bytesize <= max_bytesize
           @bot.irc.send("#{command} #@name :#{line}")
+          next
+        end
+
+        splitted = []
+        rest = line
+        acc = 0
+        accumulated_bytesizes = line.each_char.map {|ch|
+          acc += ch.bytesize
+        }
+        while rest.bytesize > max_bytesize_without_end
+          max_slice_length = accumulated_bytesizes.rindex {|bytesize| bytesize <= max_bytesize_without_end}
+          max_slice_bytesize = accumulated_bytesizes[max_slice_length]
+          last_space_index = rest.rindex(/\s/, max_slice_length)
+          r = max_slice_bytesize
+          if last_space_index
+            r = accumulated_bytesizes[last_space_index] - 1
+          end
+
+          splitted << (rest.byteslice(0...r) + split_end.tr(" ", "\u00A0"))
+          rest = split_start.tr(" ", "\u00A0") + rest.byteslice(r...rest.bytesize).lstrip
+        end
+        splitted << rest
+
+        splitted[0, (@bot.config.max_messages || splitted.size)].each do |string|
+          string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
+          @bot.irc.send("#{command} #@name :#{string}")
         end
       end
     end
