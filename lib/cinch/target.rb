@@ -178,17 +178,24 @@ module Cinch
       end
 
       splitted = []
-      acc = 0
-      acc_rune_sizes = msg.each_char.map {|ch|
-        acc += ch.bytesize
-      }
       while msg.bytesize > max_bytesize_without_end
-        max_rune = acc_rune_sizes.rindex {|bs| bs <= max_bytesize_without_end} || 0
-        r = [msg.rindex(/\s/, max_rune) || max_rune, 1].max
-        splitted << (msg[0...r] + split_end.tr(" ", "\u00A0"))
-        msg = split_start.tr(" ", "\u00A0") + msg[r..-1].lstrip
+        acc = 0
+        acc_rune_sizes = msg.each_char.map {|ch|
+          acc += ch.bytesize
+        }
+
+        max_rune = acc_rune_sizes.rindex {|bs|
+          bs <= max_bytesize_without_end
+        } || 0
+        r = [msg.rindex(/\s/, max_rune) || (max_rune + 1), 1].max
+
+        splitted << (msg[0...r] + split_end)
+        msg = split_start.tr(" ", "\z") + msg[r..-1].lstrip
       end
       splitted << msg
+
+      # clean string from any substitute characters
+      splitted.map {|string| string.gsub("\z", ' ')}
     end
   end
 end
