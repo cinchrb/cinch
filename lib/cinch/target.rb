@@ -196,5 +196,35 @@ module Cinch
         nil
       end
     end
+
+    private
+    def split_message(msg, prefix, split_start, split_end)
+      max_bytesize = 510 - prefix.bytesize
+      max_bytesize_without_end = max_bytesize - split_end.bytesize
+
+      if msg.bytesize <= max_bytesize
+        return [msg]
+      end
+
+      splitted = []
+      while msg.bytesize > max_bytesize_without_end
+        acc = 0
+        acc_rune_sizes = msg.each_char.map {|ch|
+          acc += ch.bytesize
+        }
+
+        max_rune = acc_rune_sizes.rindex {|bs|
+          bs <= max_bytesize_without_end
+        } || 0
+        r = [msg.rindex(/\s/, max_rune) || (max_rune + 1), 1].max
+
+        splitted << (msg[0...r] + split_end)
+        msg = split_start.tr(" ", "\z") + msg[r..-1].lstrip
+      end
+      splitted << msg
+
+      # clean string from any substitute characters
+      splitted.map {|string| string.gsub("\z", ' ')}
+    end
   end
 end
