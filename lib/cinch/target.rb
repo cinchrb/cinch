@@ -36,29 +36,13 @@ module Cinch
       split_start = @bot.config.message_split_start || ""
       split_end   = @bot.config.message_split_end   || ""
       command = notice ? "NOTICE" : "PRIVMSG"
+      prefix = ":#{@bot.mask} #{command} #{@name} :"
 
-      text.split(/\r\n|\r|\n/).each do |line|
-        maxlength = 510 - (":" + " #{command} " + " :").size
-        maxlength = maxlength - @bot.mask.to_s.length - @name.to_s.length
-        maxlength_without_end = maxlength - split_end.bytesize
+      text.lines.map(&:chomp).each do |line|
+        splitted = split_message(line, prefix, split_start, split_end)
 
-        if line.bytesize > maxlength
-          splitted = []
-
-          while line.bytesize > maxlength_without_end
-            pos = line.rindex(/\s/, maxlength_without_end)
-            r = pos || maxlength_without_end
-            splitted << line.slice!(0, r) + split_end.tr(" ", "\u00A0")
-            line = split_start.tr(" ", "\u00A0") + line.lstrip
-          end
-
-          splitted << line
-          splitted[0, (@bot.config.max_messages || splitted.size)].each do |string|
-            string.tr!("\u00A0", " ") # clean string from any non-breaking spaces
-            @bot.irc.send("#{command} #@name :#{string}")
-          end
-        else
-          @bot.irc.send("#{command} #@name :#{line}")
+        splitted[0, (@bot.config.max_messages || splitted.size)].each do |string|
+          @bot.irc.send("#{command} #@name :#{string}")
         end
       end
     end
@@ -181,6 +165,34 @@ module Cinch
       else
         nil
       end
+    end
+
+    private
+    def split_message(msg, prefix, split_start, split_end)
+      max_bytesize = 510 - prefix.bytesize
+      max_bytesize_without_end = max_bytesize - split_end.bytesize
+
+      if msg.bytesize <= max_bytesize
+        return [msg]
+      end
+
+      splitted = []
+      while msg.bytesize > max_bytesize_without_end
+        acc = 0
+        acc_rune_sizes = msg.each_char.map {|ch|
+          acc += ch.bytesize
+        }
+
+        max_rune = acc_rune_sizes.rindex {|bs| bs <= max_bytesize_without_end} || 0
+        r = [msg.rindex(/\s/, max_rune) || (max_rune + 1), 1].max
+
+        splitted << (msg[0...r] + split_end)
+        msg = split_start.tr(" ", "\z") + msg[r..-1].lstrip
+      end
+      splitted << msg
+
+      # clean string from any substitute characters
+      splitted.map {|string| string.tr("\z", " ")}
     end
   end
 end
