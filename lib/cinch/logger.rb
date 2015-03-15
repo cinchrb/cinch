@@ -145,6 +145,10 @@ module Cinch
       message
     end
 
+    def format_fatal(message)
+      message
+    end
+
     def format_info(message)
       message
     end

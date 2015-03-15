@@ -58,6 +58,10 @@ module Cinch
         "%s %s %s" % [timestamp, "II", message]
       end
 
+      def format_fatal(message)
+        "%s %s %s" % [timestamp, colorize("!!", :red), message]
+      end
+
       def format_incoming(message)
         pre, msg = message.split(" :", 2)
         pre_parts = pre.split(" ")
