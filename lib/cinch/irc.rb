@@ -616,7 +616,7 @@ module Cinch
     def on_307(msg, events)
       # RPL_WHOISREGNICK
       user = User(msg.params[1])
-      update_whois(user, {:authname => user.nick})
+      update_whois(user, {:registered => true})
     end
 
     def on_311(msg, events)

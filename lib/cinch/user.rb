@@ -303,6 +303,10 @@ module Cinch
         return
       end
 
+      if values[:registered]
+        values[:authname] ||= self.nick
+        values.delete(:registered)
+      end
       {
         :authname => nil,
         :idle     => 0,
