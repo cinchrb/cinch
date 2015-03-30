@@ -1,3 +1,8 @@
+* Cinch 2.2.5, 30 March 2015
+  - Correctly split messages containing multibyte characters
+  - Fix User#authname on servers that send both 330 (WHOISACCOUNT) and
+    307 (WHOISREGNICK)
+
 * Cinch 2.2.4, 10 Feburary 2015
   - Fix User#away
 
