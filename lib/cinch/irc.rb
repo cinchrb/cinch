@@ -462,7 +462,13 @@ module Cinch
         :remove => add_and_remove
       }
 
-      modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1], param_modes)
+
+      modes, err = ModeParser.parse_modes(msg.params[1], msg.params[2..-1], param_modes)
+      if err != nil
+        if  @network.ircd != :slack || !err.is_a?(ModeParser::TooManyParametersError)
+          raise Exceptions::InvalidModeString, err
+        end
+      end
       modes.each do |direction, mode, param|
         if @bot.irc.isupport["PREFIX"].keys.include?(mode)
           target = User(param)
@@ -506,7 +512,10 @@ module Cinch
     end
 
     def parse_bot_modes(msg)
-      modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1])
+      modes, err = ModeParser.parse_modes(msg.params[1], msg.params[2..-1])
+      if err != nil
+        raise Exceptions::InvalidModeString, err
+      end
       modes.each do |direction, mode, _|
         if direction == :add
           @bot.modes << mode unless @bot.modes.include?(mode)
