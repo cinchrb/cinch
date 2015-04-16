@@ -441,62 +441,72 @@ module Cinch
     # @version 1.1.0
     def on_mode(msg, events)
       if msg.channel?
-        add_and_remove = @bot.irc.isupport["CHANMODES"]["A"] + @bot.irc.isupport["CHANMODES"]["B"] + @bot.irc.isupport["PREFIX"].keys
+        parse_channel_modes(msg, events)
+        return
+      end
+      if msg.params.first == bot.nick
+        parse_bot_modes(msg)
+      end
+    end
 
-        param_modes = {
-          :add    => @bot.irc.isupport["CHANMODES"]["C"] + add_and_remove,
-          :remove => add_and_remove
-        }
+    def parse_channel_modes(msg, events)
+      add_and_remove = @bot.irc.isupport["CHANMODES"]["A"] + @bot.irc.isupport["CHANMODES"]["B"] + @bot.irc.isupport["PREFIX"].keys
 
-        modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1], param_modes)
-        modes.each do |direction, mode, param|
-          if @bot.irc.isupport["PREFIX"].keys.include?(mode)
-            target = User(param)
+      param_modes = {
+        :add    => @bot.irc.isupport["CHANMODES"]["C"] + add_and_remove,
+        :remove => add_and_remove
+      }
 
-            # (un)set a user-mode
-            if direction == :add
-              msg.channel.users[target] << mode unless msg.channel.users[User(param)].include?(mode)
-            else
-              msg.channel.users[target].delete mode
-            end
+      modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1], param_modes)
+      modes.each do |direction, mode, param|
+        if @bot.irc.isupport["PREFIX"].keys.include?(mode)
+          target = User(param)
 
-            user_events = {
-              "o" => "op",
-              "v" => "voice",
-              "h" => "halfop"
-            }
-            if user_events.has_key?(mode)
-              event = (direction == :add ? "" : "de") + user_events[mode]
-              events << [event.to_sym, target]
-            end
-          elsif @bot.irc.isupport["CHANMODES"]["A"].include?(mode)
-            case mode
-            when "b"
-              process_ban_mode(msg, events, param, direction)
-            when "q"
-              process_owner_mode(msg, events, param, direction) if @network.owner_list_mode
-            else
-              raise Exceptions::UnsupportedMode, mode
-            end
+          # (un)set a user-mode
+          if direction == :add
+            msg.channel.users[target] << mode unless msg.channel.users[User(param)].include?(mode)
           else
-            # channel options
-            if direction == :add
-              msg.channel.modes_unsynced[mode] = param.nil? ? true : param
-            else
-              msg.channel.modes_unsynced.delete(mode)
-            end
+            msg.channel.users[target].delete mode
+          end
+
+          user_events = {
+            "o" => "op",
+            "v" => "voice",
+            "h" => "halfop"
+          }
+          if user_events.has_key?(mode)
+            event = (direction == :add ? "" : "de") + user_events[mode]
+            events << [event.to_sym, target]
+          end
+        elsif @bot.irc.isupport["CHANMODES"]["A"].include?(mode)
+          case mode
+          when "b"
+            process_ban_mode(msg, events, param, direction)
+          when "q"
+            process_owner_mode(msg, events, param, direction) if @network.owner_list_mode
+          else
+            raise Exceptions::UnsupportedMode, mode
+          end
+        else
+          # channel options
+          if direction == :add
+            msg.channel.modes_unsynced[mode] = param.nil? ? true : param
+          else
+            msg.channel.modes_unsynced.delete(mode)
           end
         end
+      end
 
-        events << [:mode_change, modes]
-      elsif msg.params.first == bot.nick
-        modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1])
-        modes.each do |direction, mode, _|
-          if direction == :add
-            @bot.modes << mode unless @bot.modes.include?(mode)
-          else
-            @bot.modes.delete(mode)
-          end
+      events << [:mode_change, modes]
+    end
+
+    def parse_bot_modes(msg)
+      modes = ModeParser.parse_modes(msg.params[1], msg.params[2..-1])
+      modes.each do |direction, mode, _|
+        if direction == :add
+          @bot.modes << mode unless @bot.modes.include?(mode)
+        else
+          @bot.modes.delete(mode)
         end
       end
     end
