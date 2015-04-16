@@ -311,6 +311,11 @@ module Cinch
           new_network = :jtv
           new_ircd    = :jtv
         end
+      when "004"
+        if msg.params == %w{irc.tinyspeck.com IRC-SLACK gateway}
+          new_network = :slack
+          new_ircd = :slack
+        end
       when "005"
         case @isupport["NETWORK"]
         when "NGameTV"
@@ -603,6 +608,11 @@ module Cinch
     # @since 2.0.0
     def on_002(msg, events)
       detect_network(msg, "002")
+    end
+
+    # @since 2.2.6
+    def on_004(msg, events)
+      detect_network(msg, "004")
     end
 
     def on_005(msg, events)
