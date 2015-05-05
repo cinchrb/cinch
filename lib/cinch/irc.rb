@@ -355,7 +355,7 @@ module Cinch
         msg.channel.bans_unsynced << ban
         events << [:ban, ban]
       else
-        msg.channel.bans_unsynced.delete_if {|b| b.mask == ban.mask}.first
+        msg.channel.bans_unsynced.delete_if {|b| b.mask == ban.mask}
         events << [:unban, ban]
       end
     end
@@ -475,7 +475,7 @@ module Cinch
 
           # (un)set a user-mode
           if direction == :add
-            msg.channel.users[target] << mode unless msg.channel.users[User(param)].include?(mode)
+            msg.channel.users[target] << mode unless msg.channel.users[target].include?(mode)
           else
             msg.channel.users[target].delete mode
           end
@@ -579,7 +579,6 @@ module Cinch
       if msg.user
         msg.user.online = true
       end
-
 
       if msg.message =~ /^\001DCC SEND (?:"([^"]+)"|(\S+)) (\S+) (\d+)(?: (\d+))?\001$/
         process_dcc_send($1 || $2, $3, $4, $5, msg, events)
