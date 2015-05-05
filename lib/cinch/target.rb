@@ -103,7 +103,7 @@ module Cinch
     # @see #safe_notice
     # @see #notice
     def safe_notice(text)
-      safe_msg(text, true)
+      safe_send(text, true)
     end
 
     # Invoke an action (/me) in/to the target.
