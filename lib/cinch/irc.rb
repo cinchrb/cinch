@@ -675,14 +675,11 @@ module Cinch
     def on_318(msg, events)
       # RPL_ENDOFWHOIS
       user = User(msg.params[1])
-
-      if @whois_updates[user].nil? ||
-         (@whois_updates[user].empty? && !user.attr(:unknown?, true, true))
-        user.end_of_whois(nil)
-        return
+      if @whois_updates[user] && @whois_updates[user][:unknown?]
+        user.end_of_whois(nil, true)
+      else
+        user.end_of_whois(@whois_updates[user])
       end
-
-      user.end_of_whois(@whois_updates[user])
       @whois_updates.delete user
     end
 
@@ -856,8 +853,7 @@ module Cinch
     def on_401(msg, events)
       # ERR_NOSUCHNICK
       if user = @bot.user_list.find(msg.params[1])
-        user.end_of_whois(nil, true)
-        @whois_updates.delete user
+        update_whois(user, {:unknown? => true})
       end
     end
 
