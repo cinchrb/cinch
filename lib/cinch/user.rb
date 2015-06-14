@@ -274,9 +274,9 @@ module Cinch
     # @return [void]
     # @api private
     # @since 1.0.1
-    def end_of_whois(values, not_found = false)
+    def end_of_whois(values)
       @in_whois = false
-      if not_found
+      if values[:unknown?]
         sync(:unknown?, true, true)
         self.online = false
         sync(:idle, 0, true)

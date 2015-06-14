@@ -675,11 +675,7 @@ module Cinch
     def on_318(msg, events)
       # RPL_ENDOFWHOIS
       user = User(msg.params[1])
-      if @whois_updates[user] && @whois_updates[user][:unknown?]
-        user.end_of_whois(nil, true)
-      else
-        user.end_of_whois(@whois_updates[user])
-      end
+      user.end_of_whois(@whois_updates[user])
       @whois_updates.delete user
     end
 
@@ -861,7 +857,7 @@ module Cinch
       # ERR_NOSUCHSERVER
 
       if user = @bot.user_list.find(msg.params[1]) # not _ensured, we only want a user that already exists
-        user.end_of_whois(nil, true)
+        user.end_of_whois({:unknown? => true})
         @whois_updates.delete user
         # TODO freenode specific, test on other IRCd
       end
