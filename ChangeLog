@@ -1,3 +1,8 @@
+* Cinch 2.2.6, 08 July 2015
+  - Better support for Slack
+  - Support channel owners on InspIRCd
+  - Don't get stuck in a WHOIS forever on certain servers
+
 * Cinch 2.2.5, 30 March 2015
   - Correctly split messages containing multibyte characters
   - Fix User#authname on servers that send both 330 (WHOISACCOUNT) and
