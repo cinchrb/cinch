@@ -320,6 +320,17 @@ Default value
 Description
 : The password to use for SASL authentication.
 
+### sasl.mechanisms
+Type
+: Array<Cinch::SASL::Mechanism>
+
+Default value
+: `[Cinch::SASL::DH_Blowfish, Cinch::SASL::Plain]`
+
+Description
+: The SASL mechanisms to use. All mechanisms in the array will be
+attempted, until one was successful
+
 ## server
 Type
 : String
