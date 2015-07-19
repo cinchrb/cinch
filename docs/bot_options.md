@@ -320,6 +320,17 @@ Default value
 Description
 : The password to use for SASL authentication.
 
+### sasl.mechanisms
+Type
+: Array<SASL::Mechanism>
+
+Default value
+: `[SASL::DH_Blowfish, SASL::Plain]`
+
+Description
+: The SASL mechanisms to use. All mechanisms in the array will be
+attempted, until one was successful
+
 ## server
 Type
 : String

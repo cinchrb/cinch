@@ -210,7 +210,7 @@ module Cinch
     def start
       setup
       if connect
-        @sasl_remaining_methods = [SASL::Plain, SASL::DH_Blowfish]
+        @sasl_remaining_methods = @bot.config.sasl.mechanisms.reverse
         send_cap_ls
         send_login
 
