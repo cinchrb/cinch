@@ -187,12 +187,12 @@ module Cinch
         r = [msg.rindex(/\s/, max_rune) || (max_rune + 1), 1].max
 
         splitted << (msg[0...r] + split_end)
-        msg = split_start.tr(" ", "\z") + msg[r..-1].lstrip
+        msg = split_start.tr(" ", "\cz") + msg[r..-1].lstrip
       end
       splitted << msg
 
       # clean string from any substitute characters
-      splitted.map {|string| string.tr("\z", " ")}
+      splitted.map {|string| string.tr("\cz", " ")}
     end
   end
 end
