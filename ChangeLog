@@ -1,3 +1,6 @@
+* Cinch 2.2.8, 23 October 2015
+  - Fix WHOIS retry code, don't raise an exception
+
 * Cinch 2.2.7, 28 September 2015
   - Don't replace the letter "z" with spaces when splitting long
     messages
