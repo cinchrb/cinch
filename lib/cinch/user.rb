@@ -276,6 +276,16 @@ module Cinch
     # @since 1.0.1
     def end_of_whois(values)
       @in_whois = false
+      if values.nil?
+        # for some reason, we did not receive user information. one
+        # reason is freenode throttling WHOIS
+        Thread.new do
+          sleep 2
+          refresh
+        end
+        return
+      end
+
       if values[:unknown?]
         sync(:unknown?, true, true)
         self.online = false
@@ -290,16 +300,6 @@ module Cinch
           sync(field, nil, true)
         end
 
-        return
-      end
-
-      if values.nil?
-        # for some reason, we did not receive user information. one
-        # reason is freenode throttling WHOIS
-        Thread.new do
-          sleep 2
-          refresh
-        end
         return
       end
 
