@@ -75,7 +75,7 @@ module Cinch
       self["MAXTARGETS"]  = 1
       self["MAXCHANNELS"] = Float::INFINITY # deprecated
       self["CHANLIMIT"]   = {"#" => Float::INFINITY}
-      self["STATUSMSG"]   = ["@", "+"]
+      self["STATUSMSG"]   = []
       self["CASEMAPPING"] = :rfc1459
       self["ELIST"]       = []
       self["MONITOR"]     = 0
