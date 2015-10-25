@@ -43,6 +43,9 @@ module Cinch
     # @return [Hash{String => Object}]
     attr_reader :modes
     synced_attr_reader :modes
+
+    # @note Generally, you shouldn't initialize new instances of this
+    #   class. Use {ChannelList#find_ensured} instead.
     def initialize(name, bot)
       @bot    = bot
       @name   = name

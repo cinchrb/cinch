@@ -185,7 +185,8 @@ module Cinch
     # @api private
     attr_writer :monitored
 
-
+    # @note Generally, you shouldn't initialize new instances of this
+    #   class. Use {UserList#find_ensured} instead.
     def initialize(*args)
       @data = {
         :user         => nil,
