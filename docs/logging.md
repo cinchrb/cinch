@@ -49,6 +49,41 @@ This will set all loggers to the `:debug` level (which actually is the
 default already) and the first logger (which is the default STDOUT
 logger) to `:info`.
 
+# Log filtering
+
+Sometimes it is undesirable to log a message unchanged. For example
+when identifying to the network, passwords might be sent in plain
+text. To prevent such information from appearing in logs, {Cinch::LogFilter log filters}
+can be employed.
+
+Log filters take a log message as input and return a new message. This
+allows removing/masking out passwords or other undesired information.
+Additionally, messages can be dropped entirely by returning nil.
+
+It is possible to use more than one filter, in which case they will be
+called in order, each acting on the previous filter's output.
+
+Filters can be installed by adding them to {Cinch::LoggerList#filters}.
+
+An example (and very simple) password filter might look like this:
+
+    class PasswordFilter
+      def initialize(bot)
+        @bot = bot
+      end
+
+      def filter(message, event)
+        message.gsub(@bot.config.password, "*" * @bot.config.password.size)
+      end
+    end
+
+This filter will replace the password in all log messages (except for
+exceptions). It could further discriminate by looking at `event` and
+only modify outgoing IRC messages. It could also use the
+{Cinch::Message} class to parse the message and only operate on the
+actual message component, not channel names and similar. How fancy
+your filtering needs to be depends on you.
+
 # Writing your own logger
 
 This section will follow soon. For now just look at the code of

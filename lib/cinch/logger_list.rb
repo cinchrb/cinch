@@ -9,6 +9,17 @@ module Cinch
   # @attr_writer level
   # @since 2.0.0
   class LoggerList < Array
+    # A list of log filters that will be applied before emitting a log
+    # message.
+    #
+    # @return [Array<LogFilter>]
+    # @since 2.3.0
+    attr_accessor :filters
+    def initialize(*args)
+      @filters = []
+      super
+    end
+
     # (see Logger#level=)
     def level=(level)
       each {|l| l.level = level}
@@ -16,47 +27,64 @@ module Cinch
 
     # (see Logger#log)
     def log(messages, event = :debug, level = event)
-      each {|l| l.log(messages, event, level)}
+      do_log(messages, event, level)
     end
 
     # (see Logger#debug)
     def debug(message)
-      each {|l| l.debug(message)}
+      do_log(message, :debug)
     end
 
     # (see Logger#error)
     def error(message)
-      each {|l| l.error(message)}
+      do_log(message, :error)
     end
 
     # (see Logger#error)
     def fatal(message)
-      each {|l| l.fatal(message)}
+      do_log(message, :fatal)
     end
 
     # (see Logger#info)
     def info(message)
-      each {|l| l.info(message)}
+      do_log(message, :info)
     end
 
     # (see Logger#warn)
     def warn(message)
-      each {|l| l.warn(message)}
+      do_log(message, :warn)
     end
 
     # (see Logger#incoming)
     def incoming(message)
-      each {|l| l.incoming(message)}
+      do_log(message, :incoming, :log)
     end
 
     # (see Logger#outgoing)
     def outgoing(message)
-      each {|l| l.outgoing(message)}
+      do_log(message, :outgoing, :log)
     end
 
     # (see Logger#exception)
     def exception(e)
-      each {|l| l.exception(e)}
+      do_log(e, :exception, :error)
+    end
+
+    private
+    def do_log(messages, event, level = event)
+      messages = Array(messages)
+      if event != :exception
+        messages.map! { |m|
+          @filters.each do |f|
+            m = f.filter(m, event)
+            if m.nil?
+              break
+            end
+          end
+          m
+        }.compact
+      end
+      each {|l| l.log(messages, event, level)}
     end
   end
 end
