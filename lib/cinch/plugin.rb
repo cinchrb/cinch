@@ -1,6 +1,5 @@
 require "cinch/helpers"
 
-# TODO more details in "message dropped" debug output
 module Cinch
   # This class represents the core of the plugin functionality of
   # Cinch. It provides both the methods for users to write their own
@@ -512,3 +511,5 @@ module Cinch
     end
   end
 end
+
+# TODO more details in "message dropped" debug output

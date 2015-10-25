@@ -269,8 +269,6 @@ module Cinch
 
     # @param [Hash, nil] values A hash of values gathered from WHOIS,
     #   or `nil` if no data was returned
-    # @param [Boolean] not_found Has to be true if WHOIS resulted in
-    #   an unknown user
     # @return [void]
     # @api private
     # @since 1.0.1

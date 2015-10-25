@@ -195,7 +195,7 @@ module Cinch
       reply_target.send(text)
     end
 
-    # Like #reply, but using {Target#safe_send} instead
+    # Like {#reply}, but using {Target#safe_send} instead
     #
     # @param (see #reply)
     # @return (see #reply)
@@ -218,7 +218,7 @@ module Cinch
       reply_target.action(text)
     end
 
-    # Like #action_reply, but using {Target#safe_action} instead
+    # Like {#action_reply}, but using {Target#safe_action} instead
     #
     # @param (see #action_reply)
     # @return (see #action_reply)
