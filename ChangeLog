@@ -1,3 +1,14 @@
+* Cinch 2.3.0, 26 October 2015
+  - Add basic support for STATUSMSG messages. These are messages
+    directed at voiced or ops in a channel, by sending a message to
+    +#channel or @#channel. Cinch will now correctly identify those as
+    channel messages. Channel#reply will reply to the same group of
+    people, and Channel#statusmsg_mode will contain the mode that was
+    addressed.
+  - Add support for filtering log messages, allowing to hide passwords
+    and other confidential information. See
+    http://www.rubydoc.info/gems/cinch/file/docs/logging.md for more
+    information.
 * Cinch 2.2.8, 23 October 2015
   - Fix WHOIS retry code, don't raise an exception
 
