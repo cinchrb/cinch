@@ -27,64 +27,59 @@ module Cinch
 
     # (see Logger#log)
     def log(messages, event = :debug, level = event)
-      do_log(messages, event, level)
+      messages = Array(messages).map {|m| filter(m, event)}.compact
+      each {|l| l.log(messages, event, level)}
     end
 
     # (see Logger#debug)
     def debug(message)
-      do_log(message, :debug)
+      (m = filter(message, :debug)) && each {|l| l.debug(m)}
     end
 
     # (see Logger#error)
     def error(message)
-      do_log(message, :error)
+      (m = filter(message, :error)) && each {|l| l.error(m)}
     end
 
     # (see Logger#error)
     def fatal(message)
-      do_log(message, :fatal)
+      (m = filter(message, :fatal)) && each {|l| l.fatal(m)}
     end
 
     # (see Logger#info)
     def info(message)
-      do_log(message, :info)
+      (m = filter(message, :info)) && each {|l| l.info(m)}
     end
 
     # (see Logger#warn)
     def warn(message)
-      do_log(message, :warn)
+      (m = filter(message, :warn)) && each {|l| l.warn(m)}
     end
 
     # (see Logger#incoming)
     def incoming(message)
-      do_log(message, :incoming, :log)
+      (m = filter(message, :incoming)) && each {|l| l.incoming(m)}
     end
 
     # (see Logger#outgoing)
     def outgoing(message)
-      do_log(message, :outgoing, :log)
+      (m = filter(message, :outgoing)) && each {|l| l.outgoing(m)}
     end
 
     # (see Logger#exception)
     def exception(e)
-      do_log(e, :exception, :error)
+      each {|l| l.exception(e)}
     end
 
     private
-    def do_log(messages, event, level = event)
-      messages = Array(messages)
-      if event != :exception
-        messages.map! { |m|
-          @filters.each do |f|
-            m = f.filter(m, event)
-            if m.nil?
-              break
-            end
-          end
-          m
-        }.compact
+    def filter(m, ev)
+      @filters.each do |f|
+        m = f.filter(m, ev)
+        if m.nil?
+          break
+        end
       end
-      each {|l| l.log(messages, event, level)}
+      m
     end
   end
 end
