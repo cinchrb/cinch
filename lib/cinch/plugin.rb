@@ -310,7 +310,7 @@ module Cinch
           if hooks.is_a?(Hash)
             hooks = hooks.map { |k, v| v }
           end
-          hooks.select! { |hook| (events & hook.for).size > 0 }
+          hooks = hooks.select { |hook| (events & hook.for).size > 0 }
         end
 
         return hooks.select { |hook| hook.group.nil? || hook.group == group }
