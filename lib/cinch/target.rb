@@ -128,7 +128,7 @@ module Cinch
     # @return (see #action)
     # @see #action
     def safe_action(text)
-      action(Cinch::Helpers.Sanitize(text))
+      action(Cinch::Helpers.sanitize(text))
     end
 
     # Send a CTCP to the target.
