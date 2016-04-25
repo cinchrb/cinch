@@ -77,9 +77,9 @@ module Cinch
             fd = nil
             Timeout.timeout(30) do
               fd, _ = @socket.accept
-              send_data(fd)
-              fd.close
             end
+            send_data(fd)
+            fd.close
           ensure
             @socket.close
           end
