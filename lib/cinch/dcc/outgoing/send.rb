@@ -105,7 +105,7 @@ module Cinch
 
           while chunk = @io.read(8096)
             rs, ws = IO.select([fd], [fd])
-            rs.first.recv         unless rs.empty?
+            rs.first.recv(8096)   unless rs.empty?
             ws.first.write(chunk) unless ws.empty?
           end
         end
