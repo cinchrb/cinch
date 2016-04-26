@@ -154,6 +154,10 @@ This event gets triggered when a user in a channel gets half-opped.
 One additional argument, the user being half-opped, gets passed to the
 handler.
 
+## `:join`
+
+This event gets triggered when a user joins a channel
+
 
 ## `:leaving`
 
