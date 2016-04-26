@@ -102,18 +102,10 @@ module Cinch
         private
         def send_data(fd)
           @io.advise(:sequential)
-
-          while chunk = @io.read(8096)
-            while true
-              rs, ws = IO.select([fd], [fd])
-              if !rs.empty?
-                rs.first.recv(8096)
-              end
-              if !ws.empty?
-                ws.first.write(chunk)
-                break
-              end
-            end
+          while chunk = @io.read(1024)
+            rs, ws = IO.select([fd], [fd])
+            rs.first.sysread(1024)  unless rs.empty?
+            ws.first.syswrite(chunk) unless ws.empty?
           end
         end
       end
