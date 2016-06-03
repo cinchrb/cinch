@@ -335,7 +335,7 @@ module Cinch
       @config           = Configuration::Bot.new
 
       @loggers = LoggerList.new
-      @loggers << Logger::FormattedLogger.new($stderr, level: @config.log_level)
+      @loggers << Logger::FormattedLogger.new($stderr, level: @config.default_logger_level)
       @handlers         = HandlerList.new
       @semaphores_mutex = Mutex.new
       @semaphores       = Hash.new { |h, k| h[k] = Mutex.new }
