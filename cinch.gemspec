@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'cinch'
-  s.version = '2.3.2'
+  s.version = '2.3.1'
   s.summary = 'An IRC Bot Building Framework'
   s.description = 'A simple, friendly DSL for creating IRC bots'
   s.authors = ['Dominik Honnef']

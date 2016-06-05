@@ -274,6 +274,10 @@ module Cinch
     def parse_tags(raw_tags)
       return {} if raw_tags.nil?
       
+      def to_symbol(string)
+        return string.gsub(/-/, "_").downcase.to_sym
+      end
+      
       tags = {}
       raw_tags.split(";").each do |tag|
         key, value = tag.split("=")
@@ -282,10 +286,10 @@ module Cinch
           value = {}
           _value.split(",").each do |item|
             _key, _value = item.split "/"
-            value[_key] = _value
+            value[to_symbol(_key)] = _value
           end
         end
-        tags[key] = value
+        tags[to_symbol(key)] = value
       end
       return tags
     end
