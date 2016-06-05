@@ -21,6 +21,9 @@ module Cinch
 
     # @return [Array<String>]
     attr_reader :params
+    
+    # @return [Hash]
+    attr_reader :tags
 
     # @return [Array<Symbol>]
     attr_reader :events
@@ -94,8 +97,8 @@ module Cinch
     # @api private
     # @return [void]
     def parse
-      match = @raw.match(/(^:(\S+) )?(\S+)(.*)/)
-      _, @prefix, @command, raw_params = match.captures
+      match = @raw.match(/(?:^@([^:]+))?(?::?(\S+) )?(\S+)(.*)/)
+      tags, @prefix, @command, raw_params = match.captures
 
       if @bot.irc.network.ngametv?
         if @prefix != "ngame"
@@ -104,6 +107,7 @@ module Cinch
       end
 
       @params  = parse_params(raw_params)
+      @tags    = parse_tags(tags)
 
       @user    = parse_user
       @channel, @statusmsg_mode = parse_channel
@@ -265,6 +269,25 @@ module Cinch
       end
 
       return params
+    end
+    
+    def parse_tags(raw_tags)
+      return {} if raw_tags.nil?
+      
+      tags = {}
+      raw_tags.split(";").each do |tag|
+        key, value = tag.split("=")
+        if value =~ /,/
+          _value = value
+          value = {}
+          _value.split(",").each do |item|
+            _key, _value = item.split "/"
+            value[_key] = _value
+          end
+        end
+        tags[key] = value
+      end
+      return tags
     end
 
     def parse_user
