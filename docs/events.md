@@ -21,6 +21,27 @@ Cinch provides three kinds of events:
    kicked/killed or `:message`, which is actually a synonym for
    `:privmsg`, the underlying IRC command.
 
+# Using events in plugins
+
+Use the `listen_to` method within plugin code to subscribe to events.
+
+Example:
+
+    class MyPlugin
+      include Cinch::Plugin
+      
+      listen_to :part, method: :part
+      listen_to :join, method: :join
+      
+      def part(m)
+        # code to execute on part event
+      end
+      
+      def join(m)
+        # code to execute on join event
+      end
+    end
+
 # Events of the first two kinds
 
 All events of the first two kinds behave exactly the same: When they
