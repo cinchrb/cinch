@@ -115,7 +115,7 @@ module Cinch
     end
 
     # @private
-    def authname_unynced
+    def authname_unsynced
       attr(:authname, true, true)
     end
 
