@@ -12,7 +12,7 @@ profits flourish.
 Cinch will do all of the hard work for you, so you can spend time creating cool
 plugins and extensions to wow your internet peers.
 
-For general support, join [#cinch](irc://irc.freenode.org/cinch) – but
+For general support, join #cinch channel on Freenode server (irc://irc.freenode.org/cinch) – but
 please don't bring any bots.
 
 Installation
