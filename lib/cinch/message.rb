@@ -280,16 +280,20 @@ module Cinch
       
       tags = {}
       raw_tags.split(";").each do |tag|
-        key, value = tag.split("=")
-        if value =~ /,/
-          _value = value
-          value = {}
-          _value.split(",").each do |item|
-            _key, _value = item.split "/"
-            value[to_symbol(_key)] = _value
-          end
+        tag_name, tag_value = tag.split("=")
+        if tag_value =~ /,/
+          tag_value = tag_value.split(',')
+        elsif tag_value.nil?
+          tag_value = tag_name
         end
-        tags[to_symbol(key)] = value
+        if tag_name =~ /\//
+          vendor, tag_name = tag_name.split('/')
+          tags[to_symbol(vendor)] = {
+            to_symol(tag_name) => tag_value
+          }
+        else
+          tags[to_symbol(tag_name)] = tag_value
+        end
       end
       return tags
     end
