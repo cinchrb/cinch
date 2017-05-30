@@ -212,10 +212,12 @@ module Cinch
     # This method is used to set a bot's options. It indeed does
     # nothing else but yielding {Bot#config}, but it makes for a nice DSL.
     #
+    # @params [Array<Object>] args arguments to pass to the config block
     # @yieldparam [Struct] config the bot's config
+    # @yieldparam [Array<Object>] args arguments passed from this method
     # @return [void]
-    def configure
-      yield @config
+    def configure(*args)
+      yield @config, *args
     end
 
     # Disconnects from the server.
