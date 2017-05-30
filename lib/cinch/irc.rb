@@ -530,7 +530,7 @@ module Cinch
         # @bot.set_nick msg.params.last
         target = @bot
       else
-        target = msg.user
+        target = msg.user || User(msg.params.first)
       end
 
       target.update_nick(msg.params.last)
