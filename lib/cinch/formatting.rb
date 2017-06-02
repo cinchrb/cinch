@@ -82,7 +82,7 @@ module Cinch
     # @example Nested formatting, combining text styles and colors
     #   reply = Format(:underline, "Hello %s! Is your favourite color %s?" % [Format(:bold, "stranger"), Format(:red, "red")])
     def self.format(*settings, string)
-      string   = string.dup
+      string   = string ? string.dup : string.to_s.dup
 
       attributes = settings.select {|k| Attributes.has_key?(k)}.map {|k| Attributes[k]}
       colors = settings.select {|k| Colors.has_key?(k)}.map {|k| Colors[k]}
