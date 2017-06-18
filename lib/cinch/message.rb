@@ -289,7 +289,7 @@ module Cinch
         if tag_name =~ /\//
           vendor, tag_name = tag_name.split('/')
           tags[to_symbol(vendor)] = {
-            to_symol(tag_name) => tag_value
+            to_symbol(tag_name) => tag_value
           }
         else
           tags[to_symbol(tag_name)] = tag_value
