@@ -6,3 +6,4 @@ pkg
 .yardoc/
 .ruby-gemset
 .ruby-version
+Gemfile.lock
