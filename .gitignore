@@ -4,3 +4,6 @@ doc
 pkg
 *.gem
 .yardoc/
+.ruby-gemset
+.ruby-version
+Gemfile.lock
