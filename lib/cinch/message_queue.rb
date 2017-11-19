@@ -53,30 +53,9 @@ module Cinch
 
     # @return [void]
     def process!
-      while true
+      loop do
         wait
-
-        queue = @queues_to_process.pop
-        message = queue.pop.to_s.chomp
-
-        if queue.empty?
-          @mutex.synchronize do
-            @queued_queues.delete(queue)
-          end
-        else
-          @queues_to_process << queue
-        end
-
-        begin
-          to_send = Cinch::Utilities::Encoding.encode_outgoing(message, @bot.config.encoding)
-          @socket.write to_send + "\r\n"
-          @log << Time.now
-          @bot.loggers.outgoing(message)
-
-          @time_since_last_send = Time.now
-        rescue IOError
-          @bot.loggers.error "Could not send message (connectivity problems): #{message}"
-        end
+        process_one
       end
     end
 
@@ -104,5 +83,30 @@ module Cinch
         end
       end
     end
-  end
+
+    def process_one
+      queue = @queues_to_process.pop
+      message = queue.pop.to_s.chomp
+
+      if queue.empty?
+        @mutex.synchronize do
+          @queued_queues.delete(queue)
+        end
+      else
+        @queues_to_process << queue
+      end
+
+      begin
+        to_send = Cinch::Utilities::Encoding.encode_outgoing(message, @bot.config.encoding)
+        @socket.write to_send + "\r\n"
+        @log << Time.now
+        @bot.loggers.outgoing(message)
+
+        @time_since_last_send = Time.now
+      rescue IOError
+        @bot.loggers.error "Could not send message (connectivity problems): #{message}"
+      end
+    end
+
+  end # class MessageQueue
 end
