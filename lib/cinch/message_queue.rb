@@ -16,7 +16,7 @@ module Cinch
       @queued_queues     = Set.new
 
       @mutex = Mutex.new
-      
+
       @time_since_last_send = nil
 
       @log = []
@@ -81,7 +81,7 @@ module Cinch
 
     def process_one
       queue = @queues_to_process.pop
-      message = queue.pop.to_s.chomp
+      message = queue.pop.to_s.each_line.first.chomp
 
       if queue.empty?
         @mutex.synchronize do

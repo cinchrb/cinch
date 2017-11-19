@@ -43,5 +43,10 @@ class WireTest < TestCase
     assert_equal "PRIVMSG cinch :\001ACTION evil\001\r\n", sent
   end
 
+  test "should not be able to send more than one IRC command at a time" do
+    @bot.irc.send("first\r\nsecond")
+    assert_equal "first\r\n", sent
+  end
+
 end
 
