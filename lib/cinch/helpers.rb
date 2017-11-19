@@ -218,7 +218,7 @@ module Cinch
     # @return [String] The filtered string
     # @since 2.2.0
     def self.sanitize(string)
-      string.gsub(/[\x00-\x08\x10-\x1f\x7f]/, '')
+      string.gsub(/[\x00-\x08\x0a-\x1f\x7f]/, '')
     end
 
     # (see Formatting.unformat)
