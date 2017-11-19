@@ -22,11 +22,11 @@ class PluginTest < TestCase
     @plugin.match(/pattern/)
     matcher = @plugin.matchers.last
 
-    assert_equal(1, @plugin.matchers.size, "Shoult not forget existing matchers")
-    assert_equal Cinch::Plugin::ClassMethods::Matcher.new(/pattern/, true, true, :execute), matcher
+    assert_equal(1, @plugin.matchers.size, "Should not forget existing matchers")
+    assert_equal Cinch::Plugin::ClassMethods::Matcher.new(/pattern/, true, true, :execute, nil, nil, nil, nil, false), matcher
 
     matcher = @plugin.match(/pattern/, use_prefix: false, use_suffix: false, method: :some_method)
-    assert_equal Cinch::Plugin::ClassMethods::Matcher.new(/pattern/, false, false, :some_method), matcher
+    assert_equal Cinch::Plugin::ClassMethods::Matcher.new(/pattern/, false, false, :some_method, nil, nil, nil, nil, false), matcher
   end
 
   test "should be able to listen to events" do
@@ -108,13 +108,13 @@ class PluginTest < TestCase
     @plugin.set :prefix,      "some prefix"
     @plugin.set :suffix,      "some suffix"
     @plugin.set :plugin_name, "some plugin"
-    @plugin.set :reacting_on,    :event1
+    @plugin.set :react_on,    :event1
 
     assert_equal "some help message", @plugin.help
     assert_equal "some prefix",       @plugin.prefix
     assert_equal "some suffix",       @plugin.suffix
     assert_equal "some plugin",       @plugin.plugin_name
-    assert_equal :event1,             @plugin.reacting_on
+    assert_equal :event1,             @plugin.react_on
   end
 
   test "should support `set(key => value, key => value, ...)`" do
@@ -122,13 +122,13 @@ class PluginTest < TestCase
                 :prefix      => "some prefix",
                 :suffix      => "some suffix",
                 :plugin_name => "some plugin",
-                :reacting_on    => :event1)
+                :react_on    => :event1)
 
     assert_equal "some help message", @plugin.help
     assert_equal "some prefix",       @plugin.prefix
     assert_equal "some suffix",       @plugin.suffix
     assert_equal "some plugin",       @plugin.plugin_name
-    assert_equal :event1,             @plugin.reacting_on
+    assert_equal :event1,             @plugin.react_on
   end
 
   test "should support `self.key = value`" do
@@ -136,13 +136,13 @@ class PluginTest < TestCase
     @plugin.prefix      = "some prefix"
     @plugin.suffix      = "some suffix"
     @plugin.plugin_name = "some plugin"
-    @plugin.reacting_on    = :event1
+    @plugin.react_on    = :event1
 
     assert_equal "some help message", @plugin.help
     assert_equal "some prefix",       @plugin.prefix
     assert_equal "some suffix",       @plugin.suffix
     assert_equal "some plugin",       @plugin.plugin_name
-    assert_equal :event1,             @plugin.reacting_on
+    assert_equal :event1,             @plugin.react_on
   end
 
   test "should support querying attributes" do
@@ -150,13 +150,13 @@ class PluginTest < TestCase
     @plugin.help = "I am a help message"
     @plugin.prefix = "^"
     @plugin.suffix = "!"
-    @plugin.react_on(:event1)
+    @plugin.react_on = :event1
 
     assert_equal "foo", @plugin.plugin_name
     assert_equal "I am a help message", @plugin.help
     assert_equal "^", @plugin.prefix
     assert_equal "!", @plugin.suffix
-    assert_equal :event1, @plugin.reacting_on
+    assert_equal :event1, @plugin.react_on
   end
 
   test "should have a default name" do
