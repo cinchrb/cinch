@@ -38,5 +38,10 @@ class WireTest < TestCase
     assert_equal "PRIVMSG cinch :hello,\r\nPRIVMSG cinch :world!\r\n", sent
   end
 
+  test "should not be able to inject IRC commands using newlines in actions" do
+    @bot.action("evil\r\nKICK #testchan John :Injecting commands")
+    assert_equal "PRIVMSG cinch :\001ACTION evil\001\r\n", sent
+  end
+
 end
 
