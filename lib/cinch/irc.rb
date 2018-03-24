@@ -819,6 +819,12 @@ module Cinch
       msg.channel.mark_as_synced(:bans)
     end
 
+    def on_381(msg, events)
+      @bot.is_oper = true
+      update_whois(@bot, {:oper? => true})
+      events << [:oper]
+    end
+
     def on_386(msg, events)
       # RPL_QLIST
       unless @in_lists.include?(:owners)
@@ -828,12 +834,6 @@ module Cinch
 
       owner = User(msg.params[2])
       msg.channel.owners_unsynced << owner
-    end
-
-    def on_381(msg, events)
-      @bot.is_oper = true
-      update_whois(@bot, {:oper? => true})
-      events << [:oper]
     end
 
     def on_387(msg, events)
@@ -881,6 +881,10 @@ module Cinch
       update_whois(user, {:secure? => true})
     end
 
+    def on_464(msg, events)
+      events << [:oper_fail]
+    end
+    
     # @since 2.0.0
     def on_730(msg, events)
       # RPL_MONONLINE
