@@ -95,7 +95,6 @@ module Cinch
         ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
       @bot.loggers.info "Using SSL with #{@bot.config.server}:#{@bot.config.port}"
-
       @socket      = OpenSSL::SSL::SSLSocket.new(socket, ssl_context)
       @socket.sync = true
       @socket.connect
@@ -611,6 +610,9 @@ module Cinch
       # Ensure that we know our real, possibly truncated or otherwise
       # modified nick.
       @bot.set_nick msg.params.first
+      if @bot.config.oper["user"] != "" && @bot.config.oper["pass"] != ""
+        @bot.oper @bot.config.oper["pass"], @bot.config.oper["user"]
+      end
     end
 
     # @since 2.0.0
@@ -826,6 +828,12 @@ module Cinch
 
       owner = User(msg.params[2])
       msg.channel.owners_unsynced << owner
+    end
+
+    def on_381(msg, events)
+      @bot.is_oper = true
+      update_whois(@bot, {:oper? => true})
+      events << [:oper]
     end
 
     def on_387(msg, events)
