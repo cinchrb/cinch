@@ -22,10 +22,7 @@ module Cinch
           :realname => "cinch",
           :user => "cinch",
           :modes => [],
-          :oper => {
-            "user" => "",
-            "pass" => ""
-          },
+          :oper => nil,
           :messages_per_second => nil,
           :server_queue_size => nil,
           :strictness => :forgiving,

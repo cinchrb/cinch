@@ -610,7 +610,7 @@ module Cinch
       # Ensure that we know our real, possibly truncated or otherwise
       # modified nick.
       @bot.set_nick msg.params.first
-      if @bot.config.oper["user"] != "" && @bot.config.oper["pass"] != ""
+      if !@bot.config.oper.nil? && @bot.config.oper["user"] != "" && @bot.config.oper["pass"] != ""
         @bot.oper @bot.config.oper["pass"], @bot.config.oper["user"]
       end
     end
