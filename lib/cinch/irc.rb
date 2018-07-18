@@ -290,6 +290,9 @@ module Cinch
     def set_leaving_user(message, user, events)
       events << [:leaving, user]
     end
+    def set_joining_user(message, user, events)
+      events << [:joining, user]
+    end
 
     # @since 2.0.0
     def detect_network(msg, event)
@@ -418,6 +421,8 @@ module Cinch
       end
       msg.channel.add_user(msg.user)
       msg.user.online = true
+
+      set_joining_user(msg, user, events)
     end
 
     def on_kick(msg, events)
