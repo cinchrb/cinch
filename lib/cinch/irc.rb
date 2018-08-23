@@ -89,6 +89,8 @@ module Cinch
           ssl_context.key  = OpenSSL::PKey::RSA.new(File.read(@bot.config.ssl.client_cert))
         end
 
+        ssl_context.ca_file     = @bot.config.ssl.ca_file
+        ssl_context.ciphers     = @bot.config.ssl.ciphers
         ssl_context.ca_path     = @bot.config.ssl.ca_path
         ssl_context.verify_mode = @bot.config.ssl.verify ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
       else
