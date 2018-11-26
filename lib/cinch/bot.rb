@@ -332,10 +332,10 @@ module Cinch
 
     # @yield
     def initialize(&b)
-      @loggers = LoggerList.new
-      @loggers << Logger::FormattedLogger.new($stderr)
-
       @config           = Configuration::Bot.new
+
+      @loggers = LoggerList.new
+      @loggers << Logger::FormattedLogger.new($stderr, level: @config.default_logger_level)
       @handlers         = HandlerList.new
       @semaphores_mutex = Mutex.new
       @semaphores       = Hash.new { |h, k| h[k] = Mutex.new }

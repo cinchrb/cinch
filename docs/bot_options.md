@@ -443,3 +443,12 @@ Default value
 Description
 : Give up connecting after this amount of seconds.
 
+## default_logger_level
+Type
+: Symbol
+
+Default value
+: `:debug`
+
+Description
+: Modify the log level of the default logger, for instance, the bot will log very little if you set this value to `:fatal`.  

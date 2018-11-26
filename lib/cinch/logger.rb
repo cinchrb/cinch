@@ -20,10 +20,10 @@ module Cinch
     attr_reader :output
 
     # @param [IO] output The I/O object to write log data to
-    def initialize(output)
+    def initialize(output, level: :debug)
       @output = output
       @mutex  = Mutex.new
-      @level  = :debug
+      @level  = level
     end
 
     # Logs a debugging message.
