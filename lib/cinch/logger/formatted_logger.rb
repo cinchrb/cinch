@@ -40,8 +40,7 @@ module Cinch
       end
 
       def format_general(message)
-        # :print: doesn't call all of :space: so use both.
-        message.gsub(/[^[:print:][:space:]]/) do |m|
+        message.gsub(/[^[:print:]]/) do |m|
           colorize(m.inspect[1..-2], :bg_white, :black)
         end
       end
