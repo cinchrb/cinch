@@ -97,7 +97,7 @@ module Cinch
     # @api private
     # @return [void]
     def parse
-      match = @raw.match(/(?:^@([^:]+))?(?::?(\S+) )?(\S+)(.*)/)
+      match = @raw.match(/\A(?:@([^ ]+) )?(?::(\S+) )?(\S+)(.*)/)
       tags, @prefix, @command, raw_params = match.captures
 
       if @bot.irc.network.ngametv?
