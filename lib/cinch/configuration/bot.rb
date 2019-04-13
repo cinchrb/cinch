@@ -4,7 +4,7 @@ module Cinch
   class Configuration
     # @since 2.0.0
     class Bot < Configuration
-      KnownOptions = [:server, :port, :ssl, :password, :nick, :nicks,
+      KnownOptions = [:server, :port, :inet, :ssl, :password, :nick, :nicks,
                       :realname, :user, :messages_per_second, :server_queue_size,
                       :strictness, :message_split_start, :message_split_end,
                       :max_messages, :plugins, :channels, :encoding, :reconnect, :max_reconnect_delay,
@@ -15,6 +15,7 @@ module Cinch
         {
           :server => "localhost",
           :port   => 6667,
+          :inet   => nil,
           :ssl    => Configuration::SSL.new,
           :password => nil,
           :nick   => "cinch",

@@ -44,10 +44,11 @@ module Cinch
     # @return [Boolean] True if the connection could be established
     def connect
       tcp_socket = nil
+      addr = Addrinfo.getaddrinfo(@bot.config.server, @bot.config.port, @bot.config.inet, :STREAM).sample
 
       begin
         Timeout::timeout(@bot.config.timeouts.connect) do
-          tcp_socket = TCPSocket.new(@bot.config.server, @bot.config.port, @bot.config.local_host)
+          tcp_socket = TCPSocket.new(addr.ip_address, addr.ip_port, @bot.config.local_host)
         end
       rescue Timeout::Error
         @bot.loggers.warn("Timed out while connecting")
