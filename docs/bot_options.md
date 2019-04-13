@@ -92,7 +92,7 @@ Type
 Default value
 : `300`
 
-Descriptipn
+Description
 : With every unsuccessful reconnection attempt, Cinch increases the
   delay between new attempts. This setting is the maximum number of
   seconds to wait between two attempts.
@@ -278,6 +278,17 @@ Description
 : The port the IRC server is listening on
 
 
+## inet
+Type
+: Symbol
+
+Default value
+: `nil`
+
+Description
+: The IP family to use for the IRC server connection. Set to `:PF_INET` for IPv4 only, or
+`:PF_INET5` for IPv6 only. By default, a random IP of either family is chosen.
+
 ## realname
 Type
 : String
@@ -451,4 +462,4 @@ Default value
 : `:debug`
 
 Description
-: Modify the log level of the default logger, for instance, the bot will log very little if you set this value to `:fatal`.  
+: Modify the log level of the default logger, for instance, the bot will log very little if you set this value to `:fatal`.
