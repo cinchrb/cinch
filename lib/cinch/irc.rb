@@ -193,6 +193,19 @@ module Cinch
       end
     end
 
+    # @api private
+    # @return [Thread] The quit thread.
+    # @since 2.0.0
+    def start_quit_thread
+      Thread.new do
+        # Check every 1 second if the bot needs to be shut down.
+        while !@bot.quitting
+          sleep 1
+        end
+        self.send @bot.quit_message
+      end
+    end
+
     # @since 2.0.0
     def send_sasl
       if @bot.config.sasl.username && @sasl_current_method = @sasl_remaining_methods.pop
@@ -217,10 +230,12 @@ module Cinch
         reading_thread = start_reading_thread
         sending_thread = start_sending_thread
         ping_thread    = start_ping_thread
+        quit_thread    = start_quit_thread
 
         reading_thread.join
         sending_thread.kill
         ping_thread.kill
+        quit_thread.kill
       end
     end
 

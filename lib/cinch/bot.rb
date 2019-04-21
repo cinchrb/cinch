@@ -83,6 +83,9 @@ module Cinch
     # @return [Boolean] whether the bot is in the process of disconnecting
     attr_reader :quitting
 
+    # @return [String] quit message to send to server
+    attr_reader :quit_message
+
     # @return [UserList] All {User users} the bot knows about.
     # @see UserList
     # @since 1.1.0
@@ -224,9 +227,7 @@ module Cinch
     # @return [void]
     def quit(message = nil)
       @quitting = true
-      command   = message ? "QUIT :#{message}" : "QUIT"
-
-      @irc.send command
+      @quit_command = message ? "QUIT :#{message}" : "QUIT"
     end
 
     # Connects the bot to a server.
