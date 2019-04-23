@@ -109,6 +109,10 @@ module Cinch
     # @since 2.0.0
     attr_reader :handlers
 
+    # The bot's OPER state.
+    # @return [Boolean]
+    attr_accessor :is_oper
+
     # The bot's modes.
     #
     # @return [Array<String>]
@@ -235,6 +239,7 @@ module Cinch
     #   `@config.plugins.plugins`?
     # @return [void]
     def start(plugins = true)
+      @is_oper = false
       @reconnects = 0
       @plugins.register_plugins(@config.plugins.plugins) if plugins
 

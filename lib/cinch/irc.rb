@@ -95,7 +95,6 @@ module Cinch
         ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
       @bot.loggers.info "Using SSL with #{@bot.config.server}:#{@bot.config.port}"
-
       @socket      = OpenSSL::SSL::SSLSocket.new(socket, ssl_context)
       @socket.sync = true
       @socket.connect
@@ -611,6 +610,9 @@ module Cinch
       # Ensure that we know our real, possibly truncated or otherwise
       # modified nick.
       @bot.set_nick msg.params.first
+      if !@bot.config.oper.nil? && @bot.config.oper["user"] != "" && @bot.config.oper["pass"] != ""
+        @bot.oper @bot.config.oper["pass"], @bot.config.oper["user"]
+      end
     end
 
     # @since 2.0.0
@@ -817,6 +819,12 @@ module Cinch
       msg.channel.mark_as_synced(:bans)
     end
 
+    def on_381(msg, events)
+      @bot.is_oper = true
+      update_whois(@bot, {:oper? => true})
+      events << [:oper]
+    end
+
     def on_386(msg, events)
       # RPL_QLIST
       unless @in_lists.include?(:owners)
@@ -873,6 +881,10 @@ module Cinch
       update_whois(user, {:secure? => true})
     end
 
+    def on_464(msg, events)
+      events << [:oper_fail]
+    end
+    
     # @since 2.0.0
     def on_730(msg, events)
       # RPL_MONONLINE
