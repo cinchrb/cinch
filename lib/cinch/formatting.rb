@@ -119,7 +119,7 @@ module Cinch
     # @return [String] The filtered string
     # @since 2.2.0
     def self.unformat(string)
-      string.gsub(/[\x02\x0f\x16\x1f\x12]|\x03(\d{1,2}(,\d{1,2})?)?/, '')
+      string.gsub(/[\x02\x0f\x16\x1d\x1f\x12]|\x03(\d{1,2}(,\d{1,2})?)?/, '')
     end
   end
 end
